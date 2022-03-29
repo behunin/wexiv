@@ -1,0 +1,6 @@
+[submodule "externals/zlib"]
+	path = externals/zlib
+	url = https://github.com/behunin/zlib.git
+[submodule "externals/xmp"]
+	path = externals/xmp
+	url = https://github.com/behunin/XMP-Toolkit-SDK.git
