@@ -64,7 +64,7 @@ public:
     @param create Specifies if an existing image should be read (false)
         or if a new file should be created (true).
     */
-  Jp2Image(BasicIo::UniquePtr io, bool create);
+  Jp2Image(BasicIo::UniquePtr io);
   //@}
 
   //! @name Manipulators
