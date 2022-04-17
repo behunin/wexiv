@@ -19,6 +19,7 @@ add_library( exiv2lib_int OBJECT
     fujimn_int.cpp          fujimn_int.hpp
     helper_functions.cpp    helper_functions.hpp
     image_int.cpp           image_int.hpp
+    jp2image_int.cpp        jp2image_int.hpp
     makernote_int.cpp       makernote_int.hpp
     minoltamn_int.cpp       minoltamn_int.hpp
     nikonmn_int.cpp         nikonmn_int.hpp
@@ -178,6 +179,7 @@ write_basic_package_version_file(exiv2ConfigVersion.cmake COMPATIBILITY ExactVer
     add_dependencies(wexiv XMPCoreStatic zlib)
 
     target_link_options(wexiv PUBLIC
+        -03
         --bind
         --no-entry
         --js-library ${PROJECT_SOURCE_DIR}/library/getmeta.js
@@ -186,6 +188,7 @@ write_basic_package_version_file(exiv2ConfigVersion.cmake COMPATIBILITY ExactVer
         -sEXPORT_NAME=wexiv
         -sEXPORTED_RUNTIME_METHODS=stringToUTF8,lengthBytesUTF8
         -sMODULARIZE
+        -sSINGLE_FILE=1
         -sNO_FILESYSTEM
         -sLLD_REPORT_UNDEFINED
         -Wl,-error-limit=0

@@ -27,6 +27,7 @@
 #include "error.hpp"
 #include "image.hpp"
 #include "image_int.hpp"
+#include "jp2image_int.hpp"
 #include "safe_op.hpp"
 #include "tiffimage.hpp"
 #include "types.hpp"
@@ -99,7 +100,8 @@ struct Jp2UuidBox {
 // *****************************************************************************
 namespace Exiv2 {
 
-Jp2Image::Jp2Image(BasicIo::UniquePtr io, bool create) : Image(ImageType::jp2, mdExif | mdIptc | mdXmp, std::move(io)) {}
+Jp2Image::Jp2Image(BasicIo::UniquePtr io) : Image(ImageType::jp2, mdExif | mdIptc | mdXmp, std::move(io)) {
+}
 
 std::string Jp2Image::mimeType() const {
   return "image/jp2";
@@ -302,7 +304,7 @@ void Jp2Image::readMetadata() {
 } // Jp2Image::readMetadata
 
 Image::UniquePtr newJp2Instance(BasicIo::UniquePtr io, bool create) {
-  Image::UniquePtr image(new Jp2Image(std::move(io), create));
+  Image::UniquePtr image(new Jp2Image(std::move(io)));
   if (!image->good()) {
     image.reset();
   }
