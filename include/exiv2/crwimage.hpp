@@ -21,7 +21,8 @@
   @file    crwimage.hpp
   @brief   Class CrwImage to access Canon CRW images.<BR>
            References:<BR>
-           <a href="http://www.sno.phy.queensu.ca/~phil/exiftool/canon_raw.html">The Canon RAW (CRW) File Format</a> by Phil Harvey
+           <a href="http://www.sno.phy.queensu.ca/~phil/exiftool/canon_raw.html">The Canon RAW (CRW) File Format</a> by
+  Phil Harvey
   @author  Andreas Huggel (ahu)
            <a href="mailto:ahuggel@gmx.net">ahuggel@gmx.net</a>
   @date    28-Aug-05, ahu: created
@@ -49,7 +50,7 @@ class IptcData;
 
 // Add CRW to the supported image formats
 namespace ImageType {
-const int crw = 3; //!< CRW image type (see class CrwImage)
+const int crw = 3;  //!< CRW image type (see class CrwImage)
 }
 
 /*!
@@ -57,7 +58,7 @@ const int crw = 3; //!< CRW image type (see class CrwImage)
           comment are supported. CRW format does not contain IPTC metadata.
   */
 class EXIV2API CrwImage : public Image {
-public:
+ public:
   //! @name Creators
   //@{
   /*!
@@ -98,13 +99,13 @@ public:
   CrwImage& operator=(const CrwImage& rhs) = delete;
   //@}
 
-}; // class CrwImage
+};  // class CrwImage
 
 /*!
   Stateless parser class for Canon CRW images (Ciff format).
 */
 class EXIV2API CrwParser {
-public:
+ public:
   /*!
     @brief Decode metadata from a Canon CRW image in data buffer \em pData
             of length \em size into \em crwImage.
@@ -122,7 +123,7 @@ public:
   */
   static void decode(CrwImage* pCrwImage, const byte* pData, uint32_t size);
 
-}; // class CrwParser
+};  // class CrwParser
 
 // *****************************************************************************
 // template, inline and free functions
@@ -139,6 +140,6 @@ EXIV2API Image::UniquePtr newCrwInstance(BasicIo::UniquePtr io, bool create);
 //! Check if the file iIo is a CRW image.
 EXIV2API bool isCrwType(BasicIo& iIo, bool advance);
 
-} // namespace Exiv2
+}  // namespace Exiv2
 
-#endif // #ifndef CRWIMAGE_HPP_
+#endif  // #ifndef CRWIMAGE_HPP_

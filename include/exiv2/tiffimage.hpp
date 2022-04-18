@@ -36,21 +36,21 @@ namespace Exiv2 {
 
 // Add TIFF to the supported image formats
 namespace ImageType {
-const int tiff = 4; //!< TIFF image type (see class TiffImage)
-const int dng = 4; //!< DNG image type (see class TiffImage)
-const int nef = 4; //!< NEF image type (see class TiffImage)
-const int pef = 4; //!< PEF image type (see class TiffImage)
-const int arw = 4; //!< ARW image type (see class TiffImage)
-const int sr2 = 4; //!< SR2 image type (see class TiffImage)
-const int srw = 4; //!< SRW image type (see class TiffImage)
-} // namespace ImageType
+const int tiff = 4;  //!< TIFF image type (see class TiffImage)
+const int dng = 4;   //!< DNG image type (see class TiffImage)
+const int nef = 4;   //!< NEF image type (see class TiffImage)
+const int pef = 4;   //!< PEF image type (see class TiffImage)
+const int arw = 4;   //!< ARW image type (see class TiffImage)
+const int sr2 = 4;   //!< SR2 image type (see class TiffImage)
+const int srw = 4;   //!< SRW image type (see class TiffImage)
+}  // namespace ImageType
 
 /*!
   @brief Class to access TIFF images. Exif metadata is
       supported directly, IPTC is read from the Exif data, if present.
   */
 class EXIV2API TiffImage : public Image {
-public:
+ public:
   //! @name Creators
   //@{
   /*!
@@ -90,7 +90,7 @@ public:
   TiffImage& operator=(const TiffImage& rhs) = delete;
   //@}
 
-private:
+ private:
   //! @name Accessors
   //@{
   //! Return the group name of the group with the primary image.
@@ -98,12 +98,12 @@ private:
   //@}
 
   // DATA
-  mutable std::string primaryGroup_; //!< The primary group
-  mutable std::string mimeType_; //!< The MIME type
-  mutable int pixelWidthPrimary_; //!< Width of the primary image in pixels
-  mutable int pixelHeightPrimary_; //!< Height of the primary image in pixels
+  mutable std::string primaryGroup_;  //!< The primary group
+  mutable std::string mimeType_;      //!< The MIME type
+  mutable int pixelWidthPrimary_;     //!< Width of the primary image in pixels
+  mutable int pixelHeightPrimary_;    //!< Height of the primary image in pixels
 
-}; // class TiffImage
+};  // class TiffImage
 
 /*!
   @brief Stateless parser class for data in TIFF format. Images use this
@@ -111,7 +111,7 @@ private:
           internal class Internal::TiffParserWorker.
   */
 class EXIV2API TiffParser {
-public:
+ public:
   /*!
     @brief Decode metadata from a buffer \em pData of length \em size
             with data in TIFF format to the provided metadata containers.
@@ -125,9 +125,10 @@ public:
 
     @return Byte order in which the data is encoded.
   */
-  static ByteOrder decode(emscripten::val& exifData, emscripten::val& iptcData, emscripten::val& xmpData, const byte* pData, uint32_t size);
+  static ByteOrder decode(emscripten::val& exifData, emscripten::val& iptcData, emscripten::val& xmpData,
+                          const byte* pData, uint32_t size);
 
-}; // class TiffParser
+};  // class TiffParser
 
 // *****************************************************************************
 // template, inline and free functions
@@ -144,6 +145,6 @@ EXIV2API Image::UniquePtr newTiffInstance(BasicIo::UniquePtr io, bool create);
 //! Check if the file iIo is a TIFF image.
 EXIV2API bool isTiffType(BasicIo& iIo, bool advance);
 
-} // namespace Exiv2
+}  // namespace Exiv2
 
-#endif // #ifndef TIFFIMAGE_HPP_
+#endif  // #ifndef TIFFIMAGE_HPP_

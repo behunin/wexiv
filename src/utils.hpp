@@ -83,6 +83,6 @@ void replace(std::string& text, const std::string& searchText, const std::string
           std::basic_string<CharT,Traits,Allocator>::starts_with().
 */
 bool startsWith(const std::string& s, const std::string& start);
-} // namespace Util
+}  // namespace Util
 
-#endif // #ifndef UTILS_HPP_
+#endif  // #ifndef UTILS_HPP_

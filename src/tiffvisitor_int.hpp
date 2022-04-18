@@ -53,7 +53,7 @@ class TiffDataEntryBase;
   @endcode
 */
 class TiffVisitor {
-public:
+ public:
   //! Events for the stop/go flag. See setGo().
   enum GoEvent {
     //! Signal to control traversing of the composite tree.
@@ -63,11 +63,11 @@ public:
     // Note: If you add more events here, adjust the events_ constant too!
   };
 
-private:
-  static const int events_ = 2; //!< The number of stop/go flags.
-  std::array<bool, events_> go_; //!< Array of stop/go flags. See setGo().
+ private:
+  static const int events_ = 2;   //!< The number of stop/go flags.
+  std::array<bool, events_> go_;  //!< Array of stop/go flags. See setGo().
 
-public:
+ public:
   //! @name Creators
   //@{
   //! Default constructor. Initialises all stop/go flags to true.
@@ -135,7 +135,7 @@ public:
   bool go(GoEvent event) const;
   //@}
 
-}; // class TiffVisitor
+};  // class TiffVisitor
 
 /*!
   @brief Search the composite for a component with \em tag and \em group.
@@ -144,11 +144,12 @@ public:
         re-initialized with init().
 */
 class TiffFinder : public TiffVisitor {
-public:
+ public:
   //! @name Creators
   //@{
   //! Constructor, taking \em tag and \em group of the component to find.
-  TiffFinder(uint16_t tag, IfdId group) : tag_(tag), group_(group), tiffComponent_(0) {}
+  TiffFinder(uint16_t tag, IfdId group) : tag_(tag), group_(group), tiffComponent_(0) {
+  }
   //! Virtual destructor
   ~TiffFinder() override = default;
   //@}
@@ -188,14 +189,16 @@ public:
             @brief Return the search result. 0 if no TIFF component was found
                   for the tag and group combination.
           */
-  TiffComponent* result() const { return tiffComponent_; }
+  TiffComponent* result() const {
+    return tiffComponent_;
+  }
   //@}
 
-private:
+ private:
   uint16_t tag_;
   IfdId group_;
   TiffComponent* tiffComponent_;
-}; // class TiffFinder
+};  // class TiffFinder
 
 /*!
         @brief Copy all image tags from the source tree (the tree that is traversed) to a
@@ -203,7 +206,7 @@ private:
               constructor.
       */
 class TiffCopier : public TiffVisitor {
-public:
+ public:
   //! @name Creators
   //@{
   /*!
@@ -246,12 +249,12 @@ public:
   void copyObject(TiffComponent* object);
   //@}
 
-private:
+ private:
   TiffComponent* pRoot_;
   uint32_t root_;
   const TiffHeaderBase* pHeader_;
   const PrimaryGroups* pPrimaryGroups_;
-}; // class TiffCopier
+};  // class TiffCopier
 
 /*!
         @brief TIFF composite visitor to decode metadata from the TIFF tree and
@@ -260,7 +263,7 @@ private:
               TIFF composite.
       */
 class TiffDecoder : public TiffVisitor {
-public:
+ public:
   //! @name Creators
   //@{
   /*!
@@ -268,11 +271,8 @@ public:
                   the root element of the composite to decode and a FindDecoderFct
                   function to get the decoder function for each tag.
           */
-  TiffDecoder(emscripten::val& exifData,
-              emscripten::val& iptcData,
-              emscripten::val& xmpData,
-              TiffComponent* const pRoot,
-              FindDecoderFct findDecoderFct);
+  TiffDecoder(emscripten::val& exifData, emscripten::val& iptcData, emscripten::val& xmpData,
+              TiffComponent* const pRoot, FindDecoderFct findDecoderFct);
   //! Virtual destructor
   ~TiffDecoder() override = default;
   //@}
@@ -312,7 +312,7 @@ public:
   void decodeCanonAFInfo(const TiffEntryBase* object);
   //@}
 
-private:
+ private:
   //! @name Manipulators
   //@{
   /*!
@@ -326,17 +326,17 @@ private:
   void getObjData(byte const*& pData, long& size, uint16_t tag, IfdId group, const TiffEntryBase* object);
   //@}
 
-private:
+ private:
   // DATA
-  emscripten::val& exifData_; //!< Exif metadata container
-  emscripten::val& iptcData_; //!< IPTC metadata container
-  emscripten::val& xmpData_; //!< XMP metadata container
-  TiffComponent* const pRoot_; //!< Root element of the composite
-  const FindDecoderFct findDecoderFct_; //!< Ptr to the function to find special decoding functions
-  std::string make_; //!< Camera make, determined from the tags to decode
-  bool decodedIptc_; //!< Indicates if IPTC has been decoded yet
+  emscripten::val& exifData_;            //!< Exif metadata container
+  emscripten::val& iptcData_;            //!< IPTC metadata container
+  emscripten::val& xmpData_;             //!< XMP metadata container
+  TiffComponent* const pRoot_;           //!< Root element of the composite
+  const FindDecoderFct findDecoderFct_;  //!< Ptr to the function to find special decoding functions
+  std::string make_;                     //!< Camera make, determined from the tags to decode
+  bool decodedIptc_;                     //!< Indicates if IPTC has been decoded yet
 
-}; // class TiffDecoder
+};  // class TiffDecoder
 
 /*!
         @brief Simple state class containing relevant state information for
@@ -345,11 +345,12 @@ private:
               makernotes).
       */
 class TiffRwState {
-public:
+ public:
   //! @name Creators
   //@{
   //! Constructor.
-  TiffRwState(ByteOrder byteOrder, uint32_t baseOffset) : byteOrder_(byteOrder), baseOffset_(baseOffset) {}
+  TiffRwState(ByteOrder byteOrder, uint32_t baseOffset) : byteOrder_(byteOrder), baseOffset_(baseOffset) {
+  }
   //@}
 
   //! @name Accessors
@@ -358,7 +359,9 @@ public:
               @brief Return the applicable byte order. May be different for
                     the Makernote and the rest of the TIFF entries.
             */
-  ByteOrder byteOrder() const { return byteOrder_; }
+  ByteOrder byteOrder() const {
+    return byteOrder_;
+  }
   /*!
               @brief Return the base offset.
 
@@ -370,13 +373,15 @@ public:
               case, base offset added to the start of the TIFF image header points
               to the basis for such makernote offsets.
             */
-  uint32_t baseOffset() const { return baseOffset_; }
+  uint32_t baseOffset() const {
+    return baseOffset_;
+  }
   //@}
 
-private:
+ private:
   ByteOrder byteOrder_;
   uint32_t baseOffset_;
-}; // TiffRwState
+};  // TiffRwState
 
 /*!
         @brief TIFF composite visitor to read the TIFF structure from a block of
@@ -384,7 +389,7 @@ private:
               TiffParser to read the TIFF data from a block of memory.
       */
 class TiffReader : public TiffVisitor {
-public:
+ public:
   //! @name Creators
   //@{
   /*!
@@ -465,26 +470,26 @@ public:
   uint32_t baseOffset() const;
   //@}
 
-private:
+ private:
   using DirList = std::map<const byte*, IfdId>;
   using IdxSeq = std::map<uint16_t, int>;
   using PostList = std::vector<TiffComponent*>;
 
   // DATA
-  const byte* pData_; //!< Pointer to the memory buffer
-  const uint32_t size_; //!< Size of the buffer
-  const byte* pLast_; //!< Pointer to the last byte
-  TiffComponent* const pRoot_; //!< Root element of the composite
-  TiffRwState* pState_; //!< Pointer to the state in effect (origState_ or mnState_)
-  TiffRwState origState_; //!< State class as set in the c'tor
-  TiffRwState mnState_; //!< State class as set in the c'tor or by setMnState()
-  DirList dirList_; //!< List of IFD pointers and their groups
-  IdxSeq idxSeq_; //!< Sequences for group, used for the entry's idx
-  PostList postList_; //!< List of components with deferred reading
-  bool postProc_; //!< True in postProcessList()
-}; // class TiffReader
+  const byte* pData_;           //!< Pointer to the memory buffer
+  const uint32_t size_;         //!< Size of the buffer
+  const byte* pLast_;           //!< Pointer to the last byte
+  TiffComponent* const pRoot_;  //!< Root element of the composite
+  TiffRwState* pState_;         //!< Pointer to the state in effect (origState_ or mnState_)
+  TiffRwState origState_;       //!< State class as set in the c'tor
+  TiffRwState mnState_;         //!< State class as set in the c'tor or by setMnState()
+  DirList dirList_;             //!< List of IFD pointers and their groups
+  IdxSeq idxSeq_;               //!< Sequences for group, used for the entry's idx
+  PostList postList_;           //!< List of components with deferred reading
+  bool postProc_;               //!< True in postProcessList()
+};                              // class TiffReader
 
-} // namespace Internal
-} // namespace Exiv2
+}  // namespace Internal
+}  // namespace Exiv2
 
-#endif // #ifndef TIFFVISITOR_INT_HPP_
+#endif  // #ifndef TIFFVISITOR_INT_HPP_

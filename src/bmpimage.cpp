@@ -64,12 +64,10 @@ void BmpImage::readMetadata() {
     22      4 bytes  bitmap height
     26      2 bytes  plane count
     28      2 bytes  depth
-    30      4 bytes  compression            0 = none; 1 = RLE, 8 bits/pixel; 2 = RLE, 4 bits/pixel; 3 = bitfield; 4 = JPEG; 5 = PNG
-    34      4 bytes  image size             size of the raw bitmap data, in bytes
-    38      4 bytes  horizontal resolution  (in pixels per meter)
-    42      4 bytes  vertical resolution    (in pixels per meter)
-    46      4 bytes  color count
-    50      4 bytes  important colors       number of "important" colors
+    30      4 bytes  compression            0 = none; 1 = RLE, 8 bits/pixel; 2 = RLE, 4 bits/pixel; 3 = bitfield; 4 =
+    JPEG; 5 = PNG 34      4 bytes  image size             size of the raw bitmap data, in bytes 38      4 bytes
+    horizontal resolution  (in pixels per meter) 42      4 bytes  vertical resolution    (in pixels per meter) 46      4
+    bytes  color count 50      4 bytes  important colors       number of "important" colors
   */
   byte buf[54];
   if (io_->read(buf, sizeof(buf)) == sizeof(buf)) {
@@ -100,4 +98,4 @@ bool isBmpType(BasicIo& iIo, bool advance) {
   }
   return matched;
 }
-} // namespace Exiv2
+}  // namespace Exiv2

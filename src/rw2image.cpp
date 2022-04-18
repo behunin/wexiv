@@ -30,8 +30,8 @@
 
 namespace Exiv2 {
 
-  constexpr const char* pRaw_width = "Exif.PanasonicRaw.SensorWidth";
-  constexpr const char* pRaw_height = "Exif.PanasonicRaw.SensorHeight";
+constexpr const char* pRaw_width = "Exif.PanasonicRaw.SensorWidth";
+constexpr const char* pRaw_height = "Exif.PanasonicRaw.SensorHeight";
 
 using namespace Internal;
 
@@ -74,11 +74,13 @@ void Rw2Image::readMetadata() {
   // A lot more metadata is hidden in the embedded preview image
   // Todo: This should go into the Rw2Parser, but for that it needs the Image
 
-} // Rw2Image::readMetadata
+}  // Rw2Image::readMetadata
 
-ByteOrder Rw2Parser::decode(emscripten::val& exifData, emscripten::val& iptcData, emscripten::val& xmpData, const byte* pData, uint32_t size) {
+ByteOrder Rw2Parser::decode(emscripten::val& exifData, emscripten::val& iptcData, emscripten::val& xmpData,
+                            const byte* pData, uint32_t size) {
   Rw2Header rw2Header;
-  return TiffParserWorker::decode(exifData, iptcData, xmpData, pData, size, Tag::pana, TiffMapping::findDecoder, &rw2Header);
+  return TiffParserWorker::decode(exifData, iptcData, xmpData, pData, size, Tag::pana, TiffMapping::findDecoder,
+                                  &rw2Header);
 }
 
 Image::UniquePtr newRw2Instance(BasicIo::UniquePtr io, bool /*create*/) {
@@ -102,6 +104,6 @@ bool isRw2Type(BasicIo& iIo, bool advance) {
     iIo.seek(-len, BasicIo::cur);
   }
   return rc;
-} // Exiv2::isRw2Type
+}  // Exiv2::isRw2Type
 
-} // namespace Exiv2
+}  // namespace Exiv2

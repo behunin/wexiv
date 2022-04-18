@@ -27,7 +27,7 @@
 #include "config.h"
 #include "cr2header_int.hpp"
 #include "error.hpp"
-#include "i18n.h" // NLS support.
+#include "i18n.h"  // NLS support.
 #include "image.hpp"
 #include "tiffcomposite_int.hpp"
 #include "tiffimage.hpp"
@@ -41,8 +41,9 @@ namespace Exiv2 {
 
 using namespace Internal;
 
-Cr2Image::Cr2Image(BasicIo::UniquePtr io, bool /*create*/) : Image(ImageType::cr2, mdExif | mdIptc | mdXmp, std::move(io)) {
-} // Cr2Image::Cr2Image
+Cr2Image::Cr2Image(BasicIo::UniquePtr io, bool /*create*/) :
+    Image(ImageType::cr2, mdExif | mdIptc | mdXmp, std::move(io)) {
+}  // Cr2Image::Cr2Image
 
 std::string Cr2Image::mimeType() const {
   return "image/x-canon-cr2";
@@ -76,11 +77,13 @@ void Cr2Image::readMetadata() {
 
   ByteOrder bo = Cr2Parser::decode(exifData_, iptcData_, xmpData_, io_->mmap(), static_cast<uint32_t>(io_->size()));
   setByteOrder(bo);
-} // Cr2Image::readMetadata
+}  // Cr2Image::readMetadata
 
-ByteOrder Cr2Parser::decode(emscripten::val& exifData, emscripten::val& iptcData, emscripten::val& xmpData, const byte* pData, uint32_t size) {
+ByteOrder Cr2Parser::decode(emscripten::val& exifData, emscripten::val& iptcData, emscripten::val& xmpData,
+                            const byte* pData, uint32_t size) {
   Cr2Header cr2Header;
-  return TiffParserWorker::decode(exifData, iptcData, xmpData, pData, size, Tag::root, TiffMapping::findDecoder, &cr2Header);
+  return TiffParserWorker::decode(exifData, iptcData, xmpData, pData, size, Tag::root, TiffMapping::findDecoder,
+                                  &cr2Header);
 }
 
 Image::UniquePtr newCr2Instance(BasicIo::UniquePtr io, bool create) {
@@ -106,4 +109,4 @@ bool isCr2Type(BasicIo& iIo, bool advance) {
   return rc;
 }
 
-} // namespace Exiv2
+}  // namespace Exiv2

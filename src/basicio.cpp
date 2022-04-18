@@ -37,25 +37,25 @@
 namespace Exiv2 {
 //! Internal Pimpl structure of class MemIo.
 class MemIo::Impl final {
-public:
-  Impl() = default; //!< Default constructor
-  Impl(const byte* data, long size); //!< Constructor 2
+ public:
+  Impl() = default;                   //!< Default constructor
+  Impl(const byte* data, long size);  //!< Constructor 2
 
   // DATA
-  byte* data_{nullptr}; //!< Pointer to the start of the memory area
-  long idx_{0}; //!< Index into the memory area
-  long size_{0}; //!< Size of the memory area
-  long sizeAlloced_{0}; //!< Size of the allocated buffer
-  bool isMalloced_{false}; //!< Was the buffer allocated?
-  bool eof_{false}; //!< EOF indicator
+  byte* data_{nullptr};     //!< Pointer to the start of the memory area
+  long idx_{0};             //!< Index into the memory area
+  long size_{0};            //!< Size of the memory area
+  long sizeAlloced_{0};     //!< Size of the allocated buffer
+  bool isMalloced_{false};  //!< Was the buffer allocated?
+  bool eof_{false};         //!< EOF indicator
 
   // METHODS
-  void reserve(long wcount); //!< Reserve memory
+  void reserve(long wcount);  //!< Reserve memory
 
   // NOT IMPLEMENTED
-  Impl(const Impl& rhs) = delete; //!< Copy constructor
-  Impl& operator=(const Impl& rhs) = delete; //!< Assignment
-}; // class MemIo::Impl
+  Impl(const Impl& rhs) = delete;             //!< Copy constructor
+  Impl& operator=(const Impl& rhs) = delete;  //!< Assignment
+};                                            // class MemIo::Impl
 
 MemIo::Impl::Impl(const byte* data, long size) : data_(const_cast<byte*>(data)), size_(size) {
 }
@@ -65,7 +65,7 @@ MemIo::Impl::Impl(const byte* data, long size) : data_(const_cast<byte*>(data)),
         a single contiguous block of memory to the big data.
   */
 class EXIV2API BlockMap {
-public:
+ public:
   //! the status of the block.
   enum blockType_e { bNone, bKnown, bMemory };
   //! @name Creators
@@ -74,7 +74,9 @@ public:
   BlockMap() = default;
 
   //! Destructor. Releases all managed memory.
-  ~BlockMap() { delete[] data_; }
+  ~BlockMap() {
+    delete[] data_;
+  }
 
   //! @brief Populate the block.
   //! @param source The data populate to the block
@@ -98,21 +100,31 @@ public:
     size_ = num;
   }
 
-  bool isNone() const { return type_ == bNone; }
-  bool isInMem() const { return type_ == bMemory; }
-  bool isKnown() const { return type_ == bKnown; }
-  byte* getData() const { return data_; }
-  size_t getSize() const { return size_; }
+  bool isNone() const {
+    return type_ == bNone;
+  }
+  bool isInMem() const {
+    return type_ == bMemory;
+  }
+  bool isKnown() const {
+    return type_ == bKnown;
+  }
+  byte* getData() const {
+    return data_;
+  }
+  size_t getSize() const {
+    return size_;
+  }
 
-private:
+ private:
   blockType_e type_{bNone};
   byte* data_{nullptr};
   size_t size_{0};
-}; // class BlockMap
+};  // class BlockMap
 
 void MemIo::Impl::reserve(long wcount) {
   const long need = wcount + idx_;
-  long blockSize = 32 * 1024; // 32768           `
+  long blockSize = 32 * 1024;  // 32768           `
   const long maxBlockSize = 4 * 1024 * 1024;
 
   if (!isMalloced_) {
@@ -329,4 +341,4 @@ std::string ReplaceStringInPlace(std::string subject, const std::string& search,
   }
   return subject;
 }
-} // namespace Exiv2
+}  // namespace Exiv2

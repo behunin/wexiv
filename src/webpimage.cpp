@@ -53,7 +53,7 @@ static void readOrThrow(BasicIo& iIo, byte* buf, long rcount, ErrorCode err) {
 }
 
 WebPImage::WebPImage(BasicIo::UniquePtr io) : Image(ImageType::webp, mdNone, std::move(io)) {
-} // WebPImage::WebPImage
+}  // WebPImage::WebPImage
 
 std::string WebPImage::mimeType() const {
   return "image/webp";
@@ -94,7 +94,6 @@ void WebPImage::readMetadata() {
     throw Error(kerNotAJpeg);
   }
 
-
   byte data[12];
   DataBuf chunkId(5);
   chunkId.pData_[4] = '\0';
@@ -109,7 +108,7 @@ void WebPImage::readMetadata() {
 
   WebPImage::decodeChunks(static_cast<long>(filesize_u32));
 
-} // WebPImage::readMetadata
+}  // WebPImage::readMetadata
 
 void WebPImage::decodeChunks(long filesize) {
   DataBuf chunkId(5);
@@ -214,8 +213,8 @@ void WebPImage::decodeChunks(long filesize) {
       // 4 meaningful bytes + 2 padding bytes
       byte exifLongHeader[] = {0xFF, 0x01, 0xFF, 0xE1, 0x00, 0x00};
       byte exifShortHeader[] = {0x45, 0x78, 0x69, 0x66, 0x00, 0x00};
-      byte exifTiffLEHeader[] = {0x49, 0x49, 0x2A}; // "MM*"
-      byte exifTiffBEHeader[] = {0x4D, 0x4D, 0x00, 0x2A}; // "II\0*"
+      byte exifTiffLEHeader[] = {0x49, 0x49, 0x2A};        // "MM*"
+      byte exifTiffBEHeader[] = {0x4D, 0x4D, 0x00, 0x2A};  // "II\0*"
       long offset = 0;
       bool s_header = false;
       bool le_header = false;
@@ -316,7 +315,7 @@ bool isWebPType(BasicIo& iIo, bool /*advance*/) {
   bool matched_webp = (memcmp(webp, WebPImageId, len) == 0);
   iIo.seek(-12, BasicIo::cur);
   return matched_riff && matched_webp;
-} // Exiv2::isWebPType
+}  // Exiv2::isWebPType
 
 /*!
      @brief Function used to check equality of a Tags with a
@@ -332,7 +331,6 @@ bool WebPImage::equalsWebPTag(Exiv2::DataBuf& buf, const char* str) {
   return true;
 }
 
-
 /*!
      @brief Function used to add missing EXIF & XMP flags
      to the feature section.
@@ -341,7 +339,8 @@ bool WebPImage::equalsWebPTag(Exiv2::DataBuf& buf, const char* str) {
      @param has_exif Verify if we have exif data and set required flag
      @return Returns void
      */
-void WebPImage::inject_VP8X(BasicIo& iIo, bool has_xmp, bool has_exif, bool has_alpha, bool has_icc, int width, int height) {
+void WebPImage::inject_VP8X(BasicIo& iIo, bool has_xmp, bool has_exif, bool has_alpha, bool has_icc, int width,
+                            int height) {
   byte size[4] = {0x0A, 0x00, 0x00, 0x00};
   byte data[10] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
   iIo.write(reinterpret_cast<const byte*>(WEBP_CHUNK_HEADER_VP8X), WEBP_TAG_SIZE);
@@ -410,4 +409,4 @@ long WebPImage::getHeaderOffset(byte* data, long data_size, byte* header, long h
   return pos;
 }
 
-} // namespace Exiv2
+}  // namespace Exiv2

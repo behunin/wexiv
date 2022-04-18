@@ -27,7 +27,7 @@
 #include "datasets.hpp"
 
 #include "error.hpp"
-#include "i18n.h" // NLS support.
+#include "i18n.h"  // NLS support.
 #include "metadatum.hpp"
 #include "types.hpp"
 #include "value.hpp"
@@ -61,8 +61,8 @@ constexpr DataSet envelopeRecord[] = {
      N_("A binary number representing the particular version of the File "
         "Format specified by <FileFormat> tag."),
      true, false, 2, 2, Exiv2::unsignedShort, IptcDataSets::envelope, ""},
-    {IptcDataSets::ServiceId, "ServiceId", N_("Service Id"), N_("Identifies the provider and product"), true, false, 0, 10,
-     Exiv2::string, IptcDataSets::envelope, ""},
+    {IptcDataSets::ServiceId, "ServiceId", N_("Service Id"), N_("Identifies the provider and product"), true, false, 0,
+     10, Exiv2::string, IptcDataSets::envelope, ""},
     {IptcDataSets::EnvelopeNumber, "EnvelopeNumber", N_("Envelope Number"),
      N_("The characters form a number that will be unique for the date "
         "specified in <DateSent> tag and for the Service Identifier "
@@ -115,7 +115,8 @@ constexpr DataSet envelopeRecord[] = {
      N_("This tag consisting of a binary number representing the particular "
         "version of the ARM specified by tag <ARMId>."),
      false, false, 2, 2, Exiv2::unsignedShort, IptcDataSets::envelope, ""},
-    {0xffff, "(Invalid)", "(Invalid)", "(Invalid)", false, false, 0, 0, Exiv2::unsignedShort, IptcDataSets::envelope, ""},
+    {0xffff, "(Invalid)", "(Invalid)", "(Invalid)", false, false, 0, 0, Exiv2::unsignedShort, IptcDataSets::envelope,
+     ""},
 };
 
 const DataSet* IptcDataSets::envelopeRecordList() {
@@ -164,8 +165,9 @@ constexpr DataSet application2Record[] = {
         "envelope handling priority (see tag <EnvelopePriority>). The \"1\" "
         "is most urgent, \"5\" normal and \"8\" denotes the least-urgent copy."),
      false, false, 1, 1, Exiv2::string, IptcDataSets::application2, N_("Urgency")},
-    {IptcDataSets::Subject, "Subject", N_("Subject"), N_("The Subject Reference is a structured definition of the subject matter."),
-     false, true, 13, 236, Exiv2::string, IptcDataSets::application2, ""},
+    {IptcDataSets::Subject, "Subject", N_("Subject"),
+     N_("The Subject Reference is a structured definition of the subject matter."), false, true, 13, 236, Exiv2::string,
+     IptcDataSets::application2, ""},
     {IptcDataSets::Category, "Category", N_("Category"),
      N_("Identifies the subject of the object data in the opinion of the provider. "
         "A list of categories will be maintained by a regional registry, "
@@ -233,8 +235,8 @@ constexpr DataSet application2Record[] = {
      N_("Identifies the date of a prior envelope to which the current object refers."), false, true, 8, 8, Exiv2::date,
      IptcDataSets::application2, ""},
     {IptcDataSets::ReferenceNumber, "ReferenceNumber", N_("Reference Number"),
-     N_("Identifies the Envelope Number of a prior envelope to which the current object refers."), false, true, 8, 8, Exiv2::string,
-     IptcDataSets::application2, ""},
+     N_("Identifies the Envelope Number of a prior envelope to which the current object refers."), false, true, 8, 8,
+     Exiv2::string, IptcDataSets::application2, ""},
     {IptcDataSets::DateCreated, "DateCreated", N_("Date Created"),
      N_("Represented in the form CCYYMMDD to designate the date the "
         "intellectual content of the object data was created rather than the "
@@ -255,13 +257,15 @@ constexpr DataSet application2Record[] = {
         "time the digital representation of the object data was created. "
         "Follows ISO 8601 standard."),
      false, false, 11, 11, Exiv2::time, IptcDataSets::application2, ""},
-    {IptcDataSets::Program, "Program", N_("Program"), N_("Identifies the type of program used to originate the object data."), false,
-     false, 0, 32, Exiv2::string, IptcDataSets::application2, ""},
+    {IptcDataSets::Program, "Program", N_("Program"),
+     N_("Identifies the type of program used to originate the object data."), false, false, 0, 32, Exiv2::string,
+     IptcDataSets::application2, ""},
     {IptcDataSets::ProgramVersion, "ProgramVersion", N_("Program Version"),
      N_("Used to identify the version of the program mentioned in tag <Program>."), false, false, 0, 10, Exiv2::string,
      IptcDataSets::application2, ""},
-    {IptcDataSets::ObjectCycle, "ObjectCycle", N_("Object Cycle"), N_("Used to identify the editorial cycle of object data."), false,
-     false, 1, 1, Exiv2::string, IptcDataSets::application2, ""},
+    {IptcDataSets::ObjectCycle, "ObjectCycle", N_("Object Cycle"),
+     N_("Used to identify the editorial cycle of object data."), false, false, 1, 1, Exiv2::string,
+     IptcDataSets::application2, ""},
     {IptcDataSets::Byline, "Byline", N_("By-line"),
      N_("Contains name of the creator of the object data, e.g. writer, photographer "
         "or graphic artist."),
@@ -302,23 +306,23 @@ constexpr DataSet application2Record[] = {
         "to practices of the provider."),
      false, false, 0, 32, Exiv2::string, IptcDataSets::application2, N_("Transmission Reference")},
     {IptcDataSets::Headline, "Headline", N_("Headline"),
-     N_("A publishable entry providing a synopsis of the contents of the object data."), false, false, 0, 256, Exiv2::string,
-     IptcDataSets::application2, N_("Headline")},
+     N_("A publishable entry providing a synopsis of the contents of the object data."), false, false, 0, 256,
+     Exiv2::string, IptcDataSets::application2, N_("Headline")},
     {IptcDataSets::Credit, "Credit", N_("Credit"),
-     N_("Identifies the provider of the object data, not necessarily the owner/creator."), false, false, 0, 32, Exiv2::string,
-     IptcDataSets::application2, N_("Credit")},
+     N_("Identifies the provider of the object data, not necessarily the owner/creator."), false, false, 0, 32,
+     Exiv2::string, IptcDataSets::application2, N_("Credit")},
     {IptcDataSets::Source, "Source", N_("Source"),
      N_("Identifies the original owner of the intellectual content of the "
         "object data. This could be an agency, a member of an agency or an individual."),
      false, false, 0, 32, Exiv2::string, IptcDataSets::application2, N_("Source")},
-    {IptcDataSets::Copyright, "Copyright", N_("Copyright"), N_("Contains any necessary copyright notice."), false, false, 0, 128,
-     Exiv2::string, IptcDataSets::application2, N_("Copyright Notice")},
+    {IptcDataSets::Copyright, "Copyright", N_("Copyright"), N_("Contains any necessary copyright notice."), false,
+     false, 0, 128, Exiv2::string, IptcDataSets::application2, N_("Copyright Notice")},
     {IptcDataSets::Contact, "Contact", N_("Contact"),
      N_("Identifies the person or organisation which can provide further "
         "background information on the object data."),
      false, true, 0, 128, Exiv2::string, IptcDataSets::application2, ""},
-    {IptcDataSets::Caption, "Caption", N_("Caption"), N_("A textual description of the object data."), false, false, 0, 2000,
-     Exiv2::string, IptcDataSets::application2, N_("Description")},
+    {IptcDataSets::Caption, "Caption", N_("Caption"), N_("A textual description of the object data."), false, false, 0,
+     2000, Exiv2::string, IptcDataSets::application2, N_("Description")},
     {IptcDataSets::Writer, "Writer", N_("Writer"),
      N_("Identification of the name of the person involved in the writing, "
         "editing or correcting the object data or caption/abstract."),
@@ -327,24 +331,27 @@ constexpr DataSet application2Record[] = {
      N_("Contains the rasterized object data description and is used "
         "where characters that have not been coded are required for the caption."),
      false, false, 7360, 7360, Exiv2::undefined, IptcDataSets::application2, ""},
-    {IptcDataSets::ImageType, "ImageType", N_("Image Type"), N_("Indicates the color components of an image."), false, false, 2, 2,
-     Exiv2::string, IptcDataSets::application2, ""},
-    {IptcDataSets::ImageOrientation, "ImageOrientation", N_("Image Orientation"), N_("Indicates the layout of an image."), false,
-     false, 1, 1, Exiv2::string, IptcDataSets::application2, ""},
+    {IptcDataSets::ImageType, "ImageType", N_("Image Type"), N_("Indicates the color components of an image."), false,
+     false, 2, 2, Exiv2::string, IptcDataSets::application2, ""},
+    {IptcDataSets::ImageOrientation, "ImageOrientation", N_("Image Orientation"),
+     N_("Indicates the layout of an image."), false, false, 1, 1, Exiv2::string, IptcDataSets::application2, ""},
     {IptcDataSets::Language, "Language", N_("Language"),
      N_("Describes the major national language of the object, according "
         "to the 2-letter codes of ISO 639:1988. Does not define or imply "
         "any coded character set, but is used for internal routing, e.g. to "
         "various editorial desks."),
      false, false, 2, 3, Exiv2::string, IptcDataSets::application2, ""},
-    {IptcDataSets::AudioType, "AudioType", N_("Audio Type"), N_("Indicates the type of an audio content."), false, false, 2, 2,
-     Exiv2::string, IptcDataSets::application2, ""},
-    {IptcDataSets::AudioRate, "AudioRate", N_("Audio Rate"), N_("Indicates the sampling rate in Hertz of an audio content."), false,
-     false, 6, 6, Exiv2::string, IptcDataSets::application2, ""},
+    {IptcDataSets::AudioType, "AudioType", N_("Audio Type"), N_("Indicates the type of an audio content."), false,
+     false, 2, 2, Exiv2::string, IptcDataSets::application2, ""},
+    {IptcDataSets::AudioRate, "AudioRate", N_("Audio Rate"),
+     N_("Indicates the sampling rate in Hertz of an audio content."), false, false, 6, 6, Exiv2::string,
+     IptcDataSets::application2, ""},
     {IptcDataSets::AudioResolution, "AudioResolution", N_("Audio Resolution"),
-     N_("Indicates the sampling resolution of an audio content."), false, false, 2, 2, Exiv2::string, IptcDataSets::application2, ""},
-    {IptcDataSets::AudioDuration, "AudioDuration", N_("Audio Duration"), N_("Indicates the duration of an audio content."), false,
-     false, 6, 6, Exiv2::string, IptcDataSets::application2, ""},
+     N_("Indicates the sampling resolution of an audio content."), false, false, 2, 2, Exiv2::string,
+     IptcDataSets::application2, ""},
+    {IptcDataSets::AudioDuration, "AudioDuration", N_("Audio Duration"),
+     N_("Indicates the duration of an audio content."), false, false, 6, 6, Exiv2::string, IptcDataSets::application2,
+     ""},
     {IptcDataSets::AudioOutcue, "AudioOutcue", N_("Audio Outcue"),
      N_("Identifies the content of the end of an audio object data, "
         "according to guidelines established by the provider."),
@@ -358,9 +365,10 @@ constexpr DataSet application2Record[] = {
      N_("A binary number representing the particular version of the "
         "object data preview file format specified in tag <PreviewFormat>."),
      false, false, 2, 2, Exiv2::unsignedShort, IptcDataSets::application2, ""},
-    {IptcDataSets::Preview, "Preview", N_("Preview Data"), N_("Binary image preview data."), false, false, 0, 256000, Exiv2::undefined,
+    {IptcDataSets::Preview, "Preview", N_("Preview Data"), N_("Binary image preview data."), false, false, 0, 256000,
+     Exiv2::undefined, IptcDataSets::application2, ""},
+    {0xffff, "(Invalid)", N_("(Invalid)"), N_("(Invalid)"), false, false, 0, 0, Exiv2::unsignedShort,
      IptcDataSets::application2, ""},
-    {0xffff, "(Invalid)", N_("(Invalid)"), N_("(Invalid)"), false, false, 0, 0, Exiv2::unsignedShort, IptcDataSets::application2, ""},
 };
 
 const DataSet* IptcDataSets::application2RecordList() {
@@ -507,7 +515,7 @@ void IptcDataSets::dataSetList(std::ostream& os) {
       os << record[j] << "\n";
     }
   }
-} // IptcDataSets::dataSetList
+}  // IptcDataSets::dataSetList
 
 IptcKey::IptcKey(std::string key) : key_(std::move(key)) {
   decomposeKey();
@@ -601,10 +609,11 @@ void IptcKey::decomposeKey() {
   tag_ = dataSet;
   record_ = recId;
   key_ = familyName + "." + recordName + "." + dataSetName;
-} // IptcKey::decomposeKey
+}  // IptcKey::decomposeKey
 
 void IptcKey::makeKey() {
-  key_ = std::string(familyName_) + "." + IptcDataSets::recordName(record_) + "." + IptcDataSets::dataSetName(tag_, record_);
+  key_ = std::string(familyName_) + "." + IptcDataSets::recordName(record_) + "." +
+         IptcDataSets::dataSetName(tag_, record_);
 }
 
 // *************************************************************************
@@ -614,9 +623,10 @@ std::ostream& operator<<(std::ostream& os, const DataSet& dataSet) {
   IptcKey iptcKey(dataSet.number_, dataSet.recordId_);
   os << dataSet.name_ << ", " << std::dec << dataSet.number_ << ", "
      << "0x" << std::setw(4) << std::setfill('0') << std::right << std::hex << dataSet.number_ << ", "
-     << IptcDataSets::recordName(dataSet.recordId_) << ", " << std::boolalpha << dataSet.mandatory_ << ", " << dataSet.repeatable_
-     << ", " << std::dec << dataSet.minbytes_ << ", " << dataSet.maxbytes_ << ", " << iptcKey.key() << ", "
-     << TypeInfo::typeName(IptcDataSets::dataSetType(dataSet.number_, dataSet.recordId_)) << ", ";
+     << IptcDataSets::recordName(dataSet.recordId_) << ", " << std::boolalpha << dataSet.mandatory_ << ", "
+     << dataSet.repeatable_ << ", " << std::dec << dataSet.minbytes_ << ", " << dataSet.maxbytes_ << ", "
+     << iptcKey.key() << ", " << TypeInfo::typeName(IptcDataSets::dataSetType(dataSet.number_, dataSet.recordId_))
+     << ", ";
   // CSV encoded I am \"dead\" beat" => "I am ""dead"" beat"
   char Q = '"';
   os << Q;
@@ -631,4 +641,4 @@ std::ostream& operator<<(std::ostream& os, const DataSet& dataSet) {
   return os;
 }
 
-} // namespace Exiv2
+}  // namespace Exiv2

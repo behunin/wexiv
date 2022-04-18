@@ -25,7 +25,7 @@
 #include "nikonmn_int.hpp"
 
 #include "error.hpp"
-#include "i18n.h" // NLS support.
+#include "i18n.h"  // NLS support.
 #include "image.hpp"
 #include "makernote_int.hpp"
 #include "tags_int.hpp"
@@ -33,7 +33,7 @@
 #include "value.hpp"
 
 // + standard includes
-#include <math.h> //for log, pow, abs
+#include <math.h>  //for log, pow, abs
 
 // *****************************************************************************
 // class member definitions
@@ -51,8 +51,9 @@ constexpr TagDetails nikonActiveDLighning[] = {{0, N_("Off")},  {1, N_("Low")}, 
                                                {5, N_("High")}, {7, N_("Extra High")}, {65535, N_("Auto")}};
 
 //! Focus area for Nikon cameras.
-constexpr const char* nikonFocusarea[] = {N_("Single area"),   N_("Dynamic area"),       N_("Dynamic area, closest subject"),
-                                          N_("Group dynamic"), N_("Single area (wide)"), N_("Dynamic area (wide)")};
+constexpr const char* nikonFocusarea[] = {
+    N_("Single area"),   N_("Dynamic area"),       N_("Dynamic area, closest subject"),
+    N_("Group dynamic"), N_("Single area (wide)"), N_("Dynamic area (wide)")};
 
 // Roger Larsson: My guess is that focuspoints will follow autofocus sensor
 // module. Note that relative size and position will vary depending on if
@@ -112,10 +113,10 @@ constexpr TagDetails nikonNefCompression[] = {
     {1, N_("Lossy (type 1)")}, {2, N_("Uncompressed")}, {3, N_("Lossless")}, {4, N_("Lossy (type 2)")}};
 
 //! RetouchHistory, tag 0x009e
-constexpr TagDetails nikonRetouchHistory[] = {{0, N_("None")},       {3, N_("B & W")},         {4, N_("Sepia")},
-                                              {5, N_("Trim")},       {6, N_("Small picture")}, {7, N_("D-Lighting")},
-                                              {8, N_("Red eye")},    {9, N_("Cyanotype")},     {10, N_("Sky light")},
-                                              {11, N_("Warm tone")}, {12, N_("Color custom")}, {13, N_("Image overlay")}};
+constexpr TagDetails nikonRetouchHistory[] = {
+    {0, N_("None")},          {3, N_("B & W")},      {4, N_("Sepia")},         {5, N_("Trim")},
+    {6, N_("Small picture")}, {7, N_("D-Lighting")}, {8, N_("Red eye")},       {9, N_("Cyanotype")},
+    {10, N_("Sky light")},    {11, N_("Warm tone")}, {12, N_("Color custom")}, {13, N_("Image overlay")}};
 
 //! HighISONoiseReduction, tag 0x00b1
 constexpr TagDetails nikonHighISONoiseReduction[] = {
@@ -127,24 +128,30 @@ constexpr TagInfo Nikon1MakerNote::tagInfo_[] = {
     {0x0002, "ISOSpeed", N_("ISO Speed"), N_("ISO speed setting"), nikon1Id, makerTags, unsignedShort, -1, print0x0002},
     {0x0003, "ColorMode", N_("Color Mode"), N_("Color mode"), nikon1Id, makerTags, asciiString, -1, printValue},
     {0x0004, "Quality", N_("Quality"), N_("Image quality setting"), nikon1Id, makerTags, asciiString, -1, printValue},
-    {0x0005, "WhiteBalance", N_("White Balance"), N_("White balance"), nikon1Id, makerTags, asciiString, -1, printValue},
-    {0x0006, "Sharpening", N_("Sharpening"), N_("Image sharpening setting"), nikon1Id, makerTags, asciiString, -1, printValue},
+    {0x0005, "WhiteBalance", N_("White Balance"), N_("White balance"), nikon1Id, makerTags, asciiString, -1,
+     printValue},
+    {0x0006, "Sharpening", N_("Sharpening"), N_("Image sharpening setting"), nikon1Id, makerTags, asciiString, -1,
+     printValue},
     {0x0007, "Focus", N_("Focus"), N_("Focus mode"), nikon1Id, makerTags, asciiString, -1, print0x0007},
-    {0x0008, "FlashSetting", N_("Flash Setting"), N_("Flash setting"), nikon1Id, makerTags, asciiString, -1, printValue},
+    {0x0008, "FlashSetting", N_("Flash Setting"), N_("Flash setting"), nikon1Id, makerTags, asciiString, -1,
+     printValue},
     {0x000a, "0x000a", "0x000a", N_("Unknown"), nikon1Id, makerTags, unsignedRational, -1, printValue},
-    {0x000f, "ISOSelection", N_("ISO Selection"), N_("ISO selection"), nikon1Id, makerTags, asciiString, -1, printValue},
+    {0x000f, "ISOSelection", N_("ISO Selection"), N_("ISO selection"), nikon1Id, makerTags, asciiString, -1,
+     printValue},
     {0x0010, "DataDump", N_("Data Dump"), N_("Data dump"), nikon1Id, makerTags, undefined, -1, printValue},
-    {0x0080, "ImageAdjustment", N_("Image Adjustment"), N_("Image adjustment setting"), nikon1Id, makerTags, asciiString, -1,
-     printValue},
-    {0x0082, "AuxiliaryLens", N_("Auxiliary Lens"), N_("Auxiliary lens (adapter)"), nikon1Id, makerTags, asciiString, -1, printValue},
-    {0x0085, "FocusDistance", N_("Focus Distance"), N_("Manual focus distance"), nikon1Id, makerTags, unsignedRational, -1,
-     print0x0085},
-    {0x0086, "DigitalZoom", N_("Digital Zoom"), N_("Digital zoom setting"), nikon1Id, makerTags, unsignedRational, -1, print0x0086},
-    {0x0088, "AFFocusPos", N_("AF Focus Position"), N_("AF focus position information"), nikon1Id, makerTags, undefined, -1,
-     print0x0088},
+    {0x0080, "ImageAdjustment", N_("Image Adjustment"), N_("Image adjustment setting"), nikon1Id, makerTags,
+     asciiString, -1, printValue},
+    {0x0082, "AuxiliaryLens", N_("Auxiliary Lens"), N_("Auxiliary lens (adapter)"), nikon1Id, makerTags, asciiString,
+     -1, printValue},
+    {0x0085, "FocusDistance", N_("Focus Distance"), N_("Manual focus distance"), nikon1Id, makerTags, unsignedRational,
+     -1, print0x0085},
+    {0x0086, "DigitalZoom", N_("Digital Zoom"), N_("Digital zoom setting"), nikon1Id, makerTags, unsignedRational, -1,
+     print0x0086},
+    {0x0088, "AFFocusPos", N_("AF Focus Position"), N_("AF focus position information"), nikon1Id, makerTags, undefined,
+     -1, print0x0088},
     // End of list marker
-    {0xffff, "(UnknownNikon1MnTag)", "(UnknownNikon1MnTag)", N_("Unknown Nikon1MakerNote tag"), nikon1Id, makerTags, asciiString, -1,
-     printValue},
+    {0xffff, "(UnknownNikon1MnTag)", "(UnknownNikon1MnTag)", N_("Unknown Nikon1MakerNote tag"), nikon1Id, makerTags,
+     asciiString, -1, printValue},
 };
 
 const TagInfo* Nikon1MakerNote::tagList() {
@@ -167,7 +174,6 @@ static std::string getKeyString(const std::string& key, const ExifData* metadata
   }
   return result;
 }
-
 
 std::ostream& Nikon1MakerNote::printBarValue(std::ostream& os, const Value& value, const ExifData* exifData) {
   if (!exifData)
@@ -314,30 +320,33 @@ constexpr TagDetails nikon2ImageAdjustment[] = {
 constexpr TagDetails nikon2IsoSpeed[] = {{0, "80"}, {2, "160"}, {4, "320"}, {5, "100"}};
 
 //! WhiteBalance, tag 0x0007
-constexpr TagDetails nikon2WhiteBalance[] = {{0, N_("Auto")},        {1, N_("Preset")}, {2, N_("Daylight")},  {3, N_("Incandescent")},
-                                             {4, N_("Fluorescent")}, {5, N_("Cloudy")}, {6, N_("Speedlight")}};
+constexpr TagDetails nikon2WhiteBalance[] = {{0, N_("Auto")},         {1, N_("Preset")},      {2, N_("Daylight")},
+                                             {3, N_("Incandescent")}, {4, N_("Fluorescent")}, {5, N_("Cloudy")},
+                                             {6, N_("Speedlight")}};
 
 // Nikon2 MakerNote Tag Info
 constexpr TagInfo Nikon2MakerNote::tagInfo_[] = {
     {0x0002, "0x0002", "0x0002", N_("Unknown"), nikon2Id, makerTags, asciiString, -1, printValue},
     {0x0003, "Quality", N_("Quality"), N_("Image quality setting"), nikon2Id, makerTags, unsignedShort, -1,
      EXV_PRINT_TAG(nikon2Quality)},
-    {0x0004, "ColorMode", N_("Color Mode"), N_("Color mode"), nikon2Id, makerTags, unsignedShort, -1, EXV_PRINT_TAG(nikon2ColorMode)},
-    {0x0005, "ImageAdjustment", N_("Image Adjustment"), N_("Image adjustment setting"), nikon2Id, makerTags, unsignedShort, -1,
-     EXV_PRINT_TAG(nikon2ImageAdjustment)},
+    {0x0004, "ColorMode", N_("Color Mode"), N_("Color mode"), nikon2Id, makerTags, unsignedShort, -1,
+     EXV_PRINT_TAG(nikon2ColorMode)},
+    {0x0005, "ImageAdjustment", N_("Image Adjustment"), N_("Image adjustment setting"), nikon2Id, makerTags,
+     unsignedShort, -1, EXV_PRINT_TAG(nikon2ImageAdjustment)},
     {0x0006, "ISOSpeed", N_("ISO Speed"), N_("ISO speed setting"), nikon2Id, makerTags, unsignedShort, -1,
      EXV_PRINT_TAG(nikon2IsoSpeed)},
     {0x0007, "WhiteBalance", N_("White Balance"), N_("White balance"), nikon2Id, makerTags, unsignedShort, -1,
      EXV_PRINT_TAG(nikon2WhiteBalance)},
     {0x0008, "Focus", N_("Focus Mode"), N_("Focus mode"), nikon2Id, makerTags, unsignedRational, -1, printValue},
     {0x0009, "0x0009", "0x0009", N_("Unknown"), nikon2Id, makerTags, asciiString, -1, printValue},
-    {0x000a, "DigitalZoom", N_("Digital Zoom"), N_("Digital zoom setting"), nikon2Id, makerTags, unsignedRational, -1, print0x000a},
-    {0x000b, "AuxiliaryLens", N_("Auxiliary Lens"), N_("Auxiliary lens (adapter)"), nikon2Id, makerTags, unsignedShort, -1,
-     printValue},
+    {0x000a, "DigitalZoom", N_("Digital Zoom"), N_("Digital zoom setting"), nikon2Id, makerTags, unsignedRational, -1,
+     print0x000a},
+    {0x000b, "AuxiliaryLens", N_("Auxiliary Lens"), N_("Auxiliary lens (adapter)"), nikon2Id, makerTags, unsignedShort,
+     -1, printValue},
     {0x0f00, "0x0f00", "0x0f00", N_("Unknown"), nikon2Id, makerTags, unsignedLong, -1, printValue},
     // End of list marker
-    {0xffff, "(UnknownNikon2MnTag)", "(UnknownNikon2MnTag)", N_("Unknown Nikon2MakerNote tag"), nikon2Id, makerTags, asciiString, -1,
-     printValue},
+    {0xffff, "(UnknownNikon2MnTag)", "(UnknownNikon2MnTag)", N_("Unknown Nikon2MakerNote tag"), nikon2Id, makerTags,
+     asciiString, -1, printValue},
 };
 
 const TagInfo* Nikon2MakerNote::tagList() {
@@ -363,114 +372,138 @@ std::ostream& Nikon2MakerNote::print0x000a(std::ostream& os, const Value& value,
 
 // Nikon3 MakerNote Tag Info
 constexpr TagInfo Nikon3MakerNote::tagInfo_[] = {
-    {0x0001, "Version", N_("Version"), N_("Nikon Makernote version"), nikon3Id, makerTags, undefined, -1, printExifVersion},
+    {0x0001, "Version", N_("Version"), N_("Nikon Makernote version"), nikon3Id, makerTags, undefined, -1,
+     printExifVersion},
     {0x0002, "ISOSpeed", N_("ISO Speed"), N_("ISO speed setting"), nikon3Id, makerTags, unsignedShort, -1, print0x0002},
     {0x0003, "ColorMode", N_("Color Mode"), N_("Color mode"), nikon3Id, makerTags, asciiString, -1, printValue},
     {0x0004, "Quality", N_("Quality"), N_("Image quality setting"), nikon3Id, makerTags, asciiString, -1, printValue},
-    {0x0005, "WhiteBalance", N_("White Balance"), N_("White balance"), nikon3Id, makerTags, asciiString, -1, printValue},
-    {0x0006, "Sharpening", N_("Sharpening"), N_("Image sharpening setting"), nikon3Id, makerTags, asciiString, -1, printValue},
+    {0x0005, "WhiteBalance", N_("White Balance"), N_("White balance"), nikon3Id, makerTags, asciiString, -1,
+     printValue},
+    {0x0006, "Sharpening", N_("Sharpening"), N_("Image sharpening setting"), nikon3Id, makerTags, asciiString, -1,
+     printValue},
     {0x0007, "Focus", N_("Focus"), N_("Focus mode"), nikon3Id, makerTags, asciiString, -1, print0x0007},
-    {0x0008, "FlashSetting", N_("Flash Setting"), N_("Flash setting"), nikon3Id, makerTags, asciiString, -1, printValue},
+    {0x0008, "FlashSetting", N_("Flash Setting"), N_("Flash setting"), nikon3Id, makerTags, asciiString, -1,
+     printValue},
     {0x0009, "FlashDevice", N_("Flash Device"), N_("Flash device"), nikon3Id, makerTags, asciiString, -1, printValue},
     {0x000a, "0x000a", "0x000a", N_("Unknown"), nikon3Id, makerTags, unsignedRational, -1, printValue},
-    {0x000b, "WhiteBalanceBias", N_("White Balance Bias"), N_("White balance bias"), nikon3Id, makerTags, signedShort, -1, printValue},
-    {0x000c, "WB_RBLevels", N_("WB RB Levels"), N_("WB RB levels"), nikon3Id, makerTags, unsignedRational, -1, printValue},
+    {0x000b, "WhiteBalanceBias", N_("White Balance Bias"), N_("White balance bias"), nikon3Id, makerTags, signedShort,
+     -1, printValue},
+    {0x000c, "WB_RBLevels", N_("WB RB Levels"), N_("WB RB levels"), nikon3Id, makerTags, unsignedRational, -1,
+     printValue},
     {0x000d, "ProgramShift", N_("Program Shift"), N_("Program shift"), nikon3Id, makerTags, undefined, -1,
      EXV_PRINT_TAG(nikonFlashComp)},
     {0x000e, "ExposureDiff", N_("Exposure Difference"), N_("Exposure difference"), nikon3Id, makerTags, undefined, -1,
      EXV_PRINT_TAG(nikonFlashComp)},
-    {0x000f, "ISOSelection", N_("ISO Selection"), N_("ISO selection"), nikon3Id, makerTags, asciiString, -1, printValue},
+    {0x000f, "ISOSelection", N_("ISO Selection"), N_("ISO selection"), nikon3Id, makerTags, asciiString, -1,
+     printValue},
     {0x0010, "DataDump", N_("Data Dump"), N_("Data dump"), nikon3Id, makerTags, undefined, -1, printValue},
-    {0x0011, "Preview", N_("Pointer to a preview image"), N_("Offset to an IFD containing a preview image"), nikon3Id, makerTags,
-     undefined, -1, printValue},
+    {0x0011, "Preview", N_("Pointer to a preview image"), N_("Offset to an IFD containing a preview image"), nikon3Id,
+     makerTags, undefined, -1, printValue},
     {0x0012, "FlashComp", N_("Flash Comp"), N_("Flash compensation setting"), nikon3Id, makerTags, undefined, -1,
      EXV_PRINT_TAG(nikonFlashComp)},
     {0x0013, "ISOSettings", N_("ISO Settings"), N_("ISO setting"), nikon3Id, makerTags, unsignedShort, -1,
-     print0x0002}, // use 0x0002 print fct
-    {0x0016, "ImageBoundary", N_("Image Boundary"), N_("Image boundary"), nikon3Id, makerTags, unsignedShort, -1, printValue},
+     print0x0002},  // use 0x0002 print fct
+    {0x0016, "ImageBoundary", N_("Image Boundary"), N_("Image boundary"), nikon3Id, makerTags, unsignedShort, -1,
+     printValue},
     {0x0017, "FlashExposureComp", "Flash Exposure Comp", N_("Flash exposure comp"), nikon3Id, makerTags, undefined, -1,
      EXV_PRINT_TAG(nikonFlashComp)},
-    {0x0018, "FlashBracketComp", N_("Flash Bracket Comp"), N_("Flash bracket compensation applied"), nikon3Id, makerTags, undefined,
-     -1, EXV_PRINT_TAG(nikonFlashComp)}, // use 0x0012 print fct
-    {0x0019, "ExposureBracketComp", N_("Exposure Bracket Comp"), N_("AE bracket compensation applied"), nikon3Id, makerTags,
-     signedRational, -1, printValue},
-    {0x001a, "ImageProcessing", N_("Image Processing"), N_("Image processing"), nikon3Id, makerTags, asciiString, -1, printValue},
-    {0x001b, "CropHiSpeed", N_("Crop High Speed"), N_("Crop high speed"), nikon3Id, makerTags, unsignedShort, -1, printValue},
-    {0x001c, "ExposureTuning", N_("Exposure Tuning"), N_("Exposure tuning"), nikon3Id, makerTags, unsignedShort, -1, printValue},
-    {0x001d, "SerialNumber", N_("Serial Number"), N_("Serial Number"), nikon3Id, makerTags, asciiString, -1, printValue},
+    {0x0018, "FlashBracketComp", N_("Flash Bracket Comp"), N_("Flash bracket compensation applied"), nikon3Id,
+     makerTags, undefined, -1, EXV_PRINT_TAG(nikonFlashComp)},  // use 0x0012 print fct
+    {0x0019, "ExposureBracketComp", N_("Exposure Bracket Comp"), N_("AE bracket compensation applied"), nikon3Id,
+     makerTags, signedRational, -1, printValue},
+    {0x001a, "ImageProcessing", N_("Image Processing"), N_("Image processing"), nikon3Id, makerTags, asciiString, -1,
+     printValue},
+    {0x001b, "CropHiSpeed", N_("Crop High Speed"), N_("Crop high speed"), nikon3Id, makerTags, unsignedShort, -1,
+     printValue},
+    {0x001c, "ExposureTuning", N_("Exposure Tuning"), N_("Exposure tuning"), nikon3Id, makerTags, unsignedShort, -1,
+     printValue},
+    {0x001d, "SerialNumber", N_("Serial Number"), N_("Serial Number"), nikon3Id, makerTags, asciiString, -1,
+     printValue},
     {0x001e, "ColorSpace", N_("Color Space"), N_("Color space"), nikon3Id, makerTags, unsignedShort, -1,
      EXV_PRINT_TAG(nikonColorSpace)},
     {0x001f, "VRInfo", N_("VR Info"), N_("VR info"), nikon3Id, makerTags, undefined, -1, printValue},
-    {0x0020, "ImageAuthentication", N_("Image Authentication"), N_("Image authentication"), nikon3Id, makerTags, unsignedByte, -1,
-     EXV_PRINT_TAG(nikonOffOn)},
+    {0x0020, "ImageAuthentication", N_("Image Authentication"), N_("Image authentication"), nikon3Id, makerTags,
+     unsignedByte, -1, EXV_PRINT_TAG(nikonOffOn)},
     {0x0022, "ActiveDLighting", N_("ActiveD-Lighting"), N_("ActiveD-lighting"), nikon3Id, makerTags, unsignedShort, -1,
      EXV_PRINT_TAG(nikonActiveDLighning)},
-    {0x0023, "PictureControl", N_("Picture Control"), N_(" Picture control"), nikon3Id, makerTags, undefined, -1, printValue},
+    {0x0023, "PictureControl", N_("Picture Control"), N_(" Picture control"), nikon3Id, makerTags, undefined, -1,
+     printValue},
     {0x0024, "WorldTime", N_("World Time"), N_("World time"), nikon3Id, makerTags, undefined, -1, printValue},
     {0x0025, "ISOInfo", N_("ISO Info"), N_("ISO info"), nikon3Id, makerTags, undefined, -1, printValue},
     {0x002a, "VignetteControl", N_("Vignette Control"), N_("Vignette control"), nikon3Id, makerTags, unsignedShort, -1,
      EXV_PRINT_TAG(nikonOlnh)},
     {0x0034, "ShutterMode", N_("Shutter Mode"), N_("Shutter mode"), nikon3Id, makerTags, unsignedShort, -1,
      EXV_PRINT_TAG(nikonShutterModes)},
-    {0x0037, "MechanicalShutterCount", N_("Mechanical Shutter Count"), N_("Mechanical shutter count"), nikon3Id, makerTags,
-     unsignedLong, -1, printValue},
-    {0x0080, "ImageAdjustment", N_("Image Adjustment"), N_("Image adjustment setting"), nikon3Id, makerTags, asciiString, -1,
+    {0x0037, "MechanicalShutterCount", N_("Mechanical Shutter Count"), N_("Mechanical shutter count"), nikon3Id,
+     makerTags, unsignedLong, -1, printValue},
+    {0x0080, "ImageAdjustment", N_("Image Adjustment"), N_("Image adjustment setting"), nikon3Id, makerTags,
+     asciiString, -1, printValue},
+    {0x0081, "ToneComp", N_("Tone Compensation"), N_("Tone compensation"), nikon3Id, makerTags, asciiString, -1,
      printValue},
-    {0x0081, "ToneComp", N_("Tone Compensation"), N_("Tone compensation"), nikon3Id, makerTags, asciiString, -1, printValue},
-    {0x0082, "AuxiliaryLens", N_("Auxiliary Lens"), N_("Auxiliary lens (adapter)"), nikon3Id, makerTags, asciiString, -1, printValue},
+    {0x0082, "AuxiliaryLens", N_("Auxiliary Lens"), N_("Auxiliary lens (adapter)"), nikon3Id, makerTags, asciiString,
+     -1, printValue},
     {0x0083, "LensType", N_("Lens Type"), N_("Lens type"), nikon3Id, makerTags, unsignedByte, -1, print0x0083},
     {0x0084, "Lens", N_("Lens"), N_("Lens"), nikon3Id, makerTags, unsignedRational, -1, print0x0084},
-    {0x0085, "FocusDistance", N_("Focus Distance"), N_("Manual focus distance"), nikon3Id, makerTags, unsignedRational, -1,
-     print0x0085},
-    {0x0086, "DigitalZoom", N_("Digital Zoom"), N_("Digital zoom setting"), nikon3Id, makerTags, unsignedRational, -1, print0x0086},
+    {0x0085, "FocusDistance", N_("Focus Distance"), N_("Manual focus distance"), nikon3Id, makerTags, unsignedRational,
+     -1, print0x0085},
+    {0x0086, "DigitalZoom", N_("Digital Zoom"), N_("Digital zoom setting"), nikon3Id, makerTags, unsignedRational, -1,
+     print0x0086},
     {0x0087, "FlashMode", N_("Flash Mode"), N_("Mode of flash used"), nikon3Id, makerTags, unsignedByte, -1,
      EXV_PRINT_TAG(nikonFlashMode)},
     {0x0088, "AFInfo", N_("AF Info"), N_("AF info"), nikon3Id, makerTags, undefined, -1, printValue},
-    {0x0089, "ShootingMode", N_("Shooting Mode"), N_("Shooting mode"), nikon3Id, makerTags, unsignedShort, -1, print0x0089},
-    {0x008a, "AutoBracketRelease", N_("Auto Bracket Release"), N_("Auto bracket release"), nikon3Id, makerTags, unsignedShort, -1,
-     EXV_PRINT_TAG(nikonAutoBracketRelease)},
+    {0x0089, "ShootingMode", N_("Shooting Mode"), N_("Shooting mode"), nikon3Id, makerTags, unsignedShort, -1,
+     print0x0089},
+    {0x008a, "AutoBracketRelease", N_("Auto Bracket Release"), N_("Auto bracket release"), nikon3Id, makerTags,
+     unsignedShort, -1, EXV_PRINT_TAG(nikonAutoBracketRelease)},
     {0x008b, "LensFStops", N_("Lens FStops"), N_("Lens FStops"), nikon3Id, makerTags, undefined, -1, print0x008b},
-    {0x008c, "ContrastCurve", N_("Contrast Curve"), N_("Contrast curve"), nikon3Id, makerTags, undefined, -1, printValue},
+    {0x008c, "ContrastCurve", N_("Contrast Curve"), N_("Contrast curve"), nikon3Id, makerTags, undefined, -1,
+     printValue},
     {0x008d, "ColorHue", N_("Color Hue"), N_("Color hue"), nikon3Id, makerTags, asciiString, -1, printValue},
     {0x008f, "SceneMode", N_("Scene Mode"), N_("Scene mode"), nikon3Id, makerTags, asciiString, -1, printValue},
     {0x0090, "LightSource", N_("Light Source"), N_("Light source"), nikon3Id, makerTags, asciiString, -1, printValue},
     {0x0091, "ShotInfo", "Shot Info", N_("Shot info"), nikon3Id, makerTags, undefined, -1, printValue},
-    {0x0092, "HueAdjustment", N_("Hue Adjustment"), N_("Hue adjustment"), nikon3Id, makerTags, signedShort, -1, printValue},
+    {0x0092, "HueAdjustment", N_("Hue Adjustment"), N_("Hue adjustment"), nikon3Id, makerTags, signedShort, -1,
+     printValue},
     {0x0093, "NEFCompression", N_("NEF Compression"), N_("NEF compression"), nikon3Id, makerTags, unsignedShort, -1,
      EXV_PRINT_TAG(nikonNefCompression)},
     {0x0094, "Saturation", N_("Saturation"), N_("Saturation"), nikon3Id, makerTags, signedShort, -1, printValue},
-    {0x0095, "NoiseReduction", N_("Noise Reduction"), N_("Noise reduction"), nikon3Id, makerTags, asciiString, -1, printValue},
-    {0x0096, "LinearizationTable", N_("Linearization Table"), N_("Linearization table"), nikon3Id, makerTags, undefined, -1,
+    {0x0095, "NoiseReduction", N_("Noise Reduction"), N_("Noise reduction"), nikon3Id, makerTags, asciiString, -1,
      printValue},
+    {0x0096, "LinearizationTable", N_("Linearization Table"), N_("Linearization table"), nikon3Id, makerTags, undefined,
+     -1, printValue},
     {0x0097, "ColorBalance", N_("Color Balance"), N_("Color balance"), nikon3Id, makerTags, undefined, -1, printValue},
     {0x0098, "LensData", N_("Lens Data"), N_("Lens data settings"), nikon3Id, makerTags, undefined, -1, printValue},
-    {0x0099, "RawImageCenter", N_("Raw Image Center"), N_("Raw image center"), nikon3Id, makerTags, unsignedShort, -1, printValue},
-    {0x009a, "SensorPixelSize", N_("Sensor Pixel Size"), N_("Sensor pixel size"), nikon3Id, makerTags, unsignedRational, -1,
-     print0x009a},
+    {0x0099, "RawImageCenter", N_("Raw Image Center"), N_("Raw image center"), nikon3Id, makerTags, unsignedShort, -1,
+     printValue},
+    {0x009a, "SensorPixelSize", N_("Sensor Pixel Size"), N_("Sensor pixel size"), nikon3Id, makerTags, unsignedRational,
+     -1, print0x009a},
     {0x009b, "0x009b", "0x009b", N_("Unknown"), nikon3Id, makerTags, unsignedShort, -1, printValue},
     {0x009c, "SceneAssist", N_("Scene Assist"), N_("Scene assist"), nikon3Id, makerTags, asciiString, -1, printValue},
-    {0x009e, "RetouchHistory", N_("Retouch History"), N_("Retouch history"), nikon3Id, makerTags, unsignedShort, -1, print0x009e},
+    {0x009e, "RetouchHistory", N_("Retouch History"), N_("Retouch history"), nikon3Id, makerTags, unsignedShort, -1,
+     print0x009e},
     {0x009f, "0x009f", "0x009f", N_("Unknown"), nikon3Id, makerTags, signedShort, -1, printValue},
-    {0x00a0, "SerialNO", N_("Serial NO"), N_("Camera serial number, usually starts with \"NO= \""), nikon3Id, makerTags, asciiString,
-     -1, printValue},
-    {0x00a2, "ImageDataSize", N_("Image Data Size"), N_("Image data size"), nikon3Id, makerTags, unsignedLong, -1, printValue},
+    {0x00a0, "SerialNO", N_("Serial NO"), N_("Camera serial number, usually starts with \"NO= \""), nikon3Id, makerTags,
+     asciiString, -1, printValue},
+    {0x00a2, "ImageDataSize", N_("Image Data Size"), N_("Image data size"), nikon3Id, makerTags, unsignedLong, -1,
+     printValue},
     {0x00a3, "0x00a3", "0x00a3", N_("Unknown"), nikon3Id, makerTags, unsignedByte, -1, printValue},
     {0x00a5, "ImageCount", N_("Image Count"), N_("Image count"), nikon3Id, makerTags, unsignedLong, -1, printValue},
-    {0x00a6, "DeletedImageCount", N_("Deleted Image Count"), N_("Deleted image count"), nikon3Id, makerTags, unsignedLong, -1,
-     printValue},
-    {0x00a7, "ShutterCount", N_("Shutter Count"), N_("Number of shots taken by camera"), nikon3Id, makerTags, unsignedLong, -1,
-     printValue},
+    {0x00a6, "DeletedImageCount", N_("Deleted Image Count"), N_("Deleted image count"), nikon3Id, makerTags,
+     unsignedLong, -1, printValue},
+    {0x00a7, "ShutterCount", N_("Shutter Count"), N_("Number of shots taken by camera"), nikon3Id, makerTags,
+     unsignedLong, -1, printValue},
     {0x00a8, "FlashInfo", "Flash Info", N_("Flash info"), nikon3Id, makerTags, undefined, -1, printValue},
-    {0x00a9, "ImageOptimization", N_("Image Optimization"), N_("Image optimization"), nikon3Id, makerTags, asciiString, -1,
-     printValue},
+    {0x00a9, "ImageOptimization", N_("Image Optimization"), N_("Image optimization"), nikon3Id, makerTags, asciiString,
+     -1, printValue},
     {0x00aa, "Saturation", N_("Saturation"), N_("Saturation"), nikon3Id, makerTags, asciiString, -1, printValue},
-    {0x00ab, "VariProgram", N_("Program Variation"), N_("Program variation"), nikon3Id, makerTags, asciiString, -1, printValue},
-    {0x00ac, "ImageStabilization", N_("Image Stabilization"), N_("Image stabilization"), nikon3Id, makerTags, asciiString, -1,
+    {0x00ab, "VariProgram", N_("Program Variation"), N_("Program variation"), nikon3Id, makerTags, asciiString, -1,
      printValue},
+    {0x00ac, "ImageStabilization", N_("Image Stabilization"), N_("Image stabilization"), nikon3Id, makerTags,
+     asciiString, -1, printValue},
     {0x00ad, "AFResponse", N_("AF Response"), N_("AF response"), nikon3Id, makerTags, asciiString, -1, printValue},
     {0x00b0, "MultiExposure", "Multi Exposure", N_("Multi exposure"), nikon3Id, makerTags, undefined, -1, printValue},
-    {0x00b1, "HighISONoiseReduction", N_("High ISO Noise Reduction"), N_("High ISO Noise Reduction"), nikon3Id, makerTags,
-     unsignedShort, -1, EXV_PRINT_TAG(nikonHighISONoiseReduction)},
+    {0x00b1, "HighISONoiseReduction", N_("High ISO Noise Reduction"), N_("High ISO Noise Reduction"), nikon3Id,
+     makerTags, unsignedShort, -1, EXV_PRINT_TAG(nikonHighISONoiseReduction)},
     {0x00b3, "ToningEffect", "Toning Effect", N_("Toning effect"), nikon3Id, makerTags, asciiString, -1, printValue},
     {0x00b7, "AFInfo2", "AF Info 2", N_("AF info 2"), nikon3Id, makerTags, undefined, -1, printValue},
     {0x00b8, "FileInfo", "File Info", N_("File info"), nikon3Id, makerTags, undefined, -1, printValue},
@@ -480,15 +513,17 @@ constexpr TagInfo Nikon3MakerNote::tagInfo_[] = {
     {0x0e00, "PrintIM", N_("Print IM"), N_("PrintIM information"), nikon3Id, makerTags, undefined, -1, printValue},
     // TODO: Add Capture Data decoding implementation.
     {0x0e01, "CaptureData", N_("Capture Data"), N_("Capture data"), nikon3Id, makerTags, undefined, -1, printValue},
-    {0x0e09, "CaptureVersion", N_("Capture Version"), N_("Capture version"), nikon3Id, makerTags, asciiString, -1, printValue},
+    {0x0e09, "CaptureVersion", N_("Capture Version"), N_("Capture version"), nikon3Id, makerTags, asciiString, -1,
+     printValue},
     // TODO: Add Capture Offsets decoding implementation.
-    {0x0e0e, "CaptureOffsets", N_("Capture Offsets"), N_("Capture offsets"), nikon3Id, makerTags, undefined, -1, printValue},
+    {0x0e0e, "CaptureOffsets", N_("Capture Offsets"), N_("Capture offsets"), nikon3Id, makerTags, undefined, -1,
+     printValue},
     {0x0e10, "ScanIFD", "Scan IFD", N_("Scan IFD"), nikon3Id, makerTags, undefined, -1, printValue},
     {0x0e1d, "ICCProfile", "ICC Profile", N_("ICC profile"), nikon3Id, makerTags, undefined, -1, printValue},
     {0x0e1e, "CaptureOutput", "Capture Output", N_("Capture output"), nikon3Id, makerTags, undefined, -1, printValue},
     // End of list marker
-    {0xffff, "(UnknownNikon3MnTag)", "(UnknownNikon3MnTag)", N_("Unknown Nikon3MakerNote tag"), nikon3Id, makerTags, asciiString, -1,
-     printValue},
+    {0xffff, "(UnknownNikon3MnTag)", "(UnknownNikon3MnTag)", N_("Unknown Nikon3MakerNote tag"), nikon3Id, makerTags,
+     asciiString, -1, printValue},
 };
 
 const TagInfo* Nikon3MakerNote::tagList() {
@@ -507,11 +542,11 @@ constexpr TagDetails nikonOnOff[] = {{1, N_("On")}, {2, N_("Off")}};
 // Nikon3 Vibration Reduction Tag Info
 constexpr TagInfo Nikon3MakerNote::tagInfoVr_[] = {
     {0, "Version", N_("Version"), N_("Version"), nikonVrId, makerTags, undefined, 4, printExifVersion},
-    {4, "VibrationReduction", N_("Vibration Reduction"), N_("Vibration reduction"), nikonVrId, makerTags, unsignedByte, 1,
-     EXV_PRINT_TAG(nikonOnOff)},
+    {4, "VibrationReduction", N_("Vibration Reduction"), N_("Vibration reduction"), nikonVrId, makerTags, unsignedByte,
+     1, EXV_PRINT_TAG(nikonOnOff)},
     // End of list marker
-    {0xffff, "(UnknownNikonVrTag)", "(UnknownNikonVrTag)", N_("Unknown Nikon Vibration Reduction Tag"), nikonVrId, makerTags,
-     unsignedByte, 1, printValue},
+    {0xffff, "(UnknownNikonVrTag)", "(UnknownNikonVrTag)", N_("Unknown Nikon Vibration Reduction Tag"), nikonVrId,
+     makerTags, unsignedByte, 1, printValue},
 };
 
 const TagInfo* Nikon3MakerNote::tagListVr() {
@@ -537,12 +572,14 @@ constexpr TagInfo Nikon3MakerNote::tagInfoPc_[] = {
     {4, "Name", N_("Name"), N_("Name"), nikonPcId, makerTags, asciiString, 20, printValue},
     {24, "Base", N_("Base"), N_("Base"), nikonPcId, makerTags, asciiString, 20, printValue},
     {48, "Adjust", N_("Adjust"), N_("Adjust"), nikonPcId, makerTags, unsignedByte, 1, EXV_PRINT_TAG(nikonAdjust)},
-    {49, "QuickAdjust", N_("Quick Adjust"), N_("Quick adjust"), nikonPcId, makerTags, unsignedByte, 1, printPictureControl},
+    {49, "QuickAdjust", N_("Quick Adjust"), N_("Quick adjust"), nikonPcId, makerTags, unsignedByte, 1,
+     printPictureControl},
     {50, "Sharpness", N_("Sharpness"), N_("Sharpness"), nikonPcId, makerTags, unsignedByte, 1, printPictureControl},
     {51, "Contrast", N_("Contrast"), N_("Contrast"), nikonPcId, makerTags, unsignedByte, 1, printPictureControl},
     {52, "Brightness", N_("Brightness"), N_("Brightness"), nikonPcId, makerTags, unsignedByte, 1, printPictureControl},
     {53, "Saturation", N_("Saturation"), N_("Saturation"), nikonPcId, makerTags, unsignedByte, 1, printPictureControl},
-    {54, "HueAdjustment", N_("Hue Adjustment"), N_("Hue adjustment"), nikonPcId, makerTags, unsignedByte, 1, printPictureControl},
+    {54, "HueAdjustment", N_("Hue Adjustment"), N_("Hue adjustment"), nikonPcId, makerTags, unsignedByte, 1,
+     printPictureControl},
     {55, "FilterEffect", N_("Filter Effect"), N_("Filter effect"), nikonPcId, makerTags, unsignedByte, 1,
      EXV_PRINT_TAG(nikonFilterEffect)},
     {56, "ToningEffect", N_("Toning Effect"), N_("Toning effect"), nikonPcId, makerTags, unsignedByte, 1,
@@ -550,8 +587,8 @@ constexpr TagInfo Nikon3MakerNote::tagInfoPc_[] = {
     {57, "ToningSaturation", N_("Toning Saturation"), N_("Toning saturation"), nikonPcId, makerTags, unsignedByte, 1,
      printPictureControl},
     // End of list marker
-    {0xffff, "(UnknownNikonPcTag)", "(UnknownNikonPcTag)", N_("Unknown Nikon Picture Control Tag"), nikonPcId, makerTags, unsignedByte,
-     1, printValue},
+    {0xffff, "(UnknownNikonPcTag)", "(UnknownNikonPcTag)", N_("Unknown Nikon Picture Control Tag"), nikonPcId,
+     makerTags, unsignedByte, 1, printValue},
 };
 
 const TagInfo* Nikon3MakerNote::tagListPc() {
@@ -563,13 +600,15 @@ constexpr TagDetails aftOnOff[] = {{0, N_("Off")}, {1, N_("On")}, {2, N_("On")}}
 
 // Nikon3 AF Fine Tune
 constexpr TagInfo Nikon3MakerNote::tagInfoAFT_[] = {
-    {0, "AFFineTune", N_("AF Fine Tune"), N_("AF fine tune"), nikonAFTId, makerTags, unsignedByte, 1, EXV_PRINT_TAG(aftOnOff)},
-    {1, "AFFineTuneIndex", N_("AF Fine Tune Index"), N_("AF fine tune index"), nikonAFTId, makerTags, unsignedByte, 1, printValue},
-    {2, "AFFineTuneAdj", N_("AF Fine Tune Adjustment"), N_("AF fine tune adjustment"), nikonAFTId, makerTags, signedByte, 1,
+    {0, "AFFineTune", N_("AF Fine Tune"), N_("AF fine tune"), nikonAFTId, makerTags, unsignedByte, 1,
+     EXV_PRINT_TAG(aftOnOff)},
+    {1, "AFFineTuneIndex", N_("AF Fine Tune Index"), N_("AF fine tune index"), nikonAFTId, makerTags, unsignedByte, 1,
      printValue},
+    {2, "AFFineTuneAdj", N_("AF Fine Tune Adjustment"), N_("AF fine tune adjustment"), nikonAFTId, makerTags,
+     signedByte, 1, printValue},
     // End of list marker
-    {0xffff, "(UnknownNikonAFTTag)", "(UnknownNikonAFTTag)", N_("Unknown Nikon AF Fine Tune Tag"), nikonAFTId, makerTags, unsignedByte,
-     1, printValue},
+    {0xffff, "(UnknownNikonAFTTag)", "(UnknownNikonAFTTag)", N_("Unknown Nikon AF Fine Tune Tag"), nikonAFTId,
+     makerTags, unsignedByte, 1, printValue},
 };
 
 const TagInfo* Nikon3MakerNote::tagListAFT() {
@@ -581,11 +620,11 @@ constexpr TagInfo Nikon3MakerNote::tagInfoWt_[] = {
     {0, "Timezone", N_("Timezone"), N_("Timezone"), nikonWtId, makerTags, signedShort, 1, printTimeZone},
     {2, "DaylightSavings", N_("Daylight Savings"), N_("Daylight savings"), nikonWtId, makerTags, unsignedByte, 1,
      EXV_PRINT_TAG(nikonYesNo)},
-    {3, "DateDisplayFormat", N_("Date Display Format"), N_("Date display format"), nikonWtId, makerTags, unsignedByte, 1,
-     EXV_PRINT_TAG(nikonDateDisplayFormat)},
+    {3, "DateDisplayFormat", N_("Date Display Format"), N_("Date display format"), nikonWtId, makerTags, unsignedByte,
+     1, EXV_PRINT_TAG(nikonDateDisplayFormat)},
     // End of list marker
-    {0xffff, "(UnknownNikonWtTag)", "(UnknownNikonWtTag)", N_("Unknown Nikon World Time Tag"), nikonWtId, makerTags, unsignedByte, 1,
-     printValue},
+    {0xffff, "(UnknownNikonWtTag)", "(UnknownNikonWtTag)", N_("Unknown Nikon World Time Tag"), nikonWtId, makerTags,
+     unsignedByte, 1, printValue},
 };
 
 const TagInfo* Nikon3MakerNote::tagListWt() {
@@ -609,8 +648,8 @@ constexpr TagInfo Nikon3MakerNote::tagInfoIi_[] = {
     {10, "ISOExpansion2", N_("ISO Expansion 2"), N_("ISO expansion 2"), nikonIiId, makerTags, unsignedShort, 1,
      EXV_PRINT_TAG(nikonIsoExpansion)},
     // End of list marker
-    {0xffff, "(UnknownNikonIiTag)", "(UnknownNikonIiTag)", N_("Unknown Nikon Iso Info Tag"), nikonIiId, makerTags, unsignedByte, 1,
-     printValue},
+    {0xffff, "(UnknownNikonIiTag)", "(UnknownNikonIiTag)", N_("Unknown Nikon Iso Info Tag"), nikonIiId, makerTags,
+     unsignedByte, 1, printValue},
 };
 
 const TagInfo* Nikon3MakerNote::tagListIi() {
@@ -623,9 +662,10 @@ constexpr TagDetails nikonAfAreaMode[] = {
     {3, N_("Group Dynamic")}, {4, N_("Single Area (wide)")}, {5, N_("Dynamic Area (wide)")}};
 
 //! AfPoint
-constexpr TagDetails nikonAfPoint[] = {{0, N_("Center")},      {1, N_("Top")},        {2, N_("Bottom")},      {3, N_("Mid-left")},
-                                       {4, N_("Mid-right")},   {5, N_("Upper-left")}, {6, N_("Upper-right")}, {7, N_("Lower-left")},
-                                       {8, N_("Lower-right")}, {9, N_("Far Left")},   {10, N_("Far Right")}};
+constexpr TagDetails nikonAfPoint[] = {{0, N_("Center")},      {1, N_("Top")},        {2, N_("Bottom")},
+                                       {3, N_("Mid-left")},    {4, N_("Mid-right")},  {5, N_("Upper-left")},
+                                       {6, N_("Upper-right")}, {7, N_("Lower-left")}, {8, N_("Lower-right")},
+                                       {9, N_("Far Left")},    {10, N_("Far Right")}};
 
 //! AfPointsInFocus
 constexpr TagDetailsBitmask nikonAfPointsInFocus[] = {
@@ -635,13 +675,14 @@ constexpr TagDetailsBitmask nikonAfPointsInFocus[] = {
 
 // Nikon3 Auto Focus Tag Info
 constexpr TagInfo Nikon3MakerNote::tagInfoAf_[] = {
-    {0, "AFAreaMode", N_("AF Area Mode"), N_("AF area mode"), nikonAfId, makerTags, unsignedByte, 1, EXV_PRINT_TAG(nikonAfAreaMode)},
+    {0, "AFAreaMode", N_("AF Area Mode"), N_("AF area mode"), nikonAfId, makerTags, unsignedByte, 1,
+     EXV_PRINT_TAG(nikonAfAreaMode)},
     {1, "AFPoint", N_("AF Point"), N_("AF point"), nikonAfId, makerTags, unsignedByte, 1, EXV_PRINT_TAG(nikonAfPoint)},
     {2, "AFPointsInFocus", N_("AF Points In Focus"), N_("AF points in focus"), nikonAfId, makerTags, unsignedShort, 1,
      printAfPointsInFocus},
     // End of list marker
-    {0xffff, "(UnknownNikonAfTag)", "(UnknownNikonAfTag)", N_("Unknown Nikon Auto Focus Tag"), nikonAfId, makerTags, unsignedByte, 1,
-     printValue},
+    {0xffff, "(UnknownNikonAfTag)", "(UnknownNikonAfTag)", N_("Unknown Nikon Auto Focus Tag"), nikonAfId, makerTags,
+     unsignedByte, 1, printValue},
 };
 
 const TagInfo* Nikon3MakerNote::tagListAf() {
@@ -662,19 +703,26 @@ constexpr TagInfo Nikon3MakerNote::tagInfoAf21_[] = {
     {5, "AFAreaMode", N_("AF Area Mode"), N_("AF area mode"), nikonAf21Id, makerTags, unsignedByte, 1, printValue},
     {6, "PhaseDetectAF", N_("Phase Detect AF"), N_("Phase detect AF"), nikonAf21Id, makerTags, unsignedByte, 1,
      EXV_PRINT_TAG(nikonPhaseDetectAF)},
-    {7, "PrimaryAFPoint", N_("Primary AF Point"), N_("Primary AF point"), nikonAf21Id, makerTags, unsignedByte, 1, printValue},
-    {8, "AFPointsUsed", N_("AF Points Used"), N_("AF points used"), nikonAf21Id, makerTags, unsignedByte, 7, printValue},
-    {16, "AFImageWidth", N_("AF Image Width"), N_("AF image width"), nikonAf21Id, makerTags, unsignedShort, 1, printValue},
-    {18, "AFImageHeight", N_("AF Image Height"), N_("AF image height"), nikonAf21Id, makerTags, unsignedShort, 1, printValue},
-    {20, "AFAreaXPosition", N_("AF Area X Position"), N_("AF area x position"), nikonAf21Id, makerTags, unsignedShort, 1, printValue},
-    {22, "AFAreaYPosition", N_("AF Area Y Position"), N_("AF area y position"), nikonAf21Id, makerTags, unsignedShort, 1, printValue},
+    {7, "PrimaryAFPoint", N_("Primary AF Point"), N_("Primary AF point"), nikonAf21Id, makerTags, unsignedByte, 1,
+     printValue},
+    {8, "AFPointsUsed", N_("AF Points Used"), N_("AF points used"), nikonAf21Id, makerTags, unsignedByte, 7,
+     printValue},
+    {16, "AFImageWidth", N_("AF Image Width"), N_("AF image width"), nikonAf21Id, makerTags, unsignedShort, 1,
+     printValue},
+    {18, "AFImageHeight", N_("AF Image Height"), N_("AF image height"), nikonAf21Id, makerTags, unsignedShort, 1,
+     printValue},
+    {20, "AFAreaXPosition", N_("AF Area X Position"), N_("AF area x position"), nikonAf21Id, makerTags, unsignedShort,
+     1, printValue},
+    {22, "AFAreaYPosition", N_("AF Area Y Position"), N_("AF area y position"), nikonAf21Id, makerTags, unsignedShort,
+     1, printValue},
     {24, "AFAreaWidth", N_("AF Area Width"), N_("AF area width"), nikonAf21Id, makerTags, unsignedShort, 1, printValue},
-    {26, "AFAreaHeight", N_("AF Area Height"), N_("AF area height"), nikonAf21Id, makerTags, unsignedShort, 1, printValue},
-    {28, "ContrastDetectAFInFocus", N_("Contrast Detect AF In Focus"), N_("Contrast detect AF in focus"), nikonAf21Id, makerTags,
-     unsignedShort, 1, printValue},
+    {26, "AFAreaHeight", N_("AF Area Height"), N_("AF area height"), nikonAf21Id, makerTags, unsignedShort, 1,
+     printValue},
+    {28, "ContrastDetectAFInFocus", N_("Contrast Detect AF In Focus"), N_("Contrast detect AF in focus"), nikonAf21Id,
+     makerTags, unsignedShort, 1, printValue},
     // End of list marker
-    {0xffff, "(UnknownNikonAf2Tag)", "(UnknownNikonAf2Tag)", N_("Unknown Nikon Auto Focus 2 Tag"), nikonAf21Id, makerTags,
-     unsignedByte, 1, printValue},
+    {0xffff, "(UnknownNikonAf2Tag)", "(UnknownNikonAf2Tag)", N_("Unknown Nikon Auto Focus 2 Tag"), nikonAf21Id,
+     makerTags, unsignedByte, 1, printValue},
 };
 
 const TagInfo* Nikon3MakerNote::tagListAf21() {
@@ -689,34 +737,41 @@ constexpr TagInfo Nikon3MakerNote::tagInfoAf22_[] = {
     {5, "AFAreaMode", N_("AF Area Mode"), N_("AF area mode"), nikonAf22Id, makerTags, unsignedByte, 1, printValue},
     {6, "PhaseDetectAF", N_("Phase Detect AF"), N_("Phase detect AF"), nikonAf22Id, makerTags, unsignedByte, 1,
      EXV_PRINT_TAG(nikonPhaseDetectAF)},
-    {7, "PrimaryAFPoint", N_("Primary AF Point"), N_("Primary AF point"), nikonAf22Id, makerTags, unsignedByte, 1, printValue},
-    {8, "AFPointsUsed", N_("AF Points Used"), N_("AF points used"), nikonAf22Id, makerTags, unsignedByte, 7, printValue},
-    {70, "AFImageWidth", N_("AF Image Width"), N_("AF image width"), nikonAf22Id, makerTags, unsignedShort, 1, printValue},
-    {72, "AFImageHeight", N_("AF Image Height"), N_("AF image height"), nikonAf22Id, makerTags, unsignedShort, 1, printValue},
-    {74, "AFAreaXPosition", N_("AF Area X Position"), N_("AF area x position"), nikonAf22Id, makerTags, unsignedShort, 1, printValue},
-    {76, "AFAreaYPosition", N_("AF Area Y Position"), N_("AF area y position"), nikonAf22Id, makerTags, unsignedShort, 1, printValue},
+    {7, "PrimaryAFPoint", N_("Primary AF Point"), N_("Primary AF point"), nikonAf22Id, makerTags, unsignedByte, 1,
+     printValue},
+    {8, "AFPointsUsed", N_("AF Points Used"), N_("AF points used"), nikonAf22Id, makerTags, unsignedByte, 7,
+     printValue},
+    {70, "AFImageWidth", N_("AF Image Width"), N_("AF image width"), nikonAf22Id, makerTags, unsignedShort, 1,
+     printValue},
+    {72, "AFImageHeight", N_("AF Image Height"), N_("AF image height"), nikonAf22Id, makerTags, unsignedShort, 1,
+     printValue},
+    {74, "AFAreaXPosition", N_("AF Area X Position"), N_("AF area x position"), nikonAf22Id, makerTags, unsignedShort,
+     1, printValue},
+    {76, "AFAreaYPosition", N_("AF Area Y Position"), N_("AF area y position"), nikonAf22Id, makerTags, unsignedShort,
+     1, printValue},
     {78, "AFAreaWidth", N_("AF Area Width"), N_("AF area width"), nikonAf22Id, makerTags, unsignedShort, 1, printValue},
-    {80, "AFAreaHeight", N_("AF Area Height"), N_("AF area height"), nikonAf22Id, makerTags, unsignedShort, 1, printValue},
-    {82, "ContrastDetectAFInFocus", N_("Contrast Detect AF In Focus"), N_("Contrast detect AF in focus"), nikonAf22Id, makerTags,
-     unsignedShort, 1, printValue},
+    {80, "AFAreaHeight", N_("AF Area Height"), N_("AF area height"), nikonAf22Id, makerTags, unsignedShort, 1,
+     printValue},
+    {82, "ContrastDetectAFInFocus", N_("Contrast Detect AF In Focus"), N_("Contrast detect AF in focus"), nikonAf22Id,
+     makerTags, unsignedShort, 1, printValue},
     // End of list marker
-    {0xffff, "(UnknownNikonAf2Tag)", "(UnknownNikonAf2Tag)", N_("Unknown Nikon Auto Focus 2 Tag"), nikonAf22Id, makerTags,
-     unsignedByte, 1, printValue},
+    {0xffff, "(UnknownNikonAf2Tag)", "(UnknownNikonAf2Tag)", N_("Unknown Nikon Auto Focus 2 Tag"), nikonAf22Id,
+     makerTags, unsignedByte, 1, printValue},
 };
 
 const TagInfo* Nikon3MakerNote::tagListAf22() {
   return tagInfoAf22_;
 }
 
-
 // Nikon3 File Info Tag Info
 constexpr TagInfo Nikon3MakerNote::tagInfoFi_[] = {
     {0, "Version", N_("Version"), N_("Version"), nikonFiId, makerTags, undefined, 4, printExifVersion},
-    {6, "DirectoryNumber", N_("Directory Number"), N_("Directory number"), nikonFiId, makerTags, unsignedShort, 1, printValue},
+    {6, "DirectoryNumber", N_("Directory Number"), N_("Directory number"), nikonFiId, makerTags, unsignedShort, 1,
+     printValue},
     {8, "FileNumber", N_("File Number"), N_("File number"), nikonFiId, makerTags, unsignedShort, 1, printValue},
     // End of list marker
-    {0xffff, "(UnknownNikonFiTag)", "(UnknownNikonFiTag)", N_("Unknown Nikon File Info Tag"), nikonFiId, makerTags, unsignedByte, 1,
-     printValue},
+    {0xffff, "(UnknownNikonFiTag)", "(UnknownNikonFiTag)", N_("Unknown Nikon File Info Tag"), nikonFiId, makerTags,
+     unsignedByte, 1, printValue},
 };
 
 const TagInfo* Nikon3MakerNote::tagListFi() {
@@ -724,20 +779,21 @@ const TagInfo* Nikon3MakerNote::tagListFi() {
 }
 
 //! MultiExposureMode
-constexpr TagDetails nikonMultiExposureMode[] = {{0, N_("Off")}, {1, N_("Multiple Exposure")}, {2, N_("Image Overlay")}};
+constexpr TagDetails nikonMultiExposureMode[] = {
+    {0, N_("Off")}, {1, N_("Multiple Exposure")}, {2, N_("Image Overlay")}};
 
 // Nikon3 Multi Exposure Tag Info
 constexpr TagInfo Nikon3MakerNote::tagInfoMe_[] = {
     {0, "Version", N_("Version"), N_("Version"), nikonMeId, makerTags, undefined, 4, printExifVersion},
-    {4, "MultiExposureMode", N_("Multi Exposure Mode"), N_("Multi exposure mode"), nikonMeId, makerTags, unsignedLong, 1,
-     EXV_PRINT_TAG(nikonMultiExposureMode)},
-    {8, "MultiExposureShots", N_("Multi Exposure Shots"), N_("Multi exposure shots"), nikonMeId, makerTags, unsignedLong, 1,
-     printValue},
-    {12, "MultiExposureAutoGain", N_("Multi Exposure Auto Gain"), N_("Multi exposure auto gain"), nikonMeId, makerTags, unsignedLong,
-     1, EXV_PRINT_TAG(nikonOffOn)},
+    {4, "MultiExposureMode", N_("Multi Exposure Mode"), N_("Multi exposure mode"), nikonMeId, makerTags, unsignedLong,
+     1, EXV_PRINT_TAG(nikonMultiExposureMode)},
+    {8, "MultiExposureShots", N_("Multi Exposure Shots"), N_("Multi exposure shots"), nikonMeId, makerTags,
+     unsignedLong, 1, printValue},
+    {12, "MultiExposureAutoGain", N_("Multi Exposure Auto Gain"), N_("Multi exposure auto gain"), nikonMeId, makerTags,
+     unsignedLong, 1, EXV_PRINT_TAG(nikonOffOn)},
     // End of list marker
-    {0xffff, "(UnknownNikonMeTag)", "(UnknownNikonMeTag)", N_("Unknown Nikon Multi Exposure Tag"), nikonMeId, makerTags, unsignedByte,
-     1, printValue},
+    {0xffff, "(UnknownNikonMeTag)", "(UnknownNikonMeTag)", N_("Unknown Nikon Multi Exposure Tag"), nikonMeId, makerTags,
+     unsignedByte, 1, printValue},
 };
 
 const TagInfo* Nikon3MakerNote::tagListMe() {
@@ -765,21 +821,23 @@ constexpr TagDetails nikonFlashFirmware[] = {{0x0000, N_("n/a")},
 
 //! FlashGNDistance
 constexpr TagDetails nikonFlashGNDistance[] = {
-    {0, N_("None")}, {1, "0.1 m"},   {2, "0.2 m"},   {3, "0.3 m"},   {4, "0.4 m"},   {5, "0.5 m"},    {6, "0.6 m"},   {7, "0.7 m"},
-    {8, "0.8 m"},    {9, "0.9 m"},   {10, "1.0 m"},  {11, "1.1 m"},  {12, "1.3 m"},  {13, "1.4 m"},   {14, "1.6 m"},  {15, "1.8 m"},
-    {16, "2.0 m"},   {17, "2.2 m"},  {18, "2.5 m"},  {19, "2.8 m"},  {20, "3.2 m"},  {21, "3.6 m"},   {22, "4.0 m"},  {23, "4.5 m"},
-    {24, "5.0 m"},   {25, "5.6 m"},  {26, "6.3 m"},  {27, "7.1 m"},  {28, "8.0 m"},  {29, "9.0 m"},   {30, "10.0 m"}, {31, "11.0 m"},
-    {32, "13.0 m"},  {33, "14.0 m"}, {34, "16.0 m"}, {35, "18.0 m"}, {36, "20.0 m"}, {255, N_("n/a")}};
+    {0, N_("None")}, {1, "0.1 m"},   {2, "0.2 m"},    {3, "0.3 m"},   {4, "0.4 m"},   {5, "0.5 m"},   {6, "0.6 m"},
+    {7, "0.7 m"},    {8, "0.8 m"},   {9, "0.9 m"},    {10, "1.0 m"},  {11, "1.1 m"},  {12, "1.3 m"},  {13, "1.4 m"},
+    {14, "1.6 m"},   {15, "1.8 m"},  {16, "2.0 m"},   {17, "2.2 m"},  {18, "2.5 m"},  {19, "2.8 m"},  {20, "3.2 m"},
+    {21, "3.6 m"},   {22, "4.0 m"},  {23, "4.5 m"},   {24, "5.0 m"},  {25, "5.6 m"},  {26, "6.3 m"},  {27, "7.1 m"},
+    {28, "8.0 m"},   {29, "9.0 m"},  {30, "10.0 m"},  {31, "11.0 m"}, {32, "13.0 m"}, {33, "14.0 m"}, {34, "16.0 m"},
+    {35, "18.0 m"},  {36, "20.0 m"}, {255, N_("n/a")}};
 
 //! FlashControlMode
 constexpr TagDetails nikonFlashControlMode[] = {
     {0, N_("Off")},           {1, N_("iTTL-BL")},         {2, N_("iTTL")},
     {3, N_("Auto Aperture")}, {4, N_("Automatic")},       {5, N_("GN (distance priority)")},
-    {6, N_("Manual")},        {7, N_("Repeating Flash")}, {7, N_("Repeating Flash")} // To silence compiler warning
+    {6, N_("Manual")},        {7, N_("Repeating Flash")}, {7, N_("Repeating Flash")}  // To silence compiler warning
 };
 
 //! ExternalFlashFlags
-constexpr TagDetails nikonExternalFlashFlags[] = {{0, N_("Fired")}, {2, N_("Bounce Flash")}, {4, N_("Wide Flash Adapter")}};
+constexpr TagDetails nikonExternalFlashFlags[] = {
+    {0, N_("Fired")}, {2, N_("Bounce Flash")}, {4, N_("Wide Flash Adapter")}};
 
 //! FlashColorFilter
 constexpr TagDetails nikonFlashColorFilter[] = {{0, N_("None")},  {1, N_("FL-GL1")},  {2, N_("FL-GL2")},
@@ -792,25 +850,25 @@ constexpr TagInfo Nikon3MakerNote::tagInfoFl1_[] = {
     {4, "FlashSource", N_("Flash Source"), N_("Flash source"), nikonFl1Id, makerTags, unsignedByte, 1,
      EXV_PRINT_TAG(nikonFlashSource)},
     {5, "0x0005", N_("0x0005"), N_("Unknown"), nikonFl1Id, makerTags, unsignedByte, 1, printValue},
-    {6, "ExternalFlashFirmware", N_("External Flash Firmware"), N_("External flash firmware"), nikonFl1Id, makerTags, unsignedShort, 1,
-     EXV_PRINT_TAG(nikonFlashFirmware)},
-    {8, "ExternalFlashFlags", N_("External Flash Flags"), N_("External flash flags"), nikonFl1Id, makerTags, unsignedByte, 1,
-     EXV_PRINT_TAG(nikonExternalFlashFlags)},
+    {6, "ExternalFlashFirmware", N_("External Flash Firmware"), N_("External flash firmware"), nikonFl1Id, makerTags,
+     unsignedShort, 1, EXV_PRINT_TAG(nikonFlashFirmware)},
+    {8, "ExternalFlashFlags", N_("External Flash Flags"), N_("External flash flags"), nikonFl1Id, makerTags,
+     unsignedByte, 1, EXV_PRINT_TAG(nikonExternalFlashFlags)},
     {11, "FlashFocalLength", N_("Flash Focal Length"), N_("Flash focal length"), nikonFl1Id, makerTags, unsignedByte, 1,
      printFlashFocalLength},
-    {12, "RepeatingFlashRate", N_("Repeating Flash Rate"), N_("Repeating flash rate"), nikonFl1Id, makerTags, unsignedByte, 1,
-     printRepeatingFlashRate},
-    {13, "RepeatingFlashCount", N_("Repeating Flash Count"), N_("Repeating flash count"), nikonFl1Id, makerTags, unsignedByte, 1,
-     printRepeatingFlashCount},
+    {12, "RepeatingFlashRate", N_("Repeating Flash Rate"), N_("Repeating flash rate"), nikonFl1Id, makerTags,
+     unsignedByte, 1, printRepeatingFlashRate},
+    {13, "RepeatingFlashCount", N_("Repeating Flash Count"), N_("Repeating flash count"), nikonFl1Id, makerTags,
+     unsignedByte, 1, printRepeatingFlashCount},
     {14, "FlashGNDistance", N_("Flash GN Distance"), N_("Flash GN distance"), nikonFl1Id, makerTags, unsignedByte, 1,
      EXV_PRINT_TAG(nikonFlashGNDistance)},
-    {15, "FlashGroupAControlMode", N_("Flash Group A Control Mode"), N_("Flash group a control mode"), nikonFl1Id, makerTags,
-     unsignedByte, 1, EXV_PRINT_TAG(nikonFlashControlMode)},
-    {16, "FlashGroupBControlMode", N_("Flash Group B Control Mode"), N_("Flash group b control mode"), nikonFl1Id, makerTags,
-     unsignedByte, 1, EXV_PRINT_TAG(nikonFlashControlMode)},
+    {15, "FlashGroupAControlMode", N_("Flash Group A Control Mode"), N_("Flash group a control mode"), nikonFl1Id,
+     makerTags, unsignedByte, 1, EXV_PRINT_TAG(nikonFlashControlMode)},
+    {16, "FlashGroupBControlMode", N_("Flash Group B Control Mode"), N_("Flash group b control mode"), nikonFl1Id,
+     makerTags, unsignedByte, 1, EXV_PRINT_TAG(nikonFlashControlMode)},
     // End of list marker
-    {0xffff, "(UnknownNikonMeTag)", "(UnknownNikonMeTag)", N_("Unknown Nikon Multi Exposure Tag"), nikonFl1Id, makerTags, unsignedByte,
-     1, printValue},
+    {0xffff, "(UnknownNikonMeTag)", "(UnknownNikonMeTag)", N_("Unknown Nikon Multi Exposure Tag"), nikonFl1Id,
+     makerTags, unsignedByte, 1, printValue},
 };
 
 const TagInfo* Nikon3MakerNote::tagListFl1() {
@@ -823,21 +881,21 @@ constexpr TagInfo Nikon3MakerNote::tagInfoFl2_[] = {
     {4, "FlashSource", N_("Flash Source"), N_("Flash source"), nikonFl2Id, makerTags, unsignedByte, 1,
      EXV_PRINT_TAG(nikonFlashSource)},
     {5, "0x0005", N_("0x0005"), N_("Unknown"), nikonFl2Id, makerTags, unsignedByte, 1, printValue},
-    {6, "ExternalFlashFirmware", N_("External Flash Firmware"), N_("External flash firmware"), nikonFl2Id, makerTags, unsignedShort, 1,
-     EXV_PRINT_TAG(nikonFlashFirmware)},
-    {8, "ExternalFlashFlags", N_("External Flash Flags"), N_("External flash flags"), nikonFl2Id, makerTags, unsignedByte, 1,
-     EXV_PRINT_TAG(nikonExternalFlashFlags)},
+    {6, "ExternalFlashFirmware", N_("External Flash Firmware"), N_("External flash firmware"), nikonFl2Id, makerTags,
+     unsignedShort, 1, EXV_PRINT_TAG(nikonFlashFirmware)},
+    {8, "ExternalFlashFlags", N_("External Flash Flags"), N_("External flash flags"), nikonFl2Id, makerTags,
+     unsignedByte, 1, EXV_PRINT_TAG(nikonExternalFlashFlags)},
     {12, "FlashFocalLength", N_("Flash Focal Length"), N_("Flash focal length"), nikonFl2Id, makerTags, unsignedByte, 1,
      printFlashFocalLength},
-    {13, "RepeatingFlashRate", N_("Repeating Flash Rate"), N_("Repeating flash rate"), nikonFl2Id, makerTags, unsignedByte, 1,
-     printRepeatingFlashRate},
-    {14, "RepeatingFlashCount", N_("Repeating Flash Count"), N_("Repeating flash count"), nikonFl2Id, makerTags, unsignedByte, 1,
-     printRepeatingFlashCount},
+    {13, "RepeatingFlashRate", N_("Repeating Flash Rate"), N_("Repeating flash rate"), nikonFl2Id, makerTags,
+     unsignedByte, 1, printRepeatingFlashRate},
+    {14, "RepeatingFlashCount", N_("Repeating Flash Count"), N_("Repeating flash count"), nikonFl2Id, makerTags,
+     unsignedByte, 1, printRepeatingFlashCount},
     {15, "FlashGNDistance", N_("Flash GN Distance"), N_("Flash GN distance"), nikonFl2Id, makerTags, unsignedByte, 1,
      EXV_PRINT_TAG(nikonFlashGNDistance)},
     // End of list marker
-    {0xffff, "(UnknownNikonMeTag)", "(UnknownNikonMeTag)", N_("Unknown Nikon Multi Exposure Tag"), nikonFl2Id, makerTags, unsignedByte,
-     1, printValue},
+    {0xffff, "(UnknownNikonMeTag)", "(UnknownNikonMeTag)", N_("Unknown Nikon Multi Exposure Tag"), nikonFl2Id,
+     makerTags, unsignedByte, 1, printValue},
 };
 
 const TagInfo* Nikon3MakerNote::tagListFl2() {
@@ -849,23 +907,23 @@ constexpr TagInfo Nikon3MakerNote::tagInfoFl3_[] = {
     {0, "Version", N_("Version"), N_("Version"), nikonFl3Id, makerTags, undefined, 4, printExifVersion},
     {4, "FlashSource", N_("Flash Source"), N_("Flash source"), nikonFl3Id, makerTags, unsignedByte, 1,
      EXV_PRINT_TAG(nikonFlashSource)},
-    {6, "ExternalFlashFirmware", N_("External Flash Firmware"), N_("External flash firmware"), nikonFl3Id, makerTags, unsignedShort, 1,
-     EXV_PRINT_TAG(nikonFlashFirmware)},
-    {8, "ExternalFlashFlags", N_("External Flash Flags"), N_("External flash flags"), nikonFl3Id, makerTags, unsignedByte, 1,
-     EXV_PRINT_TAG(nikonExternalFlashFlags)},
+    {6, "ExternalFlashFirmware", N_("External Flash Firmware"), N_("External flash firmware"), nikonFl3Id, makerTags,
+     unsignedShort, 1, EXV_PRINT_TAG(nikonFlashFirmware)},
+    {8, "ExternalFlashFlags", N_("External Flash Flags"), N_("External flash flags"), nikonFl3Id, makerTags,
+     unsignedByte, 1, EXV_PRINT_TAG(nikonExternalFlashFlags)},
     {12, "FlashFocalLength", N_("Flash Focal Length"), N_("Flash focal length"), nikonFl3Id, makerTags, unsignedByte, 1,
      printFlashFocalLength},
-    {13, "RepeatingFlashRate", N_("Repeating Flash Rate"), N_("Repeating flash rate"), nikonFl3Id, makerTags, unsignedByte, 1,
-     printRepeatingFlashRate},
-    {14, "RepeatingFlashCount", N_("Repeating Flash Count"), N_("Repeating flash count"), nikonFl3Id, makerTags, unsignedByte, 1,
-     printRepeatingFlashCount},
+    {13, "RepeatingFlashRate", N_("Repeating Flash Rate"), N_("Repeating flash rate"), nikonFl3Id, makerTags,
+     unsignedByte, 1, printRepeatingFlashRate},
+    {14, "RepeatingFlashCount", N_("Repeating Flash Count"), N_("Repeating flash count"), nikonFl3Id, makerTags,
+     unsignedByte, 1, printRepeatingFlashCount},
     {15, "FlashGNDistance", N_("Flash GN Distance"), N_("Flash GN distance"), nikonFl3Id, makerTags, unsignedByte, 1,
      EXV_PRINT_TAG(nikonFlashGNDistance)},
     {16, "FlashColorFilter", N_("Flash Color Filter"), N_("Flash color filter"), nikonFl3Id, makerTags, unsignedByte, 1,
      EXV_PRINT_TAG(nikonFlashColorFilter)},
     // End of list marker
-    {0xffff, "(UnknownNikonMeTag)", "(UnknownNikonMeTag)", N_("Unknown Nikon Multi Exposure Tag"), nikonFl3Id, makerTags, unsignedByte,
-     1, printValue},
+    {0xffff, "(UnknownNikonMeTag)", "(UnknownNikonMeTag)", N_("Unknown Nikon Multi Exposure Tag"), nikonFl3Id,
+     makerTags, unsignedByte, 1, printValue},
 };
 
 const TagInfo* Nikon3MakerNote::tagListFl3() {
@@ -877,8 +935,8 @@ constexpr TagInfo Nikon3MakerNote::tagInfoSi1_[] = {
     {0, "Version", N_("Version"), N_("Version"), nikonSi1Id, makerTags, unsignedByte, 4, printExifVersion},
     {586, "ShutterCount", N_("Shutter Count"), N_("Shutter count"), nikonSi1Id, makerTags, unsignedLong, 1, printValue},
     // End of list marker
-    {0xffff, "(UnknownNikonSi1Tag)", "(UnknownNikonSi1Tag)", N_("Unknown Nikon Shot Info D80 Tag"), nikonSi1Id, makerTags,
-     unsignedByte, 1, printValue},
+    {0xffff, "(UnknownNikonSi1Tag)", "(UnknownNikonSi1Tag)", N_("Unknown Nikon Shot Info D80 Tag"), nikonSi1Id,
+     makerTags, unsignedByte, 1, printValue},
 };
 
 const TagInfo* Nikon3MakerNote::tagListSi1() {
@@ -891,8 +949,8 @@ constexpr TagInfo Nikon3MakerNote::tagInfoSi2_[] = {
     {582, "ShutterCount", N_("Shutter Count"), N_("Shutter count"), nikonSi2Id, makerTags, unsignedLong, 1, printValue},
     {738, "FlashLevel", N_("Flash Level"), N_("Flash level"), nikonSi2Id, makerTags, unsignedByte, 1, printValue},
     // End of list marker
-    {0xffff, "(UnknownNikonSi2Tag)", "(UnknownNikonSi2Tag)", N_("Unknown Nikon Shot Info D40 Tag"), nikonSi2Id, makerTags,
-     unsignedByte, 1, printValue},
+    {0xffff, "(UnknownNikonSi2Tag)", "(UnknownNikonSi2Tag)", N_("Unknown Nikon Shot Info D40 Tag"), nikonSi2Id,
+     makerTags, unsignedByte, 1, printValue},
 };
 
 const TagInfo* Nikon3MakerNote::tagListSi2() {
@@ -901,12 +959,13 @@ const TagInfo* Nikon3MakerNote::tagListSi2() {
 
 //! AfFineTuneAdj D300 (a)
 constexpr TagDetails nikonAfFineTuneAdj1[] = {
-    {0x0000, "0"},   {0x003a, "+1"},  {0x003b, "+2"},  {0x003c, "+4"},  {0x003d, "+8"},  {0x003e, "+16"}, {0x00c2, "-16"},
-    {0x00c3, "-8"},  {0x00c4, "-4"},  {0x00c5, "-2"},  {0x00c6, "-1"},  {0x103e, "+17"}, {0x10c2, "-17"}, {0x203d, "+9"},
-    {0x203e, "+18"}, {0x20c2, "-18"}, {0x20c3, "-9"},  {0x303e, "+19"}, {0x30c2, "-19"}, {0x403c, "+5"},  {0x403d, "+10"},
-    {0x403e, "+20"}, {0x40c2, "-20"}, {0x40c3, "-10"}, {0x40c4, "-5"},  {0x603d, "+11"}, {0x60c3, "-11"}, {0x803b, "+3"},
-    {0x803c, "+6"},  {0x803d, "+12"}, {0x80c3, "-12"}, {0x80c4, "-6"},  {0x80c5, "-3"},  {0xa03d, "+13"}, {0xa0c3, "-13"},
-    {0xc03c, "+7"},  {0xc03d, "+14"}, {0xc0c3, "-14"}, {0xc0c4, "-7"},  {0xe03d, "+15"}, {0xe0c3, "-15"}};
+    {0x0000, "0"},   {0x003a, "+1"},  {0x003b, "+2"},  {0x003c, "+4"},  {0x003d, "+8"},  {0x003e, "+16"},
+    {0x00c2, "-16"}, {0x00c3, "-8"},  {0x00c4, "-4"},  {0x00c5, "-2"},  {0x00c6, "-1"},  {0x103e, "+17"},
+    {0x10c2, "-17"}, {0x203d, "+9"},  {0x203e, "+18"}, {0x20c2, "-18"}, {0x20c3, "-9"},  {0x303e, "+19"},
+    {0x30c2, "-19"}, {0x403c, "+5"},  {0x403d, "+10"}, {0x403e, "+20"}, {0x40c2, "-20"}, {0x40c3, "-10"},
+    {0x40c4, "-5"},  {0x603d, "+11"}, {0x60c3, "-11"}, {0x803b, "+3"},  {0x803c, "+6"},  {0x803d, "+12"},
+    {0x80c3, "-12"}, {0x80c4, "-6"},  {0x80c5, "-3"},  {0xa03d, "+13"}, {0xa0c3, "-13"}, {0xc03c, "+7"},
+    {0xc03d, "+14"}, {0xc0c3, "-14"}, {0xc0c4, "-7"},  {0xe03d, "+15"}, {0xe0c3, "-15"}};
 
 // Nikon3 Shot Info D300 (a) Tag Info
 constexpr TagInfo Nikon3MakerNote::tagInfoSi3_[] = {
@@ -916,8 +975,8 @@ constexpr TagInfo Nikon3MakerNote::tagInfoSi3_[] = {
     {721, "AFFineTuneAdj", N_("AF Fine Tune Adj"), N_("AF fine tune adj"), nikonSi3Id, makerTags, unsignedShort, 1,
      EXV_PRINT_TAG(nikonAfFineTuneAdj1)},
     // End of list marker
-    {0xffff, "(UnknownNikonSi3Tag)", "(UnknownNikonSi3Tag)", N_("Unknown Nikon Shot Info D300 (a) Tag"), nikonSi3Id, makerTags,
-     unsignedByte, 1, printValue},
+    {0xffff, "(UnknownNikonSi3Tag)", "(UnknownNikonSi3Tag)", N_("Unknown Nikon Shot Info D300 (a) Tag"), nikonSi3Id,
+     makerTags, unsignedByte, 1, printValue},
 };
 
 const TagInfo* Nikon3MakerNote::tagListSi3() {
@@ -926,12 +985,13 @@ const TagInfo* Nikon3MakerNote::tagListSi3() {
 
 //! AfFineTuneAdj D300 (b)
 constexpr TagDetails nikonAfFineTuneAdj2[] = {
-    {0x0000, "0"},   {0x043e, "+13"}, {0x04c2, "-13"}, {0x183d, "+7"},  {0x183e, "+14"}, {0x18c2, "-14"}, {0x18c3, "-7"},
-    {0x2c3e, "+15"}, {0x2cc2, "-15"}, {0x403a, "+1"},  {0x403b, "+2"},  {0x403c, "+4"},  {0x403d, "+8"},  {0x403e, "+16"},
-    {0x40c2, "-16"}, {0x40c3, "-8"},  {0x40c4, "-4"},  {0x40c5, "-2"},  {0x40c6, "-1"},  {0x543e, "+17"}, {0x54c2, "-17"},
-    {0x683d, "+9"},  {0x683e, "+18"}, {0x68c2, "-18"}, {0x68c3, "-9"},  {0x7c3e, "+19"}, {0x7cc2, "-19"}, {0x903c, "+5"},
-    {0x903d, "+10"}, {0x903e, "+20"}, {0x90c2, "-20"}, {0x90c3, "-10"}, {0x90c4, "-5"},  {0xb83d, "+11"}, {0xb8c3, "-11"},
-    {0xe03b, "+3"},  {0xe03c, "+6"},  {0xe03d, "+12"}, {0xe0c3, "-12"}, {0xe0c4, "-6"},  {0xe0c5, "-3"}};
+    {0x0000, "0"},   {0x043e, "+13"}, {0x04c2, "-13"}, {0x183d, "+7"},  {0x183e, "+14"}, {0x18c2, "-14"},
+    {0x18c3, "-7"},  {0x2c3e, "+15"}, {0x2cc2, "-15"}, {0x403a, "+1"},  {0x403b, "+2"},  {0x403c, "+4"},
+    {0x403d, "+8"},  {0x403e, "+16"}, {0x40c2, "-16"}, {0x40c3, "-8"},  {0x40c4, "-4"},  {0x40c5, "-2"},
+    {0x40c6, "-1"},  {0x543e, "+17"}, {0x54c2, "-17"}, {0x683d, "+9"},  {0x683e, "+18"}, {0x68c2, "-18"},
+    {0x68c3, "-9"},  {0x7c3e, "+19"}, {0x7cc2, "-19"}, {0x903c, "+5"},  {0x903d, "+10"}, {0x903e, "+20"},
+    {0x90c2, "-20"}, {0x90c3, "-10"}, {0x90c4, "-5"},  {0xb83d, "+11"}, {0xb8c3, "-11"}, {0xe03b, "+3"},
+    {0xe03c, "+6"},  {0xe03d, "+12"}, {0xe0c3, "-12"}, {0xe0c4, "-6"},  {0xe0c5, "-3"}};
 
 // Nikon3 Shot Info D300 (b) Tag Info
 constexpr TagInfo Nikon3MakerNote::tagInfoSi4_[] = {
@@ -941,8 +1001,8 @@ constexpr TagInfo Nikon3MakerNote::tagInfoSi4_[] = {
     {732, "AFFineTuneAdj", N_("AF Fine Tune Adj"), N_("AF fine tune adj"), nikonSi4Id, makerTags, unsignedShort, 1,
      EXV_PRINT_TAG(nikonAfFineTuneAdj2)},
     // End of list marker
-    {0xffff, "(UnknownNikonSi4Tag)", "(UnknownNikonSi4Tag)", N_("Unknown Nikon Shot Info D300 (b) Tag"), nikonSi4Id, makerTags,
-     unsignedByte, 1, printValue},
+    {0xffff, "(UnknownNikonSi4Tag)", "(UnknownNikonSi4Tag)", N_("Unknown Nikon Shot Info D300 (b) Tag"), nikonSi4Id,
+     makerTags, unsignedByte, 1, printValue},
 };
 
 const TagInfo* Nikon3MakerNote::tagListSi4() {
@@ -958,21 +1018,23 @@ constexpr TagDetails nikonOffOn3[] = {{0x0, N_("n/a")}, {0xc, N_("Off")}, {0xf, 
 // Nikon3 Shot Info Tag Info
 constexpr TagInfo Nikon3MakerNote::tagInfoSi5_[] = {
     {0, "Version", N_("Version"), N_("Version"), nikonSi5Id, makerTags, unsignedByte, 4, printExifVersion},
-    {106, "ShutterCount1", N_("Shutter Count 1"), N_("Shutter count 1"), nikonSi5Id, makerTags, unsignedLong, 1, printValue},
-    {110, "DeletedImageCount", N_("Deleted Image Count"), N_("Deleted image count"), nikonSi5Id, makerTags, unsignedLong, 1,
+    {106, "ShutterCount1", N_("Shutter Count 1"), N_("Shutter count 1"), nikonSi5Id, makerTags, unsignedLong, 1,
      printValue},
-    {117, "VibrationReduction", N_("Vibration Reduction"), N_("Vibration reduction"), nikonSi5Id, makerTags, unsignedByte, 1,
-     EXV_PRINT_TAG(nikonOffOn2)},
-    {130, "VibrationReduction1", N_("Vibration Reduction 1"), N_("Vibration reduction 1"), nikonSi5Id, makerTags, unsignedByte, 1,
-     EXV_PRINT_TAG(nikonOffOn)},
-    {343, "ShutterCount2", N_("Shutter Count 2"), N_("Shutter count 2"), nikonSi5Id, makerTags, undefined, 2, printValue},
-    {430, "VibrationReduction2", N_("Vibration Reduction 2"), N_("Vibration reduction 2"), nikonSi5Id, makerTags, unsignedByte, 1,
-     EXV_PRINT_TAG(nikonOffOn3)},
+    {110, "DeletedImageCount", N_("Deleted Image Count"), N_("Deleted image count"), nikonSi5Id, makerTags,
+     unsignedLong, 1, printValue},
+    {117, "VibrationReduction", N_("Vibration Reduction"), N_("Vibration reduction"), nikonSi5Id, makerTags,
+     unsignedByte, 1, EXV_PRINT_TAG(nikonOffOn2)},
+    {130, "VibrationReduction1", N_("Vibration Reduction 1"), N_("Vibration reduction 1"), nikonSi5Id, makerTags,
+     unsignedByte, 1, EXV_PRINT_TAG(nikonOffOn)},
+    {343, "ShutterCount2", N_("Shutter Count 2"), N_("Shutter count 2"), nikonSi5Id, makerTags, undefined, 2,
+     printValue},
+    {430, "VibrationReduction2", N_("Vibration Reduction 2"), N_("Vibration reduction 2"), nikonSi5Id, makerTags,
+     unsignedByte, 1, EXV_PRINT_TAG(nikonOffOn3)},
     {598, "ISO", N_("ISO"), N_("ISO"), nikonSi5Id, makerTags, unsignedByte, 1, printIiIso},
     {630, "ShutterCount", N_("Shutter Count"), N_("Shutter count"), nikonSi5Id, makerTags, unsignedLong, 1, printValue},
     // End of list marker
-    {0xffff, "(UnknownNikonSi5Tag)", "(UnknownNikonSi5Tag)", N_("Unknown Nikon Shot Info Tag"), nikonSi5Id, makerTags, unsignedByte, 1,
-     printValue},
+    {0xffff, "(UnknownNikonSi5Tag)", "(UnknownNikonSi5Tag)", N_("Unknown Nikon Shot Info Tag"), nikonSi5Id, makerTags,
+     unsignedByte, 1, printValue},
 };
 
 const TagInfo* Nikon3MakerNote::tagListSi5() {
@@ -982,10 +1044,11 @@ const TagInfo* Nikon3MakerNote::tagListSi5() {
 // Nikon3 Color Balance 1 Tag Info
 constexpr TagInfo Nikon3MakerNote::tagInfoCb1_[] = {
     {0, "Version", N_("Version"), N_("Version"), nikonCb1Id, makerTags, undefined, 4, printExifVersion},
-    {36, "WB_RBGGLevels", N_("WB RBGG Levels"), N_("WB RBGG levels"), nikonCb1Id, makerTags, unsignedShort, 4, printValue},
+    {36, "WB_RBGGLevels", N_("WB RBGG Levels"), N_("WB RBGG levels"), nikonCb1Id, makerTags, unsignedShort, 4,
+     printValue},
     // End of list marker
-    {0xffff, "(UnknownNikonCb1Tag)", "(UnknownNikonCb1Tag)", N_("Unknown Nikon Color Balance 1 Tag"), nikonCb1Id, makerTags,
-     unsignedShort, 1, printValue},
+    {0xffff, "(UnknownNikonCb1Tag)", "(UnknownNikonCb1Tag)", N_("Unknown Nikon Color Balance 1 Tag"), nikonCb1Id,
+     makerTags, unsignedShort, 1, printValue},
 };
 
 const TagInfo* Nikon3MakerNote::tagListCb1() {
@@ -995,10 +1058,11 @@ const TagInfo* Nikon3MakerNote::tagListCb1() {
 // Nikon3 Color Balance 2 Tag Info
 constexpr TagInfo Nikon3MakerNote::tagInfoCb2_[] = {
     {0, "Version", N_("Version"), N_("Version"), nikonCb2Id, makerTags, undefined, 4, printExifVersion},
-    {5, "WB_RGGBLevels", N_("WB RGGB Levels"), N_("WB RGGB levels"), nikonCb2Id, makerTags, unsignedShort, 4, printValue},
+    {5, "WB_RGGBLevels", N_("WB RGGB Levels"), N_("WB RGGB levels"), nikonCb2Id, makerTags, unsignedShort, 4,
+     printValue},
     // End of list marker
-    {0xffff, "(UnknownNikonCb2Tag)", "(UnknownNikonCb2Tag)", N_("Unknown Nikon Color Balance 2 Tag"), nikonCb2Id, makerTags,
-     unsignedShort, 1, printValue},
+    {0xffff, "(UnknownNikonCb2Tag)", "(UnknownNikonCb2Tag)", N_("Unknown Nikon Color Balance 2 Tag"), nikonCb2Id,
+     makerTags, unsignedShort, 1, printValue},
 };
 
 const TagInfo* Nikon3MakerNote::tagListCb2() {
@@ -1008,10 +1072,11 @@ const TagInfo* Nikon3MakerNote::tagListCb2() {
 // Nikon3 Color Balance 2a Tag Info
 constexpr TagInfo Nikon3MakerNote::tagInfoCb2a_[] = {
     {0, "Version", N_("Version"), N_("Version"), nikonCb2aId, makerTags, undefined, 4, printExifVersion},
-    {9, "WB_RGGBLevels", N_("WB RGGB Levels"), N_("WB RGGB levels"), nikonCb2aId, makerTags, unsignedShort, 4, printValue},
+    {9, "WB_RGGBLevels", N_("WB RGGB Levels"), N_("WB RGGB levels"), nikonCb2aId, makerTags, unsignedShort, 4,
+     printValue},
     // End of list marker
-    {0xffff, "(UnknownNikonCb2aTag)", "(UnknownNikonCb2aTag)", N_("Unknown Nikon Color Balance 2a Tag"), nikonCb2aId, makerTags,
-     unsignedShort, 1, printValue},
+    {0xffff, "(UnknownNikonCb2aTag)", "(UnknownNikonCb2aTag)", N_("Unknown Nikon Color Balance 2a Tag"), nikonCb2aId,
+     makerTags, unsignedShort, 1, printValue},
 };
 
 const TagInfo* Nikon3MakerNote::tagListCb2a() {
@@ -1021,10 +1086,11 @@ const TagInfo* Nikon3MakerNote::tagListCb2a() {
 // Nikon3 Color Balance 2b Tag Info
 constexpr TagInfo Nikon3MakerNote::tagInfoCb2b_[] = {
     {0, "Version", N_("Version"), N_("Version"), nikonCb2bId, makerTags, undefined, 4, printExifVersion},
-    {145, "WB_RGGBLevels", N_("WB RGGB Levels"), N_("WB RGGB levels"), nikonCb2bId, makerTags, unsignedShort, 4, printValue},
+    {145, "WB_RGGBLevels", N_("WB RGGB Levels"), N_("WB RGGB levels"), nikonCb2bId, makerTags, unsignedShort, 4,
+     printValue},
     // End of list marker
-    {0xffff, "(UnknownNikonCb2bTag)", "(UnknownNikonCb2bTag)", N_("Unknown Nikon Color Balance 2b Tag"), nikonCb2bId, makerTags,
-     unsignedShort, 1, printValue},
+    {0xffff, "(UnknownNikonCb2bTag)", "(UnknownNikonCb2bTag)", N_("Unknown Nikon Color Balance 2b Tag"), nikonCb2bId,
+     makerTags, unsignedShort, 1, printValue},
 };
 
 const TagInfo* Nikon3MakerNote::tagListCb2b() {
@@ -1034,10 +1100,11 @@ const TagInfo* Nikon3MakerNote::tagListCb2b() {
 // Nikon3 Color Balance 3 Tag Info
 constexpr TagInfo Nikon3MakerNote::tagInfoCb3_[] = {
     {0, "Version", N_("Version"), N_("Version"), nikonCb3Id, makerTags, undefined, 4, printExifVersion},
-    {10, "WB_RGBGLevels", N_("WB RGBG Levels"), N_("WB RGBG levels"), nikonCb3Id, makerTags, unsignedShort, 4, printValue},
+    {10, "WB_RGBGLevels", N_("WB RGBG Levels"), N_("WB RGBG levels"), nikonCb3Id, makerTags, unsignedShort, 4,
+     printValue},
     // End of list marker
-    {0xffff, "(UnknownNikonCb3Tag)", "(UnknownNikonCb3Tag)", N_("Unknown Nikon Color Balance 3 Tag"), nikonCb3Id, makerTags,
-     unsignedShort, 1, printValue},
+    {0xffff, "(UnknownNikonCb3Tag)", "(UnknownNikonCb3Tag)", N_("Unknown Nikon Color Balance 3 Tag"), nikonCb3Id,
+     makerTags, unsignedShort, 1, printValue},
 };
 
 const TagInfo* Nikon3MakerNote::tagListCb3() {
@@ -1047,10 +1114,11 @@ const TagInfo* Nikon3MakerNote::tagListCb3() {
 // Nikon3 Color Balance 4 Tag Info
 constexpr TagInfo Nikon3MakerNote::tagInfoCb4_[] = {
     {0, "Version", N_("Version"), N_("Version"), nikonCb4Id, makerTags, undefined, 4, printExifVersion},
-    {147, "WB_GRBGLevels", N_("WB GRBG Levels"), N_("WB GRBG levels"), nikonCb4Id, makerTags, unsignedShort, 4, printValue},
+    {147, "WB_GRBGLevels", N_("WB GRBG Levels"), N_("WB GRBG levels"), nikonCb4Id, makerTags, unsignedShort, 4,
+     printValue},
     // End of list marker
-    {0xffff, "(UnknownNikonCb4Tag)", "(UnknownNikonCb4Tag)", N_("Unknown Nikon Color Balance 4 Tag"), nikonCb4Id, makerTags,
-     unsignedShort, 1, printValue},
+    {0xffff, "(UnknownNikonCb4Tag)", "(UnknownNikonCb4Tag)", N_("Unknown Nikon Color Balance 4 Tag"), nikonCb4Id,
+     makerTags, unsignedShort, 1, printValue},
 };
 
 const TagInfo* Nikon3MakerNote::tagListCb4() {
@@ -1060,18 +1128,21 @@ const TagInfo* Nikon3MakerNote::tagListCb4() {
 // Nikon3 Lens Data 1 Tag Info
 constexpr TagInfo Nikon3MakerNote::tagInfoLd1_[] = {
     {0, "Version", N_("Version"), N_("Version"), nikonLd1Id, makerTags, undefined, 4, printExifVersion},
-    {6, "LensIDNumber", N_("Lens ID Number"), N_("Lens ID number"), nikonLd1Id, makerTags, unsignedByte, 1, printLensId1},
+    {6, "LensIDNumber", N_("Lens ID Number"), N_("Lens ID number"), nikonLd1Id, makerTags, unsignedByte, 1,
+     printLensId1},
     {7, "LensFStops", N_("Lens F-Stops"), N_("Lens F-stops"), nikonLd1Id, makerTags, unsignedByte, 1, printFStops},
-    {8, "MinFocalLength", N_("Min Focal Length"), N_("Min focal length"), nikonLd1Id, makerTags, unsignedByte, 1, printFocal},
-    {9, "MaxFocalLength", N_("Max Focal Length"), N_("Max focal length"), nikonLd1Id, makerTags, unsignedByte, 1, printFocal},
-    {10, "MaxApertureAtMinFocal", N_("Max Aperture At Min Focal"), N_("Max aperture at min focal"), nikonLd1Id, makerTags,
-     unsignedByte, 1, printAperture},
-    {11, "MaxApertureAtMaxFocal", N_("Max Aperture At Max Focal"), N_("Max aperture at max focal"), nikonLd1Id, makerTags,
-     unsignedByte, 1, printAperture},
+    {8, "MinFocalLength", N_("Min Focal Length"), N_("Min focal length"), nikonLd1Id, makerTags, unsignedByte, 1,
+     printFocal},
+    {9, "MaxFocalLength", N_("Max Focal Length"), N_("Max focal length"), nikonLd1Id, makerTags, unsignedByte, 1,
+     printFocal},
+    {10, "MaxApertureAtMinFocal", N_("Max Aperture At Min Focal"), N_("Max aperture at min focal"), nikonLd1Id,
+     makerTags, unsignedByte, 1, printAperture},
+    {11, "MaxApertureAtMaxFocal", N_("Max Aperture At Max Focal"), N_("Max aperture at max focal"), nikonLd1Id,
+     makerTags, unsignedByte, 1, printAperture},
     {12, "MCUVersion", N_("MCU Version"), N_("MCU version"), nikonLd1Id, makerTags, unsignedByte, 1, printValue},
     // End of list marker
-    {0xffff, "(UnknownNikonLd1Tag)", "(UnknownNikonLd1Tag)", N_("Unknown Nikon Lens Data 1 Tag"), nikonLd1Id, makerTags, unsignedByte,
-     1, printValue},
+    {0xffff, "(UnknownNikonLd1Tag)", "(UnknownNikonLd1Tag)", N_("Unknown Nikon Lens Data 1 Tag"), nikonLd1Id, makerTags,
+     unsignedByte, 1, printValue},
 };
 
 const TagInfo* Nikon3MakerNote::tagListLd1() {
@@ -1081,26 +1152,31 @@ const TagInfo* Nikon3MakerNote::tagListLd1() {
 // Nikon3 Lens Data 2 Tag Info
 constexpr TagInfo Nikon3MakerNote::tagInfoLd2_[] = {
     {0, "Version", N_("Version"), N_("Version"), nikonLd2Id, makerTags, undefined, 4, printExifVersion},
-    {4, "ExitPupilPosition", N_("Exit Pupil Position"), N_("Exit pupil position"), nikonLd2Id, makerTags, unsignedByte, 1,
-     printExitPupilPosition},
+    {4, "ExitPupilPosition", N_("Exit Pupil Position"), N_("Exit pupil position"), nikonLd2Id, makerTags, unsignedByte,
+     1, printExitPupilPosition},
     {5, "AFAperture", N_("AF Aperture"), N_("AF aperture"), nikonLd2Id, makerTags, unsignedByte, 1, printAperture},
-    {8, "FocusPosition", N_("Focus Position"), N_("Focus position"), nikonLd2Id, makerTags, unsignedByte, 1, printValue},
-    {9, "FocusDistance", N_("Focus Distance"), N_("Focus distance"), nikonLd2Id, makerTags, unsignedByte, 1, printFocusDistance},
+    {8, "FocusPosition", N_("Focus Position"), N_("Focus position"), nikonLd2Id, makerTags, unsignedByte, 1,
+     printValue},
+    {9, "FocusDistance", N_("Focus Distance"), N_("Focus distance"), nikonLd2Id, makerTags, unsignedByte, 1,
+     printFocusDistance},
     {10, "FocalLength", N_("Focal Length"), N_("Focal length"), nikonLd2Id, makerTags, unsignedByte, 1, printFocal},
-    {11, "LensIDNumber", N_("Lens ID Number"), N_("Lens ID number"), nikonLd2Id, makerTags, unsignedByte, 1, printLensId2},
+    {11, "LensIDNumber", N_("Lens ID Number"), N_("Lens ID number"), nikonLd2Id, makerTags, unsignedByte, 1,
+     printLensId2},
     {12, "LensFStops", N_("Lens F-Stops"), N_("Lens F-stops"), nikonLd2Id, makerTags, unsignedByte, 1, printFStops},
-    {13, "MinFocalLength", N_("Min Focal Length"), N_("Min focal length"), nikonLd2Id, makerTags, unsignedByte, 1, printFocal},
-    {14, "MaxFocalLength", N_("Max Focal Length"), N_("Max focal length"), nikonLd2Id, makerTags, unsignedByte, 1, printFocal},
-    {15, "MaxApertureAtMinFocal", N_("Max Aperture At Min Focal"), N_("Max aperture at min focal"), nikonLd2Id, makerTags,
-     unsignedByte, 1, printAperture},
-    {16, "MaxApertureAtMaxFocal", N_("Max Aperture At Max Focal"), N_("Max aperture at max focal"), nikonLd2Id, makerTags,
-     unsignedByte, 1, printAperture},
+    {13, "MinFocalLength", N_("Min Focal Length"), N_("Min focal length"), nikonLd2Id, makerTags, unsignedByte, 1,
+     printFocal},
+    {14, "MaxFocalLength", N_("Max Focal Length"), N_("Max focal length"), nikonLd2Id, makerTags, unsignedByte, 1,
+     printFocal},
+    {15, "MaxApertureAtMinFocal", N_("Max Aperture At Min Focal"), N_("Max aperture at min focal"), nikonLd2Id,
+     makerTags, unsignedByte, 1, printAperture},
+    {16, "MaxApertureAtMaxFocal", N_("Max Aperture At Max Focal"), N_("Max aperture at max focal"), nikonLd2Id,
+     makerTags, unsignedByte, 1, printAperture},
     {17, "MCUVersion", N_("MCU Version"), N_("MCU version"), nikonLd2Id, makerTags, unsignedByte, 1, printValue},
-    {18, "EffectiveMaxAperture", N_("Effective Max Aperture"), N_("Effective max aperture"), nikonLd2Id, makerTags, unsignedByte, 1,
-     printAperture},
+    {18, "EffectiveMaxAperture", N_("Effective Max Aperture"), N_("Effective max aperture"), nikonLd2Id, makerTags,
+     unsignedByte, 1, printAperture},
     // End of list marker
-    {0xffff, "(UnknownNikonLd2Tag)", "(UnknownNikonLd2Tag)", N_("Unknown Nikon Lens Data 2 Tag"), nikonLd2Id, makerTags, unsignedByte,
-     1, printValue},
+    {0xffff, "(UnknownNikonLd2Tag)", "(UnknownNikonLd2Tag)", N_("Unknown Nikon Lens Data 2 Tag"), nikonLd2Id, makerTags,
+     unsignedByte, 1, printValue},
 };
 
 const TagInfo* Nikon3MakerNote::tagListLd2() {
@@ -1110,26 +1186,31 @@ const TagInfo* Nikon3MakerNote::tagListLd2() {
 // Nikon3 Lens Data 3 Tag Info
 constexpr TagInfo Nikon3MakerNote::tagInfoLd3_[] = {
     {0, "Version", N_("Version"), N_("Version"), nikonLd3Id, makerTags, undefined, 4, printExifVersion},
-    {4, "ExitPupilPosition", N_("Exit Pupil Position"), N_("Exit pupil position"), nikonLd3Id, makerTags, unsignedByte, 1,
-     printExitPupilPosition},
+    {4, "ExitPupilPosition", N_("Exit Pupil Position"), N_("Exit pupil position"), nikonLd3Id, makerTags, unsignedByte,
+     1, printExitPupilPosition},
     {5, "AFAperture", N_("AF Aperture"), N_("AF aperture"), nikonLd3Id, makerTags, unsignedByte, 1, printAperture},
-    {8, "FocusPosition", N_("Focus Position"), N_("Focus position"), nikonLd3Id, makerTags, unsignedByte, 1, printValue},
-    {10, "FocusDistance", N_("Focus Distance"), N_("Focus distance"), nikonLd3Id, makerTags, unsignedByte, 1, printFocusDistance},
+    {8, "FocusPosition", N_("Focus Position"), N_("Focus position"), nikonLd3Id, makerTags, unsignedByte, 1,
+     printValue},
+    {10, "FocusDistance", N_("Focus Distance"), N_("Focus distance"), nikonLd3Id, makerTags, unsignedByte, 1,
+     printFocusDistance},
     {11, "FocalLength", N_("Focal Length"), N_("Focal length"), nikonLd3Id, makerTags, unsignedByte, 1, printFocal},
-    {12, "LensIDNumber", N_("Lens ID Number"), N_("Lens ID number"), nikonLd3Id, makerTags, unsignedByte, 1, printLensId3},
+    {12, "LensIDNumber", N_("Lens ID Number"), N_("Lens ID number"), nikonLd3Id, makerTags, unsignedByte, 1,
+     printLensId3},
     {13, "LensFStops", N_("Lens F-Stops"), N_("Lens F-stops"), nikonLd3Id, makerTags, unsignedByte, 1, printFStops},
-    {14, "MinFocalLength", N_("Min Focal Length"), N_("Min focal length"), nikonLd3Id, makerTags, unsignedByte, 1, printFocal},
-    {15, "MaxFocalLength", N_("Max Focal Length"), N_("Max focal length"), nikonLd3Id, makerTags, unsignedByte, 1, printFocal},
-    {16, "MaxApertureAtMinFocal", N_("Max Aperture At Min Focal"), N_("Max aperture at min focal length"), nikonLd3Id, makerTags,
-     unsignedByte, 1, printAperture},
-    {17, "MaxApertureAtMaxFocal", N_("Max Aperture At Max Focal"), N_("Max aperture at max focal length"), nikonLd3Id, makerTags,
-     unsignedByte, 1, printAperture},
+    {14, "MinFocalLength", N_("Min Focal Length"), N_("Min focal length"), nikonLd3Id, makerTags, unsignedByte, 1,
+     printFocal},
+    {15, "MaxFocalLength", N_("Max Focal Length"), N_("Max focal length"), nikonLd3Id, makerTags, unsignedByte, 1,
+     printFocal},
+    {16, "MaxApertureAtMinFocal", N_("Max Aperture At Min Focal"), N_("Max aperture at min focal length"), nikonLd3Id,
+     makerTags, unsignedByte, 1, printAperture},
+    {17, "MaxApertureAtMaxFocal", N_("Max Aperture At Max Focal"), N_("Max aperture at max focal length"), nikonLd3Id,
+     makerTags, unsignedByte, 1, printAperture},
     {18, "MCUVersion", N_("MCU Version"), N_("MCU version"), nikonLd3Id, makerTags, unsignedByte, 1, printValue},
-    {19, "EffectiveMaxAperture", N_("Effective Max Aperture"), N_("Effective max aperture"), nikonLd3Id, makerTags, unsignedByte, 1,
-     printAperture},
+    {19, "EffectiveMaxAperture", N_("Effective Max Aperture"), N_("Effective max aperture"), nikonLd3Id, makerTags,
+     unsignedByte, 1, printAperture},
     // End of list marker
-    {0xffff, "(UnknownNikonLd3Tag)", "(UnknownNikonLd3Tag)", N_("Unknown Nikon Lens Data 3 Tag"), nikonLd3Id, makerTags, unsignedByte,
-     1, printValue},
+    {0xffff, "(UnknownNikonLd3Tag)", "(UnknownNikonLd3Tag)", N_("Unknown Nikon Lens Data 3 Tag"), nikonLd3Id, makerTags,
+     unsignedByte, 1, printValue},
 };
 
 const TagInfo* Nikon3MakerNote::tagListLd3() {
@@ -1140,31 +1221,38 @@ const TagInfo* Nikon3MakerNote::tagListLd3() {
 // based on https://exiftool.org/TagNames/Nikon.html#LensData0800
 constexpr TagInfo Nikon3MakerNote::tagInfoLd4_[] = {
     {0, "Version", N_("Version"), N_("Version"), nikonLd4Id, makerTags, undefined, 4, printExifVersion},
-    {4, "ExitPupilPosition", N_("Exit Pupil Position"), N_("Exit pupil position"), nikonLd4Id, makerTags, unsignedByte, 1,
-     printExitPupilPosition},
+    {4, "ExitPupilPosition", N_("Exit Pupil Position"), N_("Exit pupil position"), nikonLd4Id, makerTags, unsignedByte,
+     1, printExitPupilPosition},
     {5, "AFAperture", N_("AF Aperture"), N_("AF aperture"), nikonLd4Id, makerTags, unsignedByte, 1, printAperture},
-    {9, "FocusPosition", N_("Focus Position"), N_("Focus position"), nikonLd4Id, makerTags, unsignedByte, 1, printValue},
-    {11, "FocusDistance", N_("Focus Distance"), N_("Focus distance"), nikonLd4Id, makerTags, unsignedByte, 1, printFocusDistance},
+    {9, "FocusPosition", N_("Focus Position"), N_("Focus position"), nikonLd4Id, makerTags, unsignedByte, 1,
+     printValue},
+    {11, "FocusDistance", N_("Focus Distance"), N_("Focus distance"), nikonLd4Id, makerTags, unsignedByte, 1,
+     printFocusDistance},
     {12, "FocalLength", N_("Focal Length"), N_("Focal length"), nikonLd4Id, makerTags, unsignedByte, 1, printFocal},
-    {13, "LensIDNumber", N_("Lens ID Number"), N_("Lens ID number"), nikonLd4Id, makerTags, unsignedByte, 1, printLensId4},
+    {13, "LensIDNumber", N_("Lens ID Number"), N_("Lens ID number"), nikonLd4Id, makerTags, unsignedByte, 1,
+     printLensId4},
     {14, "LensFStops", N_("Lens F-Stops"), N_("Lens F-stops"), nikonLd4Id, makerTags, unsignedByte, 1, printFStops},
-    {15, "MinFocalLength", N_("Min Focal Length"), N_("Min focal length"), nikonLd4Id, makerTags, unsignedByte, 1, printFocal},
-    {16, "MaxFocalLength", N_("Max Focal Length"), N_("Max focal length"), nikonLd4Id, makerTags, unsignedByte, 1, printFocal},
-    {17, "MaxApertureAtMinFocal", N_("Max Aperture At Min Focal"), N_("Max aperture at min focal length"), nikonLd4Id, makerTags,
-     unsignedByte, 1, printAperture},
-    {18, "MaxApertureAtMaxFocal", N_("Max Aperture At Max Focal"), N_("Max aperture at max focal length"), nikonLd4Id, makerTags,
-     unsignedByte, 1, printAperture},
+    {15, "MinFocalLength", N_("Min Focal Length"), N_("Min focal length"), nikonLd4Id, makerTags, unsignedByte, 1,
+     printFocal},
+    {16, "MaxFocalLength", N_("Max Focal Length"), N_("Max focal length"), nikonLd4Id, makerTags, unsignedByte, 1,
+     printFocal},
+    {17, "MaxApertureAtMinFocal", N_("Max Aperture At Min Focal"), N_("Max aperture at min focal length"), nikonLd4Id,
+     makerTags, unsignedByte, 1, printAperture},
+    {18, "MaxApertureAtMaxFocal", N_("Max Aperture At Max Focal"), N_("Max aperture at max focal length"), nikonLd4Id,
+     makerTags, unsignedByte, 1, printAperture},
     {19, "MCUVersion", N_("MCU Version"), N_("MCU version"), nikonLd4Id, makerTags, unsignedByte, 1, printValue},
-    {20, "EffectiveMaxAperture", N_("Effective Max Aperture"), N_("Effective max aperture"), nikonLd4Id, makerTags, unsignedByte, 1,
-     printAperture},
+    {20, "EffectiveMaxAperture", N_("Effective Max Aperture"), N_("Effective max aperture"), nikonLd4Id, makerTags,
+     unsignedByte, 1, printAperture},
     {48, "LensID", N_("LensID"), N_("Lens ID"), nikonLd4Id, makerTags, unsignedShort, 1, printLensId4ZMount},
-    {54, "MaxAperture", N_("Max Aperture"), N_("Max aperture"), nikonLd4Id, makerTags, unsignedShort, 1, printApertureLd4},
+    {54, "MaxAperture", N_("Max Aperture"), N_("Max aperture"), nikonLd4Id, makerTags, unsignedShort, 1,
+     printApertureLd4},
     {56, "FNumber", N_("F-Number"), N_("F-Number"), nikonLd4Id, makerTags, unsignedShort, 1, printApertureLd4},
     {60, "FocalLength", N_("Focal Length"), N_("Focal length"), nikonLd4Id, makerTags, unsignedShort, 1, printFocalLd4},
-    {79, "FocusDistance", N_("Focus Distance"), N_("Focus distance"), nikonLd4Id, makerTags, unsignedByte, 1, printFocusDistance},
+    {79, "FocusDistance", N_("Focus Distance"), N_("Focus distance"), nikonLd4Id, makerTags, unsignedByte, 1,
+     printFocusDistance},
     // End of list marker
-    {0xffff, "(UnknownNikonLd4Tag)", "(UnknownNikonLd4Tag)", N_("Unknown Nikon Lens Data 3 Tag"), nikonLd4Id, makerTags, unsignedByte,
-     1, printValue},
+    {0xffff, "(UnknownNikonLd4Tag)", "(UnknownNikonLd4Tag)", N_("Unknown Nikon Lens Data 3 Tag"), nikonLd4Id, makerTags,
+     unsignedByte, 1, printValue},
 };
 
 const TagInfo* Nikon3MakerNote::tagListLd4() {
@@ -1287,7 +1375,7 @@ std::ostream& Nikon3MakerNote::print0x0086(std::ostream& os, const Value& value,
 }
 
 std::ostream& Nikon3MakerNote::print0x0088(std::ostream& os, const Value& value, const ExifData*) {
-  if (value.size() != 4) { // Size is 4 even for those who map this way...
+  if (value.size() != 4) {  // Size is 4 even for those who map this way...
     os << "(" << value << ")";
   } else {
     // Mapping by Roger Larsson
@@ -1310,29 +1398,29 @@ std::ostream& Nikon3MakerNote::print0x0088(std::ostream& os, const Value& value,
     switch (focusmetering) {
       case 0x00:
         os << _("Single area");
-        break; // D70, D200
+        break;  // D70, D200
       case 0x01:
         os << _("Dynamic area");
-        break; // D70, D200
+        break;  // D70, D200
       case 0x02:
         os << _("Closest subject");
-        break; // D70, D200
+        break;  // D70, D200
       case 0x03:
         os << _("Group dynamic-AF");
-        break; // D200
+        break;  // D200
       case 0x04:
         os << _("Single area (wide)"); /* TODO: combination = wide; */
-        break; // D200
+        break;                         // D200
       case 0x05:
         os << _("Dynamic area (wide)"); /* TODO: combination = wide; */
-        break; // D200
+        break;                          // D200
       default:
         os << "(" << focusmetering << ")";
         break;
     }
 
     char sep = ';';
-    if (focusmetering != 0x02) { //  No user selected point for Closest subject
+    if (focusmetering != 0x02) {  //  No user selected point for Closest subject
       os << sep << ' ';
 
       // What focuspoint did the user select?
@@ -1447,7 +1535,8 @@ std::ostream& Nikon3MakerNote::printLensId4(std::ostream& os, const Value& value
   return printLensId(os, value, metadata, "NikonLd4");
 }
 
-std::ostream& Nikon3MakerNote::printLensId(std::ostream& os, const Value& value, const ExifData* metadata, const std::string& group) {
+std::ostream& Nikon3MakerNote::printLensId(std::ostream& os, const Value& value, const ExifData* metadata,
+                                           const std::string& group) {
 #ifdef EXV_HAVE_LENSDATA
 // 8< - - - 8< do not remove this line >8 - - - >8
 //------------------------------------------------------------------------------
@@ -1512,177 +1601,274 @@ std::ostream& Nikon3MakerNote::printLensId(std::ostream& os, const Value& value,
   } fmountlens[] = {
       {0x01, 0x58, 0x50, 0x50, 0x14, 0x14, 0x02, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA00901", "AF Nikkor 50mm f/1.8"},
       {0x01, 0x58, 0x50, 0x50, 0x14, 0x14, 0x05, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA00901", "AF Nikkor 50mm f/1.8"},
-      {0x02, 0x42, 0x44, 0x5C, 0x2A, 0x34, 0x02, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA72701", "AF Zoom-Nikkor 35-70mm f/3.3-4.5"},
-      {0x02, 0x42, 0x44, 0x5C, 0x2A, 0x34, 0x08, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA72701", "AF Zoom-Nikkor 35-70mm f/3.3-4.5"},
-      {0x03, 0x48, 0x5C, 0x81, 0x30, 0x30, 0x02, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA72801", "AF Zoom-Nikkor 70-210mm f/4"},
+      {0x02, 0x42, 0x44, 0x5C, 0x2A, 0x34, 0x02, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA72701",
+       "AF Zoom-Nikkor 35-70mm f/3.3-4.5"},
+      {0x02, 0x42, 0x44, 0x5C, 0x2A, 0x34, 0x08, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA72701",
+       "AF Zoom-Nikkor 35-70mm f/3.3-4.5"},
+      {0x03, 0x48, 0x5C, 0x81, 0x30, 0x30, 0x02, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA72801",
+       "AF Zoom-Nikkor 70-210mm f/4"},
       {0x04, 0x48, 0x3C, 0x3C, 0x24, 0x24, 0x03, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA12001", "AF Nikkor 28mm f/2.8"},
       {0x05, 0x54, 0x50, 0x50, 0x0C, 0x0C, 0x04, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA01001", "AF Nikkor 50mm f/1.4"},
-      {0x06, 0x54, 0x53, 0x53, 0x24, 0x24, 0x06, 0x00, 0x40, 0x00, 0x00, "Nikon", "JAA62101", "AF Micro-Nikkor 55mm f/2.8"},
-      {0x07, 0x40, 0x3C, 0x62, 0x2C, 0x34, 0x03, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA72901", "AF Zoom-Nikkor 28-85mm f/3.5-4.5"},
-      {0x08, 0x40, 0x44, 0x6A, 0x2C, 0x34, 0x04, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA73001", "AF Zoom-Nikkor 35-105mm f/3.5-4.5"},
+      {0x06, 0x54, 0x53, 0x53, 0x24, 0x24, 0x06, 0x00, 0x40, 0x00, 0x00, "Nikon", "JAA62101",
+       "AF Micro-Nikkor 55mm f/2.8"},
+      {0x07, 0x40, 0x3C, 0x62, 0x2C, 0x34, 0x03, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA72901",
+       "AF Zoom-Nikkor 28-85mm f/3.5-4.5"},
+      {0x08, 0x40, 0x44, 0x6A, 0x2C, 0x34, 0x04, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA73001",
+       "AF Zoom-Nikkor 35-105mm f/3.5-4.5"},
       {0x09, 0x48, 0x37, 0x37, 0x24, 0x24, 0x04, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA12101", "AF Nikkor 24mm f/2.8"},
-      {0x0A, 0x48, 0x8E, 0x8E, 0x24, 0x24, 0x03, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA322AA", "AF Nikkor 300mm f/2.8 IF-ED"},
-      {0x0A, 0x48, 0x8E, 0x8E, 0x24, 0x24, 0x05, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA322AB", "AF Nikkor 300mm f/2.8 IF-ED"},
-      {0x0B, 0x48, 0x7C, 0x7C, 0x24, 0x24, 0x05, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA32101", "AF Nikkor 180mm f/2.8 IF-ED"},
-      //0C
-      {0x0D, 0x40, 0x44, 0x72, 0x2C, 0x34, 0x07, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA73101", "AF Zoom-Nikkor 35-135mm f/3.5-4.5"},
+      {0x0A, 0x48, 0x8E, 0x8E, 0x24, 0x24, 0x03, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA322AA",
+       "AF Nikkor 300mm f/2.8 IF-ED"},
+      {0x0A, 0x48, 0x8E, 0x8E, 0x24, 0x24, 0x05, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA322AB",
+       "AF Nikkor 300mm f/2.8 IF-ED"},
+      {0x0B, 0x48, 0x7C, 0x7C, 0x24, 0x24, 0x05, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA32101",
+       "AF Nikkor 180mm f/2.8 IF-ED"},
+      // 0C
+      {0x0D, 0x40, 0x44, 0x72, 0x2C, 0x34, 0x07, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA73101",
+       "AF Zoom-Nikkor 35-135mm f/3.5-4.5"},
       {0x0E, 0x48, 0x5C, 0x81, 0x30, 0x30, 0x05, 0x00, 0x00, 0x00, 0x00, "Nikon", "", "AF Zoom-Nikkor 70-210mm f/4"},
       {0x0F, 0x58, 0x50, 0x50, 0x14, 0x14, 0x05, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA009AD", "AF Nikkor 50mm f/1.8 N"},
-      {0x10, 0x48, 0x8E, 0x8E, 0x30, 0x30, 0x08, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA32301", "AF Nikkor 300mm f/4 IF-ED"},
-      {0x11, 0x48, 0x44, 0x5C, 0x24, 0x24, 0x08, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA73301", "AF Zoom-Nikkor 35-70mm f/2.8"},
-      {0x11, 0x48, 0x44, 0x5C, 0x24, 0x24, 0x15, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA73301", "AF Zoom-Nikkor 35-70mm f/2.8"},
-      {0x12, 0x48, 0x5C, 0x81, 0x30, 0x3C, 0x09, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA73201", "AF Nikkor 70-210mm f/4-5.6"},
-      {0x13, 0x42, 0x37, 0x50, 0x2A, 0x34, 0x0B, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA73401", "AF Zoom-Nikkor 24-50mm f/3.3-4.5"},
-      {0x14, 0x48, 0x60, 0x80, 0x24, 0x24, 0x0B, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA73501", "AF Zoom-Nikkor 80-200mm f/2.8 ED"},
+      {0x10, 0x48, 0x8E, 0x8E, 0x30, 0x30, 0x08, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA32301",
+       "AF Nikkor 300mm f/4 IF-ED"},
+      {0x11, 0x48, 0x44, 0x5C, 0x24, 0x24, 0x08, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA73301",
+       "AF Zoom-Nikkor 35-70mm f/2.8"},
+      {0x11, 0x48, 0x44, 0x5C, 0x24, 0x24, 0x15, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA73301",
+       "AF Zoom-Nikkor 35-70mm f/2.8"},
+      {0x12, 0x48, 0x5C, 0x81, 0x30, 0x3C, 0x09, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA73201",
+       "AF Nikkor 70-210mm f/4-5.6"},
+      {0x13, 0x42, 0x37, 0x50, 0x2A, 0x34, 0x0B, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA73401",
+       "AF Zoom-Nikkor 24-50mm f/3.3-4.5"},
+      {0x14, 0x48, 0x60, 0x80, 0x24, 0x24, 0x0B, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA73501",
+       "AF Zoom-Nikkor 80-200mm f/2.8 ED"},
       {0x15, 0x4C, 0x62, 0x62, 0x14, 0x14, 0x0C, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA32401", "AF Nikkor 85mm f/1.8"},
-      //16
-      {0x17, 0x3C, 0xA0, 0xA0, 0x30, 0x30, 0x0F, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA518AA", "Nikkor 500mm f/4 P ED IF"},
-      {0x17, 0x3C, 0xA0, 0xA0, 0x30, 0x30, 0x11, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA518AA", "Nikkor 500mm f/4 P ED IF"},
-      {0x18, 0x40, 0x44, 0x72, 0x2C, 0x34, 0x0E, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA736AA", "AF Zoom-Nikkor 35-135mm f/3.5-4.5 N"},
-      //19
+      // 16
+      {0x17, 0x3C, 0xA0, 0xA0, 0x30, 0x30, 0x0F, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA518AA",
+       "Nikkor 500mm f/4 P ED IF"},
+      {0x17, 0x3C, 0xA0, 0xA0, 0x30, 0x30, 0x11, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA518AA",
+       "Nikkor 500mm f/4 P ED IF"},
+      {0x18, 0x40, 0x44, 0x72, 0x2C, 0x34, 0x0E, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA736AA",
+       "AF Zoom-Nikkor 35-135mm f/3.5-4.5 N"},
+      // 19
       {0x1A, 0x54, 0x44, 0x44, 0x18, 0x18, 0x11, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA12201", "AF Nikkor 35mm f/2"},
-      {0x1B, 0x44, 0x5E, 0x8E, 0x34, 0x3C, 0x10, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA738AA", "AF Zoom-Nikkor 75-300mm f/4.5-5.6"},
+      {0x1B, 0x44, 0x5E, 0x8E, 0x34, 0x3C, 0x10, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA738AA",
+       "AF Zoom-Nikkor 75-300mm f/4.5-5.6"},
       {0x1C, 0x48, 0x30, 0x30, 0x24, 0x24, 0x12, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA12301", "AF Nikkor 20mm f/2.8"},
-      {0x1D, 0x42, 0x44, 0x5C, 0x2A, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00, "Nikon", "", "AF Zoom-Nikkor 35-70mm f/3.3-4.5 N"},
-      {0x1E, 0x54, 0x56, 0x56, 0x24, 0x24, 0x13, 0x00, 0x40, 0x00, 0x00, "Nikon", "JAA62201", "AF Micro-Nikkor 60mm f/2.8"},
-      {0x1F, 0x54, 0x6A, 0x6A, 0x24, 0x24, 0x14, 0x00, 0x40, 0x00, 0x00, "Nikon", "JAA62301", "AF Micro-Nikkor 105mm f/2.8"},
-      {0x20, 0x48, 0x60, 0x80, 0x24, 0x24, 0x15, 0x00, 0x00, 0x00, 0x00, "Nikon", "", "AF Zoom-Nikkor 80-200mm f/2.8 ED"},
-      {0x21, 0x40, 0x3C, 0x5C, 0x2C, 0x34, 0x16, 0x00, 0x00, 0x00, 0x00, "Nikon", "", "AF Zoom-Nikkor 28-70mm f/3.5-4.5"},
+      {0x1D, 0x42, 0x44, 0x5C, 0x2A, 0x34, 0x12, 0x00, 0x00, 0x00, 0x00, "Nikon", "",
+       "AF Zoom-Nikkor 35-70mm f/3.3-4.5 N"},
+      {0x1E, 0x54, 0x56, 0x56, 0x24, 0x24, 0x13, 0x00, 0x40, 0x00, 0x00, "Nikon", "JAA62201",
+       "AF Micro-Nikkor 60mm f/2.8"},
+      {0x1F, 0x54, 0x6A, 0x6A, 0x24, 0x24, 0x14, 0x00, 0x40, 0x00, 0x00, "Nikon", "JAA62301",
+       "AF Micro-Nikkor 105mm f/2.8"},
+      {0x20, 0x48, 0x60, 0x80, 0x24, 0x24, 0x15, 0x00, 0x00, 0x00, 0x00, "Nikon", "",
+       "AF Zoom-Nikkor 80-200mm f/2.8 ED"},
+      {0x21, 0x40, 0x3C, 0x5C, 0x2C, 0x34, 0x16, 0x00, 0x00, 0x00, 0x00, "Nikon", "",
+       "AF Zoom-Nikkor 28-70mm f/3.5-4.5"},
       {0x22, 0x48, 0x72, 0x72, 0x18, 0x18, 0x16, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA32501", "AF DC-Nikkor 135mm f/2"},
-      {0x23, 0x30, 0xBE, 0xCA, 0x3C, 0x48, 0x17, 0x00, 0x00, 0x00, 0x00, "Nikon", "", "Zoom-Nikkor 1200-1700mm f/5.6-8 P ED IF"},
+      {0x23, 0x30, 0xBE, 0xCA, 0x3C, 0x48, 0x17, 0x00, 0x00, 0x00, 0x00, "Nikon", "",
+       "Zoom-Nikkor 1200-1700mm f/5.6-8 P ED IF"},
       // - D - lenses from here
-      {0x24, 0x48, 0x60, 0x80, 0x24, 0x24, 0x1A, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA742DA", "AF Zoom-Nikkor 80-200mm f/2.8D ED"},
-      {0x25, 0x48, 0x44, 0x5c, 0x24, 0x24, 0x1B, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA743DA", "AF Zoom-Nikkor 35-70mm f/2.8D"},
-      {0x25, 0x48, 0x44, 0x5C, 0x24, 0x24, 0x3A, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA743DA", "AF Zoom-Nikkor 35-70mm f/2.8D"},
-      {0x25, 0x48, 0x44, 0x5c, 0x24, 0x24, 0x52, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA743DA", "AF Zoom-Nikkor 35-70mm f/2.8D"},
-      {0x26, 0x40, 0x3C, 0x5C, 0x2C, 0x34, 0x1C, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA744DA", "AF Zoom-Nikkor 28-70mm f/3.5-4.5D"},
+      {0x24, 0x48, 0x60, 0x80, 0x24, 0x24, 0x1A, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA742DA",
+       "AF Zoom-Nikkor 80-200mm f/2.8D ED"},
+      {0x25, 0x48, 0x44, 0x5c, 0x24, 0x24, 0x1B, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA743DA",
+       "AF Zoom-Nikkor 35-70mm f/2.8D"},
+      {0x25, 0x48, 0x44, 0x5C, 0x24, 0x24, 0x3A, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA743DA",
+       "AF Zoom-Nikkor 35-70mm f/2.8D"},
+      {0x25, 0x48, 0x44, 0x5c, 0x24, 0x24, 0x52, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA743DA",
+       "AF Zoom-Nikkor 35-70mm f/2.8D"},
+      {0x26, 0x40, 0x3C, 0x5C, 0x2C, 0x34, 0x1C, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA744DA",
+       "AF Zoom-Nikkor 28-70mm f/3.5-4.5D"},
       // ^- not yet verified
-      {0x27, 0x48, 0x8E, 0x8E, 0x24, 0x24, 0x1D, 0x02, 0x07, 0x00, 0x00, "Nikon", "JAA326DA", "AF-I Nikkor 300mm f/2.8D IF-ED"},
+      {0x27, 0x48, 0x8E, 0x8E, 0x24, 0x24, 0x1D, 0x02, 0x07, 0x00, 0x00, "Nikon", "JAA326DA",
+       "AF-I Nikkor 300mm f/2.8D IF-ED"},
       {0x27, 0x48, 0x8E, 0x8E, 0x24, 0x24, 0xF1, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA326DA",
        "AF-I Nikkor 300mm f/2.8D IF-ED + TC-14E"},
       {0x27, 0x48, 0x8E, 0x8E, 0x24, 0x24, 0xE1, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA326DA",
        "AF-I Nikkor 300mm f/2.8D IF-ED + TC-17E"},
       {0x27, 0x48, 0x8E, 0x8E, 0x24, 0x24, 0xF2, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA326DA",
        "AF-I Nikkor 300mm f/2.8D IF-ED + TC-20E"},
-      {0x28, 0x3C, 0xA6, 0xA6, 0x30, 0x30, 0x1D, 0x02, 0x07, 0x00, 0x00, "Nikon", "JAA519DA", "AF-I Nikkor 600mm f/4D IF-ED"},
-      {0x28, 0x3C, 0xA6, 0xA6, 0x30, 0x30, 0xF1, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA519DA", "AF-I Nikkor 600mm f/4D IF-ED + TC-14E"},
-      {0x28, 0x3C, 0xA6, 0xA6, 0x30, 0x30, 0xE1, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA519DA", "AF-I Nikkor 600mm f/4D IF-ED + TC-17E"},
-      {0x28, 0x3C, 0xA6, 0xA6, 0x30, 0x30, 0xF2, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA519DA", "AF-I Nikkor 600mm f/4D IF-ED + TC-20E"},
-      //29
+      {0x28, 0x3C, 0xA6, 0xA6, 0x30, 0x30, 0x1D, 0x02, 0x07, 0x00, 0x00, "Nikon", "JAA519DA",
+       "AF-I Nikkor 600mm f/4D IF-ED"},
+      {0x28, 0x3C, 0xA6, 0xA6, 0x30, 0x30, 0xF1, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA519DA",
+       "AF-I Nikkor 600mm f/4D IF-ED + TC-14E"},
+      {0x28, 0x3C, 0xA6, 0xA6, 0x30, 0x30, 0xE1, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA519DA",
+       "AF-I Nikkor 600mm f/4D IF-ED + TC-17E"},
+      {0x28, 0x3C, 0xA6, 0xA6, 0x30, 0x30, 0xF2, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA519DA",
+       "AF-I Nikkor 600mm f/4D IF-ED + TC-20E"},
+      // 29
       {0x2A, 0x54, 0x3C, 0x3C, 0x0C, 0x0C, 0x26, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA124DA", "AF Nikkor 28mm f/1.4D"},
-      {0x2B, 0x3C, 0x44, 0x60, 0x30, 0x3C, 0x1F, 0x02, 0x00, 0x00, 0x00, "Nikon", "", "AF Zoom-Nikkor 35-80mm f/4-5.6D"},
-      {0x2C, 0x48, 0x6A, 0x6A, 0x18, 0x18, 0x27, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA327DA", "AF DC-Nikkor 105mm f/2D"},
-      {0x2D, 0x48, 0x80, 0x80, 0x30, 0x30, 0x21, 0x02, 0x40, 0x00, 0x00, "Nikon", "JAA624DA", "AF Micro-Nikkor 200mm f/4D IF-ED"},
-      {0x2E, 0x48, 0x5C, 0x82, 0x30, 0x3C, 0x22, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA747DA", "AF Nikkor 70-210mm f/4-5.6D"},
-      {0x2E, 0x48, 0x5C, 0x82, 0x30, 0x3C, 0x28, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA747DA", "AF Nikkor 70-210mm f/4-5.6D"},
-      {0x2F, 0x48, 0x30, 0x44, 0x24, 0x24, 0x29, 0x02, 0x00, 0x01, 0x00, "Nikon", "JAA746DA", "AF Zoom-Nikkor 20-35mm f/2.8D IF"},
-      {0x30, 0x48, 0x98, 0x98, 0x24, 0x24, 0x24, 0x02, 0x07, 0x00, 0x00, "Nikon", "JAA520DA", "AF-I Nikkor 400mm f/2.8D IF-ED"},
+      {0x2B, 0x3C, 0x44, 0x60, 0x30, 0x3C, 0x1F, 0x02, 0x00, 0x00, 0x00, "Nikon", "",
+       "AF Zoom-Nikkor 35-80mm f/4-5.6D"},
+      {0x2C, 0x48, 0x6A, 0x6A, 0x18, 0x18, 0x27, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA327DA",
+       "AF DC-Nikkor 105mm f/2D"},
+      {0x2D, 0x48, 0x80, 0x80, 0x30, 0x30, 0x21, 0x02, 0x40, 0x00, 0x00, "Nikon", "JAA624DA",
+       "AF Micro-Nikkor 200mm f/4D IF-ED"},
+      {0x2E, 0x48, 0x5C, 0x82, 0x30, 0x3C, 0x22, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA747DA",
+       "AF Nikkor 70-210mm f/4-5.6D"},
+      {0x2E, 0x48, 0x5C, 0x82, 0x30, 0x3C, 0x28, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA747DA",
+       "AF Nikkor 70-210mm f/4-5.6D"},
+      {0x2F, 0x48, 0x30, 0x44, 0x24, 0x24, 0x29, 0x02, 0x00, 0x01, 0x00, "Nikon", "JAA746DA",
+       "AF Zoom-Nikkor 20-35mm f/2.8D IF"},
+      {0x30, 0x48, 0x98, 0x98, 0x24, 0x24, 0x24, 0x02, 0x07, 0x00, 0x00, "Nikon", "JAA520DA",
+       "AF-I Nikkor 400mm f/2.8D IF-ED"},
       {0x30, 0x48, 0x98, 0x98, 0x24, 0x24, 0xF1, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA520DA",
        "AF-I Nikkor 400mm f/2.8D IF-ED + TC-14E"},
       {0x30, 0x48, 0x98, 0x98, 0x24, 0x24, 0xE1, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA520DA",
        "AF-I Nikkor 400mm f/2.8D IF-ED + TC-17E"},
       {0x30, 0x48, 0x98, 0x98, 0x24, 0x24, 0xF2, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA520DA",
        "AF-I Nikkor 400mm f/2.8D IF-ED + TC-20E"},
-      {0x31, 0x54, 0x56, 0x56, 0x24, 0x24, 0x25, 0x02, 0x40, 0x00, 0x00, "Nikon", "JAA625DA", "AF Micro-Nikkor 60mm f/2.8D"},
-      {0x32, 0x54, 0x6A, 0x6A, 0x24, 0x24, 0x35, 0x02, 0x40, 0x01, 0x00, "Nikon", "JAA627DA", "AF Micro-Nikkor 105mm f/2.8D"},
+      {0x31, 0x54, 0x56, 0x56, 0x24, 0x24, 0x25, 0x02, 0x40, 0x00, 0x00, "Nikon", "JAA625DA",
+       "AF Micro-Nikkor 60mm f/2.8D"},
+      {0x32, 0x54, 0x6A, 0x6A, 0x24, 0x24, 0x35, 0x02, 0x40, 0x01, 0x00, "Nikon", "JAA627DA",
+       "AF Micro-Nikkor 105mm f/2.8D"},
       {0x33, 0x48, 0x2D, 0x2D, 0x24, 0x24, 0x31, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA126DA", "AF Nikkor 18mm f/2.8D"},
-      {0x34, 0x48, 0x29, 0x29, 0x24, 0x24, 0x32, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA626DA", "AF Fisheye Nikkor 16mm f/2.8D"},
-      {0x35, 0x3C, 0xA0, 0xA0, 0x30, 0x30, 0x33, 0x02, 0x07, 0x00, 0x00, "Nikon", "JAA521DA", "AF-I Nikkor 500mm f/4D IF-ED"},
-      {0x35, 0x3C, 0xA0, 0xA0, 0x30, 0x30, 0xF1, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA521DA", "AF-I Nikkor 500mm f/4D IF-ED + TC-14E"},
-      {0x35, 0x3C, 0xA0, 0xA0, 0x30, 0x30, 0xE1, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA521DA", "AF-I Nikkor 500mm f/4D IF-ED + TC-17E"},
-      {0x35, 0x3C, 0xA0, 0xA0, 0x30, 0x30, 0xF2, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA521DA", "AF-I Nikkor 500mm f/4D IF-ED + TC-20E"},
+      {0x34, 0x48, 0x29, 0x29, 0x24, 0x24, 0x32, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA626DA",
+       "AF Fisheye Nikkor 16mm f/2.8D"},
+      {0x35, 0x3C, 0xA0, 0xA0, 0x30, 0x30, 0x33, 0x02, 0x07, 0x00, 0x00, "Nikon", "JAA521DA",
+       "AF-I Nikkor 500mm f/4D IF-ED"},
+      {0x35, 0x3C, 0xA0, 0xA0, 0x30, 0x30, 0xF1, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA521DA",
+       "AF-I Nikkor 500mm f/4D IF-ED + TC-14E"},
+      {0x35, 0x3C, 0xA0, 0xA0, 0x30, 0x30, 0xE1, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA521DA",
+       "AF-I Nikkor 500mm f/4D IF-ED + TC-17E"},
+      {0x35, 0x3C, 0xA0, 0xA0, 0x30, 0x30, 0xF2, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA521DA",
+       "AF-I Nikkor 500mm f/4D IF-ED + TC-20E"},
       {0x36, 0x48, 0x37, 0x37, 0x24, 0x24, 0x34, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA125DA", "AF Nikkor 24mm f/2.8D"},
       {0x37, 0x48, 0x30, 0x30, 0x24, 0x24, 0x36, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA127DA", "AF Nikkor 20mm f/2.8D"},
       {0x38, 0x4C, 0x62, 0x62, 0x14, 0x14, 0x37, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA328DA", "AF Nikkor 85mm f/1.8D"},
-      //39                38
-      {0x3A, 0x40, 0x3C, 0x5C, 0x2C, 0x34, 0x39, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA744DA", "AF Zoom-Nikkor 28-70mm f/3.5-4.5D"},
-      {0x3B, 0x48, 0x44, 0x5C, 0x24, 0x24, 0x3A, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA743DA", "AF Zoom-Nikkor 35-70mm f/2.8D N"},
-      {0x3C, 0x48, 0x60, 0x80, 0x24, 0x24, 0x3B, 0x02, 0x00, 0x00, 0x00, "Nikon", "", "AF Zoom-Nikkor 80-200mm f/2.8D ED"},
-      {0x3D, 0x3C, 0x44, 0x60, 0x30, 0x3C, 0x3E, 0x02, 0x00, 0x00, 0x00, "Nikon", "", "AF Zoom-Nikkor 35-80mm f/4-5.6D"},
+      // 39                38
+      {0x3A, 0x40, 0x3C, 0x5C, 0x2C, 0x34, 0x39, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA744DA",
+       "AF Zoom-Nikkor 28-70mm f/3.5-4.5D"},
+      {0x3B, 0x48, 0x44, 0x5C, 0x24, 0x24, 0x3A, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA743DA",
+       "AF Zoom-Nikkor 35-70mm f/2.8D N"},
+      {0x3C, 0x48, 0x60, 0x80, 0x24, 0x24, 0x3B, 0x02, 0x00, 0x00, 0x00, "Nikon", "",
+       "AF Zoom-Nikkor 80-200mm f/2.8D ED"},
+      {0x3D, 0x3C, 0x44, 0x60, 0x30, 0x3C, 0x3E, 0x02, 0x00, 0x00, 0x00, "Nikon", "",
+       "AF Zoom-Nikkor 35-80mm f/4-5.6D"},
       {0x3E, 0x48, 0x3C, 0x3C, 0x24, 0x24, 0x3D, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA128DA", "AF Nikkor 28mm f/2.8D"},
-      {0x3F, 0x40, 0x44, 0x6A, 0x2C, 0x34, 0x45, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA748DA", "AF Zoom-Nikkor 35-105mm f/3.5-4.5D"},
-      //40
-      {0x41, 0x48, 0x7c, 0x7c, 0x24, 0x24, 0x43, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA330DA", "AF Nikkor 180mm f/2.8D IF-ED"},
+      {0x3F, 0x40, 0x44, 0x6A, 0x2C, 0x34, 0x45, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA748DA",
+       "AF Zoom-Nikkor 35-105mm f/3.5-4.5D"},
+      // 40
+      {0x41, 0x48, 0x7c, 0x7c, 0x24, 0x24, 0x43, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA330DA",
+       "AF Nikkor 180mm f/2.8D IF-ED"},
       {0x42, 0x54, 0x44, 0x44, 0x18, 0x18, 0x44, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA129DA", "AF Nikkor 35mm f/2D"},
       {0x43, 0x54, 0x50, 0x50, 0x0C, 0x0C, 0x46, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA011DB", "AF Nikkor 50mm f/1.4D"},
-      {0x44, 0x44, 0x60, 0x80, 0x34, 0x3C, 0x47, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA753DB", "AF Zoom-Nikkor 80-200mm f/4.5-5.6D"},
-      {0x45, 0x40, 0x3C, 0x60, 0x2C, 0x3C, 0x48, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA752DA", "AF Zoom-Nikkor 28-80mm f/3.5-5.6D"},
-      {0x46, 0x3C, 0x44, 0x60, 0x30, 0x3C, 0x49, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA754DA", "AF Zoom-Nikkor 35-80mm f/4-5.6D N"},
-      {0x47, 0x42, 0x37, 0x50, 0x2A, 0x34, 0x4A, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA756DA", "AF Zoom-Nikkor 24-50mm f/3.3-4.5D"},
-      {0x48, 0x48, 0x8E, 0x8E, 0x24, 0x24, 0x4B, 0x02, 0x07, 0x00, 0x00, "Nikon", "JAA333DA", "AF-S Nikkor 300mm f/2.8D IF-ED"},
+      {0x44, 0x44, 0x60, 0x80, 0x34, 0x3C, 0x47, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA753DB",
+       "AF Zoom-Nikkor 80-200mm f/4.5-5.6D"},
+      {0x45, 0x40, 0x3C, 0x60, 0x2C, 0x3C, 0x48, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA752DA",
+       "AF Zoom-Nikkor 28-80mm f/3.5-5.6D"},
+      {0x46, 0x3C, 0x44, 0x60, 0x30, 0x3C, 0x49, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA754DA",
+       "AF Zoom-Nikkor 35-80mm f/4-5.6D N"},
+      {0x47, 0x42, 0x37, 0x50, 0x2A, 0x34, 0x4A, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA756DA",
+       "AF Zoom-Nikkor 24-50mm f/3.3-4.5D"},
+      {0x48, 0x48, 0x8E, 0x8E, 0x24, 0x24, 0x4B, 0x02, 0x07, 0x00, 0x00, "Nikon", "JAA333DA",
+       "AF-S Nikkor 300mm f/2.8D IF-ED"},
       {0x48, 0x48, 0x8E, 0x8E, 0x24, 0x24, 0xF1, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA333DA",
        "AF-S Nikkor 300mm f/2.8D IF-ED + TC-14E"},
       {0x48, 0x48, 0x8E, 0x8E, 0x24, 0x24, 0xE1, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA333DA",
        "AF-S Nikkor 300mm f/2.8D IF-ED + TC-17E"},
       {0x48, 0x48, 0x8E, 0x8E, 0x24, 0x24, 0xF2, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA333DA",
        "AF-S Nikkor 300mm f/2.8D IF-ED + TC-20E"},
-      {0x49, 0x3C, 0xA6, 0xA6, 0x30, 0x30, 0x4C, 0x02, 0x07, 0x00, 0x00, "Nikon", "JAA522DA", "AF-S Nikkor 600mm f/4D IF-ED"},
-      {0x49, 0x3C, 0xA6, 0xA6, 0x30, 0x30, 0xF1, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA522DA", "AF-S Nikkor 600mm f/4D IF-ED + TC-14E"},
-      {0x49, 0x3C, 0xA6, 0xA6, 0x30, 0x30, 0xE1, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA522DA", "AF-S Nikkor 600mm f/4D IF-ED + TC-17E"},
-      {0x49, 0x3C, 0xA6, 0xA6, 0x30, 0x30, 0xF2, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA522DA", "AF-S Nikkor 600mm f/4D IF-ED + TC-20E"},
-      {0x4A, 0x54, 0x62, 0x62, 0x0C, 0x0C, 0x4D, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA332DA", "AF Nikkor 85mm f/1.4D IF"},
-      {0x4B, 0x3C, 0xA0, 0xA0, 0x30, 0x30, 0x4E, 0x02, 0x07, 0x00, 0x00, "Nikon", "JAA523DA", "AF-S Nikkor 500mm f/4D IF-ED"},
-      {0x4B, 0x3C, 0xA0, 0xA0, 0x30, 0x30, 0xF1, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA523DA", "AF-S Nikkor 500mm f/4D IF-ED + TC-14E"},
-      {0x4B, 0x3C, 0xA0, 0xA0, 0x30, 0x30, 0xE1, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA523DA", "AF-S Nikkor 500mm f/4D IF-ED + TC-17E"},
-      {0x4B, 0x3C, 0xA0, 0xA0, 0x30, 0x30, 0xF2, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA523DA", "AF-S Nikkor 500mm f/4D IF-ED + TC-20E"},
-      {0x4C, 0x40, 0x37, 0x6E, 0x2C, 0x3C, 0x4F, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA757DA", "AF Zoom-Nikkor 24-120mm f/3.5-5.6D IF"},
-      {0x4D, 0x40, 0x3C, 0x80, 0x2C, 0x3C, 0x62, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA758DA", "AF Zoom-Nikkor 28-200mm f/3.5-5.6D IF"},
-      {0x4E, 0x48, 0x72, 0x72, 0x18, 0x18, 0x51, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA329DA", "AF DC-Nikkor 135mm f/2D"},
-      {0x4F, 0x40, 0x37, 0x5C, 0x2C, 0x3C, 0x53, 0x06, 0x00, 0x00, 0x00, "Nikon", "JBA701AA", "IX-Nikkor 24-70mm f/3.5-5.6"},
-      {0x50, 0x48, 0x56, 0x7C, 0x30, 0x3C, 0x54, 0x06, 0x00, 0x00, 0x00, "Nikon", "JBA702AA", "IX-Nikkor 60-180mm f/4-5.6"},
+      {0x49, 0x3C, 0xA6, 0xA6, 0x30, 0x30, 0x4C, 0x02, 0x07, 0x00, 0x00, "Nikon", "JAA522DA",
+       "AF-S Nikkor 600mm f/4D IF-ED"},
+      {0x49, 0x3C, 0xA6, 0xA6, 0x30, 0x30, 0xF1, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA522DA",
+       "AF-S Nikkor 600mm f/4D IF-ED + TC-14E"},
+      {0x49, 0x3C, 0xA6, 0xA6, 0x30, 0x30, 0xE1, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA522DA",
+       "AF-S Nikkor 600mm f/4D IF-ED + TC-17E"},
+      {0x49, 0x3C, 0xA6, 0xA6, 0x30, 0x30, 0xF2, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA522DA",
+       "AF-S Nikkor 600mm f/4D IF-ED + TC-20E"},
+      {0x4A, 0x54, 0x62, 0x62, 0x0C, 0x0C, 0x4D, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA332DA",
+       "AF Nikkor 85mm f/1.4D IF"},
+      {0x4B, 0x3C, 0xA0, 0xA0, 0x30, 0x30, 0x4E, 0x02, 0x07, 0x00, 0x00, "Nikon", "JAA523DA",
+       "AF-S Nikkor 500mm f/4D IF-ED"},
+      {0x4B, 0x3C, 0xA0, 0xA0, 0x30, 0x30, 0xF1, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA523DA",
+       "AF-S Nikkor 500mm f/4D IF-ED + TC-14E"},
+      {0x4B, 0x3C, 0xA0, 0xA0, 0x30, 0x30, 0xE1, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA523DA",
+       "AF-S Nikkor 500mm f/4D IF-ED + TC-17E"},
+      {0x4B, 0x3C, 0xA0, 0xA0, 0x30, 0x30, 0xF2, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA523DA",
+       "AF-S Nikkor 500mm f/4D IF-ED + TC-20E"},
+      {0x4C, 0x40, 0x37, 0x6E, 0x2C, 0x3C, 0x4F, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA757DA",
+       "AF Zoom-Nikkor 24-120mm f/3.5-5.6D IF"},
+      {0x4D, 0x40, 0x3C, 0x80, 0x2C, 0x3C, 0x62, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA758DA",
+       "AF Zoom-Nikkor 28-200mm f/3.5-5.6D IF"},
+      {0x4E, 0x48, 0x72, 0x72, 0x18, 0x18, 0x51, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA329DA",
+       "AF DC-Nikkor 135mm f/2D"},
+      {0x4F, 0x40, 0x37, 0x5C, 0x2C, 0x3C, 0x53, 0x06, 0x00, 0x00, 0x00, "Nikon", "JBA701AA",
+       "IX-Nikkor 24-70mm f/3.5-5.6"},
+      {0x50, 0x48, 0x56, 0x7C, 0x30, 0x3C, 0x54, 0x06, 0x00, 0x00, 0x00, "Nikon", "JBA702AA",
+       "IX-Nikkor 60-180mm f/4-5.6"},
       //                                                  "JBA703AC" "IX-Nikkor 20-60 mm f/3.5-5.6";
-      //51
-      //52
-      {0x53, 0x48, 0x60, 0x80, 0x24, 0x24, 0x57, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA762DA", "AF Zoom-Nikkor 80-200mm f/2.8D ED"},
-      {0x53, 0x48, 0x60, 0x80, 0x24, 0x24, 0x60, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA762DA", "AF Zoom-Nikkor 80-200mm f/2.8D ED"},
+      // 51
+      // 52
+      {0x53, 0x48, 0x60, 0x80, 0x24, 0x24, 0x57, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA762DA",
+       "AF Zoom-Nikkor 80-200mm f/2.8D ED"},
+      {0x53, 0x48, 0x60, 0x80, 0x24, 0x24, 0x60, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA762DA",
+       "AF Zoom-Nikkor 80-200mm f/2.8D ED"},
       {0x54, 0x44, 0x5C, 0x7C, 0x34, 0x3C, 0x58, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA763DA",
        "AF Zoom-Micro Nikkor 70-180mm f/4.5-5.6D ED"},
       {0x54, 0x44, 0x5C, 0x7C, 0x34, 0x3C, 0x61, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA763DA",
        "AF Zoom-Micro Nikkor 70-180mm f/4.5-5.6D ED"},
-      //55
-      {0x56, 0x48, 0x5C, 0x8E, 0x30, 0x3C, 0x5A, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA764DA", "AF Zoom-Nikkor 70-300mm f/4-5.6D ED"},
-      //57
-      //58
-      {0x59, 0x48, 0x98, 0x98, 0x24, 0x24, 0x5D, 0x02, 0x07, 0x00, 0x00, "Nikon", "JAA524DA", "AF-S Nikkor 400mm f/2.8D IF-ED"},
+      // 55
+      {0x56, 0x48, 0x5C, 0x8E, 0x30, 0x3C, 0x5A, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA764DA",
+       "AF Zoom-Nikkor 70-300mm f/4-5.6D ED"},
+      // 57
+      // 58
+      {0x59, 0x48, 0x98, 0x98, 0x24, 0x24, 0x5D, 0x02, 0x07, 0x00, 0x00, "Nikon", "JAA524DA",
+       "AF-S Nikkor 400mm f/2.8D IF-ED"},
       {0x59, 0x48, 0x98, 0x98, 0x24, 0x24, 0xF1, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA524DA",
        "AF-S Nikkor 400mm f/2.8D IF-ED + TC-14E"},
       {0x59, 0x48, 0x98, 0x98, 0x24, 0x24, 0xE1, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA524DA",
        "AF-S Nikkor 400mm f/2.8D IF-ED + TC-17E"},
       {0x59, 0x48, 0x98, 0x98, 0x24, 0x24, 0xF2, 0x02, 0x0F, 0x00, 0x00, "Nikon", "JAA524DA",
        "AF-S Nikkor 400mm f/2.8D IF-ED + TC-20E"},
-      {0x5A, 0x3C, 0x3E, 0x56, 0x30, 0x3C, 0x5E, 0x06, 0x00, 0x00, 0x00, "Nikon", "JBA704AA", "IX-Nikkor 30-60mm f/4-5.6"},
-      {0x5B, 0x44, 0x56, 0x7C, 0x34, 0x3C, 0x5F, 0x06, 0x00, 0x00, 0x00, "Nikon", "JBA705AA", "IX-Nikkor 60-180mm f/4.5-5.6"},
+      {0x5A, 0x3C, 0x3E, 0x56, 0x30, 0x3C, 0x5E, 0x06, 0x00, 0x00, 0x00, "Nikon", "JBA704AA",
+       "IX-Nikkor 30-60mm f/4-5.6"},
+      {0x5B, 0x44, 0x56, 0x7C, 0x34, 0x3C, 0x5F, 0x06, 0x00, 0x00, 0x00, "Nikon", "JBA705AA",
+       "IX-Nikkor 60-180mm f/4.5-5.6"},
       //                                                  "JBA706AC" "IX-Nikkor 20-60 mm f/3.5-5.6N";
-      //5C
-      {0x5D, 0x48, 0x3C, 0x5C, 0x24, 0x24, 0x63, 0x02, 0x01, 0x00, 0x00, "Nikon", "JAA767DA", "AF-S Zoom-Nikkor 28-70mm f/2.8D IF-ED"},
+      // 5C
+      {0x5D, 0x48, 0x3C, 0x5C, 0x24, 0x24, 0x63, 0x02, 0x01, 0x00, 0x00, "Nikon", "JAA767DA",
+       "AF-S Zoom-Nikkor 28-70mm f/2.8D IF-ED"},
       {0x5E, 0x48, 0x60, 0x80, 0x24, 0x24, 0x64, 0x02, 0x03, 0x00, 0x00, "Nikon", "JAA765DA",
        "AF-S Zoom-Nikkor 80-200mm f/2.8D IF-ED"},
-      {0x5F, 0x40, 0x3C, 0x6A, 0x2C, 0x34, 0x65, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA766DA", "AF Zoom-Nikkor 28-105mm f/3.5-4.5D IF"},
-      {0x60, 0x40, 0x3C, 0x60, 0x2C, 0x3C, 0x66, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA769DA", "AF Zoom-Nikkor 28-80mm f/3.5-5.6D"},
-      {0x61, 0x44, 0x5E, 0x86, 0x34, 0x3C, 0x67, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA768DA", "AF Zoom-Nikkor 75-240mm f/4.5-5.6D"},
-      //62                69
-      {0x63, 0x48, 0x2B, 0x44, 0x24, 0x24, 0x68, 0x02, 0x01, 0x00, 0x00, "Nikon", "JAA770DA", "AF-S Nikkor 17-35mm f/2.8D IF-ED"},
-      {0x64, 0x00, 0x62, 0x62, 0x24, 0x24, 0x6A, 0x02, 0x40, 0x00, 0x00, "Nikon", "JAA628DA", "PC Micro-Nikkor 85mm f/2.8D"},
+      {0x5F, 0x40, 0x3C, 0x6A, 0x2C, 0x34, 0x65, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA766DA",
+       "AF Zoom-Nikkor 28-105mm f/3.5-4.5D IF"},
+      {0x60, 0x40, 0x3C, 0x60, 0x2C, 0x3C, 0x66, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA769DA",
+       "AF Zoom-Nikkor 28-80mm f/3.5-5.6D"},
+      {0x61, 0x44, 0x5E, 0x86, 0x34, 0x3C, 0x67, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA768DA",
+       "AF Zoom-Nikkor 75-240mm f/4.5-5.6D"},
+      // 62                69
+      {0x63, 0x48, 0x2B, 0x44, 0x24, 0x24, 0x68, 0x02, 0x01, 0x00, 0x00, "Nikon", "JAA770DA",
+       "AF-S Nikkor 17-35mm f/2.8D IF-ED"},
+      {0x64, 0x00, 0x62, 0x62, 0x24, 0x24, 0x6A, 0x02, 0x40, 0x00, 0x00, "Nikon", "JAA628DA",
+       "PC Micro-Nikkor 85mm f/2.8D"},
       {0x65, 0x44, 0x60, 0x98, 0x34, 0x3C, 0x6B, 0x0A, 0x00, 0x00, 0x00, "Nikon", "JAA771DA",
        "AF VR Zoom-Nikkor 80-400mm f/4.5-5.6D ED"},
       {0x66, 0x40, 0x2D, 0x44, 0x2C, 0x34, 0x6C, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA772DA",
        "AF Zoom-Nikkor 18-35mm f/3.5-4.5D IF-ED"},
-      {0x67, 0x48, 0x37, 0x62, 0x24, 0x30, 0x6D, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA774DA", "AF Zoom-Nikkor 24-85mm f/2.8-4D IF"},
-      {0x68, 0x42, 0x3C, 0x60, 0x2A, 0x3C, 0x6E, 0x06, 0x00, 0x00, 0x00, "Nikon", "JAA777DA", "AF Zoom-Nikkor 28-80mm f/3.3-5.6G"},
-      {0x69, 0x48, 0x5C, 0x8E, 0x30, 0x3C, 0x6F, 0x06, 0x00, 0x00, 0x00, "Nikon", "JAA776DA", "AF Zoom-Nikkor 70-300mm f/4-5.6G"},
-      {0x6A, 0x48, 0x8E, 0x8E, 0x30, 0x30, 0x70, 0x02, 0x03, 0x00, 0x00, "Nikon", "JAA334DA", "AF-S Nikkor 300mm f/4D IF-ED"},
-      {0x6B, 0x48, 0x24, 0x24, 0x24, 0x24, 0x71, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA130DA", "AF Nikkor ED 14mm f/2.8D"},
-      //6C                72
-      {0x6D, 0x48, 0x8E, 0x8E, 0x24, 0x24, 0x73, 0x02, 0x03, 0x00, 0x00, "Nikon", "JAA335DA", "AF-S Nikkor 300mm f/2.8D IF-ED II"},
-      {0x6E, 0x48, 0x98, 0x98, 0x24, 0x24, 0x74, 0x02, 0x03, 0x00, 0x00, "Nikon", "JAA525DA", "AF-S Nikkor 400mm f/2.8D IF-ED II"},
-      {0x6F, 0x3C, 0xA0, 0xA0, 0x30, 0x30, 0x75, 0x02, 0x03, 0x00, 0x00, "Nikon", "JAA526DA", "AF-S Nikkor 500mm f/4D IF-ED II"},
-      {0x70, 0x3C, 0xA6, 0xA6, 0x30, 0x30, 0x76, 0x02, 0x03, 0x00, 0x00, "Nikon", "JAA527DA", "AF-S Nikkor 600mm f/4D IF-ED II"},
-      //71
+      {0x67, 0x48, 0x37, 0x62, 0x24, 0x30, 0x6D, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA774DA",
+       "AF Zoom-Nikkor 24-85mm f/2.8-4D IF"},
+      {0x68, 0x42, 0x3C, 0x60, 0x2A, 0x3C, 0x6E, 0x06, 0x00, 0x00, 0x00, "Nikon", "JAA777DA",
+       "AF Zoom-Nikkor 28-80mm f/3.3-5.6G"},
+      {0x69, 0x48, 0x5C, 0x8E, 0x30, 0x3C, 0x6F, 0x06, 0x00, 0x00, 0x00, "Nikon", "JAA776DA",
+       "AF Zoom-Nikkor 70-300mm f/4-5.6G"},
+      {0x6A, 0x48, 0x8E, 0x8E, 0x30, 0x30, 0x70, 0x02, 0x03, 0x00, 0x00, "Nikon", "JAA334DA",
+       "AF-S Nikkor 300mm f/4D IF-ED"},
+      {0x6B, 0x48, 0x24, 0x24, 0x24, 0x24, 0x71, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA130DA",
+       "AF Nikkor ED 14mm f/2.8D"},
+      // 6C                72
+      {0x6D, 0x48, 0x8E, 0x8E, 0x24, 0x24, 0x73, 0x02, 0x03, 0x00, 0x00, "Nikon", "JAA335DA",
+       "AF-S Nikkor 300mm f/2.8D IF-ED II"},
+      {0x6E, 0x48, 0x98, 0x98, 0x24, 0x24, 0x74, 0x02, 0x03, 0x00, 0x00, "Nikon", "JAA525DA",
+       "AF-S Nikkor 400mm f/2.8D IF-ED II"},
+      {0x6F, 0x3C, 0xA0, 0xA0, 0x30, 0x30, 0x75, 0x02, 0x03, 0x00, 0x00, "Nikon", "JAA526DA",
+       "AF-S Nikkor 500mm f/4D IF-ED II"},
+      {0x70, 0x3C, 0xA6, 0xA6, 0x30, 0x30, 0x76, 0x02, 0x03, 0x00, 0x00, "Nikon", "JAA527DA",
+       "AF-S Nikkor 600mm f/4D IF-ED II"},
+      // 71
       {0x72, 0x48, 0x4C, 0x4C, 0x24, 0x24, 0x77, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA012AA", "Nikkor 45mm f/2.8 P"},
-      //73
+      // 73
       {0x74, 0x40, 0x37, 0x62, 0x2C, 0x34, 0x78, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA780DA",
        "AF-S Zoom-Nikkor 24-85mm f/3.5-4.5G IF-ED"},
-      {0x75, 0x40, 0x3C, 0x68, 0x2C, 0x3C, 0x79, 0x06, 0x00, 0x00, 0x00, "Nikon", "JAA778DA", "AF Zoom-Nikkor 28-100mm f/3.5-5.6G"},
+      {0x75, 0x40, 0x3C, 0x68, 0x2C, 0x3C, 0x79, 0x06, 0x00, 0x00, 0x00, "Nikon", "JAA778DA",
+       "AF Zoom-Nikkor 28-100mm f/3.5-5.6G"},
       {0x76, 0x58, 0x50, 0x50, 0x14, 0x14, 0x7A, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA013DA", "AF Nikkor 50mm f/1.8D"},
       {0x77, 0x48, 0x5C, 0x80, 0x24, 0x24, 0x7B, 0x0E, 0x03, 0x00, 0x00, "Nikon", "JAA781DA",
        "AF-S VR Zoom-Nikkor 70-200mm f/2.8G IF-ED"},
@@ -1694,138 +1880,204 @@ std::ostream& Nikon3MakerNote::printLensId(std::ostream& os, const Value& value,
        "AF-S DX Zoom-Nikkor 12-24mm f/4G IF-ED"},
       {0x7B, 0x48, 0x80, 0x98, 0x30, 0x30, 0x80, 0x0E, 0x03, 0x00, 0x00, "Nikon", "JAA787DA",
        "AF-S VR Zoom-Nikkor 200-400mm f/4G IF-ED"},
-      //7C                81
+      // 7C                81
       {0x7D, 0x48, 0x2B, 0x53, 0x24, 0x24, 0x82, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA788DA",
        "AF-S DX Zoom-Nikkor 17-55mm f/2.8G IF-ED"},
-      //7E                83
+      // 7E                83
       {0x7F, 0x40, 0x2D, 0x5C, 0x2C, 0x34, 0x84, 0x06, 0x11, 0x00, 0x00, "Nikon", "JAA790DA",
        "AF-S DX Zoom-Nikkor 18-70mm f/3.5-4.5G IF-ED"},
-      {0x80, 0x48, 0x1A, 0x1A, 0x24, 0x24, 0x85, 0x06, 0x00, 0x00, 0x00, "Nikon", "JAA629DA", "AF DX Fisheye-Nikkor 10.5mm f/2.8G ED"},
-      {0x81, 0x54, 0x80, 0x80, 0x18, 0x18, 0x86, 0x0E, 0x03, 0x00, 0x00, "Nikon", "JAA336DA", "AF-S VR Nikkor 200mm f/2G IF-ED"},
-      {0x82, 0x48, 0x8E, 0x8E, 0x24, 0x24, 0x87, 0x0E, 0x13, 0x00, 0x00, "Nikon", "JAA337DA", "AF-S VR Nikkor 300mm f/2.8G IF-ED"},
+      {0x80, 0x48, 0x1A, 0x1A, 0x24, 0x24, 0x85, 0x06, 0x00, 0x00, 0x00, "Nikon", "JAA629DA",
+       "AF DX Fisheye-Nikkor 10.5mm f/2.8G ED"},
+      {0x81, 0x54, 0x80, 0x80, 0x18, 0x18, 0x86, 0x0E, 0x03, 0x00, 0x00, "Nikon", "JAA336DA",
+       "AF-S VR Nikkor 200mm f/2G IF-ED"},
+      {0x82, 0x48, 0x8E, 0x8E, 0x24, 0x24, 0x87, 0x0E, 0x13, 0x00, 0x00, "Nikon", "JAA337DA",
+       "AF-S VR Nikkor 300mm f/2.8G IF-ED"},
       {0x83, 0x00, 0xB0, 0xB0, 0x5A, 0x5A, 0x88, 0x04, 0x00, 0x00, 0x00, "Nikon", "", "FSA-L2, EDG 65, 800mm F13 G"},
-      //84
-      //85
-      //86
-      //87
-      //88
+      // 84
+      // 85
+      // 86
+      // 87
+      // 88
       {0x89, 0x3C, 0x53, 0x80, 0x30, 0x3C, 0x8B, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA793DA",
        "AF-S DX Zoom-Nikkor 55-200mm f/4-5.6G ED"},
       {0x8A, 0x54, 0x6A, 0x6A, 0x24, 0x24, 0x8C, 0x0E, 0x53, 0x00, 0x00, "Nikon", "JAA630DA",
        "AF-S VR Micro-Nikkor 105mm f/2.8G IF-ED"},
       {0x8B, 0x40, 0x2D, 0x80, 0x2C, 0x3C, 0x8D, 0x0E, 0x01, 0x00, 0x00, "Nikon", "JAA794DA",
        "AF-S DX VR Zoom-Nikkor 18-200mm f/3.5-5.6G IF-ED"},
-      //{0x8B,0x40,0x2D,0x80,0x2C,0x3C,0xFD,0x0E,0x01,0x01,0x00, "Nikon", "JAA794DA", "AF-S DX VR Zoom-Nikkor 18-200mm f/3.5-5.6G IF-ED"}, // Fix bug #1026.
+      //{0x8B,0x40,0x2D,0x80,0x2C,0x3C,0xFD,0x0E,0x01,0x01,0x00, "Nikon", "JAA794DA", "AF-S DX VR Zoom-Nikkor 18-200mm
+      //f/3.5-5.6G IF-ED"}, // Fix bug #1026.
       {0x8B, 0x40, 0x2D, 0x80, 0x2C, 0x3C, 0xFD, 0x0E, 0x01, 0x02, 0x00, "Nikon", "JAA813DA",
        "AF-S DX VR Zoom-Nikkor 18-200mm f/3.5-5.6G IF-ED II"},
       {0x8C, 0x40, 0x2D, 0x53, 0x2C, 0x3C, 0x8E, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA792DA",
        "AF-S DX Zoom-Nikkor 18-55mm f/3.5-5.6G ED"},
       {0x8D, 0x44, 0x5C, 0x8E, 0x34, 0x3C, 0x8F, 0x0E, 0x31, 0x00, 0x00, "Nikon", "JAA795DA",
        "AF-S VR Zoom-Nikkor 70-300mm f/4.5-5.6G IF-ED"},
-      //8E                90
+      // 8E                90
       {0x8F, 0x40, 0x2D, 0x72, 0x2C, 0x3C, 0x91, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA796DA",
        "AF-S DX Zoom-Nikkor 18-135mm f/3.5-5.6G IF-ED"},
       {0x90, 0x3B, 0x53, 0x80, 0x30, 0x3C, 0x92, 0x0E, 0x01, 0x00, 0x00, "Nikon", "JAA798DA",
        "AF-S DX VR Zoom-Nikkor 55-200mm f/4-5.6G IF-ED"},
-      //91                93
-      {0x92, 0x48, 0x24, 0x37, 0x24, 0x24, 0x94, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA801DA", "AF-S Zoom-Nikkor 14-24mm f/2.8G ED"},
-      {0x93, 0x48, 0x37, 0x5C, 0x24, 0x24, 0x95, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA802DA", "AF-S Zoom-Nikkor 24-70mm f/2.8G ED"},
+      // 91                93
+      {0x92, 0x48, 0x24, 0x37, 0x24, 0x24, 0x94, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA801DA",
+       "AF-S Zoom-Nikkor 14-24mm f/2.8G ED"},
+      {0x93, 0x48, 0x37, 0x5C, 0x24, 0x24, 0x95, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA802DA",
+       "AF-S Zoom-Nikkor 24-70mm f/2.8G ED"},
       {0x94, 0x40, 0x2D, 0x53, 0x2C, 0x3C, 0x96, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA797DA",
        "AF-S DX Zoom-Nikkor 18-55mm f/3.5-5.6G ED II"},
-      {0x95, 0x4C, 0x37, 0x37, 0x2C, 0x2C, 0x97, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA631DA", "PC-E Nikkor 24mm f/3.5D ED"},
-      {0x95, 0x00, 0x37, 0x37, 0x2C, 0x2C, 0x97, 0x06, 0x00, 0x00, 0x00, "Nikon", "JAA631DA", "PC-E Nikkor 24mm f/3.5D ED"},
-      {0x96, 0x48, 0x98, 0x98, 0x24, 0x24, 0x98, 0x0E, 0x13, 0x00, 0x00, "Nikon", "JAA528DA", "AF-S VR Nikkor 400mm f/2.8G ED"},
-      {0x97, 0x3C, 0xA0, 0xA0, 0x30, 0x30, 0x99, 0x0E, 0x13, 0x00, 0x00, "Nikon", "JAA529DA", "AF-S VR Nikkor 500mm f/4G ED"},
-      {0x98, 0x3C, 0xA6, 0xA6, 0x30, 0x30, 0x9A, 0x0E, 0x13, 0x00, 0x00, "Nikon", "JAA530DA", "AF-S VR Nikkor 600mm f/4G ED"},
+      {0x95, 0x4C, 0x37, 0x37, 0x2C, 0x2C, 0x97, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA631DA",
+       "PC-E Nikkor 24mm f/3.5D ED"},
+      {0x95, 0x00, 0x37, 0x37, 0x2C, 0x2C, 0x97, 0x06, 0x00, 0x00, 0x00, "Nikon", "JAA631DA",
+       "PC-E Nikkor 24mm f/3.5D ED"},
+      {0x96, 0x48, 0x98, 0x98, 0x24, 0x24, 0x98, 0x0E, 0x13, 0x00, 0x00, "Nikon", "JAA528DA",
+       "AF-S VR Nikkor 400mm f/2.8G ED"},
+      {0x97, 0x3C, 0xA0, 0xA0, 0x30, 0x30, 0x99, 0x0E, 0x13, 0x00, 0x00, "Nikon", "JAA529DA",
+       "AF-S VR Nikkor 500mm f/4G ED"},
+      {0x98, 0x3C, 0xA6, 0xA6, 0x30, 0x30, 0x9A, 0x0E, 0x13, 0x00, 0x00, "Nikon", "JAA530DA",
+       "AF-S VR Nikkor 600mm f/4G ED"},
       {0x99, 0x40, 0x29, 0x62, 0x2C, 0x3C, 0x9B, 0x0E, 0x01, 0x00, 0x00, "Nikon", "JAA800DA",
        "AF-S DX VR Zoom-Nikkor 16-85mm f/3.5-5.6G ED"},
       {0x9A, 0x40, 0x2D, 0x53, 0x2C, 0x3C, 0x9C, 0x0E, 0x01, 0x00, 0x00, "Nikon", "JAA803DA",
        "AF-S DX VR Zoom-Nikkor 18-55mm f/3.5-5.6G"},
-      {0x9B, 0x54, 0x4C, 0x4C, 0x24, 0x24, 0x9D, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA633DA", "PC-E Micro Nikkor 45mm f/2.8D ED"},
-      {0x9B, 0x00, 0x4C, 0x4C, 0x24, 0x24, 0x9D, 0x06, 0x00, 0x00, 0x00, "Nikon", "JAA633DA", "PC-E Micro Nikkor 45mm f/2.8D ED"},
-      {0x9C, 0x54, 0x56, 0x56, 0x24, 0x24, 0x9E, 0x06, 0x41, 0x00, 0x00, "Nikon", "JAA632DA", "AF-S Micro Nikkor 60mm f/2.8G ED"},
-      {0x9D, 0x54, 0x62, 0x62, 0x24, 0x24, 0x9F, 0x02, 0x40, 0x00, 0x00, "Nikon", "JAA634DA", "PC-E Micro Nikkor 85mm f/2.8D"},
-      {0x9D, 0x00, 0x62, 0x62, 0x24, 0x24, 0x9F, 0x06, 0x40, 0x00, 0x00, "Nikon", "JAA634DA", "PC-E Micro Nikkor 85mm f/2.8D"},
+      {0x9B, 0x54, 0x4C, 0x4C, 0x24, 0x24, 0x9D, 0x02, 0x00, 0x00, 0x00, "Nikon", "JAA633DA",
+       "PC-E Micro Nikkor 45mm f/2.8D ED"},
+      {0x9B, 0x00, 0x4C, 0x4C, 0x24, 0x24, 0x9D, 0x06, 0x00, 0x00, 0x00, "Nikon", "JAA633DA",
+       "PC-E Micro Nikkor 45mm f/2.8D ED"},
+      {0x9C, 0x54, 0x56, 0x56, 0x24, 0x24, 0x9E, 0x06, 0x41, 0x00, 0x00, "Nikon", "JAA632DA",
+       "AF-S Micro Nikkor 60mm f/2.8G ED"},
+      {0x9D, 0x54, 0x62, 0x62, 0x24, 0x24, 0x9F, 0x02, 0x40, 0x00, 0x00, "Nikon", "JAA634DA",
+       "PC-E Micro Nikkor 85mm f/2.8D"},
+      {0x9D, 0x00, 0x62, 0x62, 0x24, 0x24, 0x9F, 0x06, 0x40, 0x00, 0x00, "Nikon", "JAA634DA",
+       "PC-E Micro Nikkor 85mm f/2.8D"},
       {0x9E, 0x40, 0x2D, 0x6A, 0x2C, 0x3C, 0xA0, 0x0E, 0x01, 0x00, 0x00, "Nikon", "JAA805DA",
        "AF-S DX VR Zoom-Nikkor 18-105mm f/3.5-5.6G ED"},
-      {0x9F, 0x58, 0x44, 0x44, 0x14, 0x14, 0xA1, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA132DA", "AF-S DX Nikkor 35mm f/1.8G"},
-      {0xA0, 0x54, 0x50, 0x50, 0x0C, 0x0C, 0xA2, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA014DA", "AF-S Nikkor 50mm f/1.4G"},
-      {0xA1, 0x40, 0x18, 0x37, 0x2C, 0x34, 0xA3, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA804DA", "AF-S DX Nikkor 10-24mm f/3.5-4.5G ED"},
-      {0xA2, 0x48, 0x5C, 0x80, 0x24, 0x24, 0xA4, 0x0E, 0x13, 0x00, 0x00, "Nikon", "JAA807DA", "AF-S Nikkor 70-200mm f/2.8G ED VR II"},
-      {0xA3, 0x3C, 0x29, 0x44, 0x30, 0x30, 0xA5, 0x0E, 0x01, 0x00, 0x00, "Nikon", "JAA806DA", "AF-S Nikkor 16-35mm f/4G ED VR"},
-      {0xA4, 0x54, 0x37, 0x37, 0x0C, 0x0C, 0xA6, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA131DA", "AF-S Nikkor 24mm f/1.4G ED"},
-      {0xA5, 0x40, 0x3C, 0x8E, 0x2C, 0x3C, 0xA7, 0x0E, 0x01, 0x00, 0x00, "Nikon", "JAA808DA", "AF-S Nikkor 28-300mm f/3.5-5.6G ED VR"},
-      {0xA6, 0x48, 0x8E, 0x8E, 0x24, 0x24, 0xA8, 0x0E, 0x13, 0x00, 0x00, "Nikon", "JAA339DA", "AF-S Nikkor 300mm f/2.8G IF-ED VR II"},
+      {0x9F, 0x58, 0x44, 0x44, 0x14, 0x14, 0xA1, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA132DA",
+       "AF-S DX Nikkor 35mm f/1.8G"},
+      {0xA0, 0x54, 0x50, 0x50, 0x0C, 0x0C, 0xA2, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA014DA",
+       "AF-S Nikkor 50mm f/1.4G"},
+      {0xA1, 0x40, 0x18, 0x37, 0x2C, 0x34, 0xA3, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA804DA",
+       "AF-S DX Nikkor 10-24mm f/3.5-4.5G ED"},
+      {0xA2, 0x48, 0x5C, 0x80, 0x24, 0x24, 0xA4, 0x0E, 0x13, 0x00, 0x00, "Nikon", "JAA807DA",
+       "AF-S Nikkor 70-200mm f/2.8G ED VR II"},
+      {0xA3, 0x3C, 0x29, 0x44, 0x30, 0x30, 0xA5, 0x0E, 0x01, 0x00, 0x00, "Nikon", "JAA806DA",
+       "AF-S Nikkor 16-35mm f/4G ED VR"},
+      {0xA4, 0x54, 0x37, 0x37, 0x0C, 0x0C, 0xA6, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA131DA",
+       "AF-S Nikkor 24mm f/1.4G ED"},
+      {0xA5, 0x40, 0x3C, 0x8E, 0x2C, 0x3C, 0xA7, 0x0E, 0x01, 0x00, 0x00, "Nikon", "JAA808DA",
+       "AF-S Nikkor 28-300mm f/3.5-5.6G ED VR"},
+      {0xA6, 0x48, 0x8E, 0x8E, 0x24, 0x24, 0xA8, 0x0E, 0x13, 0x00, 0x00, "Nikon", "JAA339DA",
+       "AF-S Nikkor 300mm f/2.8G IF-ED VR II"},
       {0xA7, 0x4B, 0x62, 0x62, 0x2C, 0x2C, 0xA9, 0x0E, 0x41, 0x00, 0x00, "Nikon", "JAA637DA",
        "AF-S DX Micro Nikkor 85mm f/3.5G ED VR"},
       {0xA8, 0x48, 0x80, 0x98, 0x30, 0x30, 0xAA, 0x0E, 0x03, 0x00, 0x00, "Nikon", "JAA809DA",
        "AF-S Zoom-Nikkor 200-400mm f/4G IF-ED VR II"},
-      {0xA9, 0x54, 0x80, 0x80, 0x18, 0x18, 0xAB, 0x0E, 0x13, 0x00, 0x00, "Nikon", "JAA340DA", "AF-S Nikkor 200mm f/2G ED VR II"},
-      {0xAA, 0x3C, 0x37, 0x6E, 0x30, 0x30, 0xAC, 0x0E, 0x01, 0x00, 0x00, "Nikon", "JAA811DA", "AF-S Nikkor 24-120mm f/4G ED VR"},
-      //AB                AD                                          -- no lens --
+      {0xA9, 0x54, 0x80, 0x80, 0x18, 0x18, 0xAB, 0x0E, 0x13, 0x00, 0x00, "Nikon", "JAA340DA",
+       "AF-S Nikkor 200mm f/2G ED VR II"},
+      {0xAA, 0x3C, 0x37, 0x6E, 0x30, 0x30, 0xAC, 0x0E, 0x01, 0x00, 0x00, "Nikon", "JAA811DA",
+       "AF-S Nikkor 24-120mm f/4G ED VR"},
+      // AB                AD                                          -- no lens --
       {0xAC, 0x38, 0x53, 0x8E, 0x34, 0x3C, 0xAE, 0x0E, 0x01, 0x00, 0x00, "Nikon", "JAA814DA",
        "AF-S DX Nikkor 55-300mm f/4.5-5.6G ED VR"},
       {0xAD, 0x3C, 0x2D, 0x8E, 0x2C, 0x3C, 0xAF, 0x0E, 0x01, 0x00, 0x00, "Nikon", "JAA812DA",
        "AF-S DX Nikkor 18-300mm f/3.5-5.6G ED VR"},
-      {0xAE, 0x54, 0x62, 0x62, 0x0C, 0x0C, 0xB0, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA338DA", "AF-S Nikkor 85mm f/1.4G"},
-      {0xAF, 0x54, 0x44, 0x44, 0x0C, 0x0C, 0xB1, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA134DA", "AF-S Nikkor 35mm f/1.4G"},
-      {0xB0, 0x4C, 0x50, 0x50, 0x14, 0x14, 0xB2, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA015DA", "AF-S Nikkor 50mm f/1.8G"},
-      {0xB1, 0x48, 0x48, 0x48, 0x24, 0x24, 0xB3, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA638DA", "AF-S DX Micro Nikkor 40mm f/2.8G"},
-      {0xB2, 0x48, 0x5C, 0x80, 0x30, 0x30, 0xB4, 0x0E, 0x01, 0x00, 0x00, "Nikon", "JAA815DA", "AF-S Nikkor 70-200mm f/4G ED VR"},
-      {0xB3, 0x4C, 0x62, 0x62, 0x14, 0x14, 0xB5, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA341DA", "AF-S Nikkor 85mm f/1.8G"},
-      {0xB4, 0x40, 0x37, 0x62, 0x2C, 0x34, 0xB6, 0x0E, 0x01, 0x00, 0x00, "Nikon", "JAA816DA", "AF-S Nikkor 24-85mm f/3.5-4.5G ED VR"},
-      {0xB5, 0x4C, 0x3C, 0x3C, 0x14, 0x14, 0xB7, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA135DA", "AF-S Nikkor 28mm f/1.8G"},
-      {0xB6, 0x3C, 0xB0, 0xB0, 0x3C, 0x3C, 0xB8, 0x0E, 0x01, 0x00, 0x00, "Nikon", "JAA531DA", "AF-S VR Nikkor 800mm f/5.6E FL ED"},
-      {0xB6, 0x3C, 0xB0, 0xB0, 0x3C, 0x3C, 0xB8, 0x4E, 0x01, 0x00, 0x00, "Nikon", "JAA531DA", "AF-S VR Nikkor 800mm f/5.6E FL ED"},
-      {0xB7, 0x44, 0x60, 0x98, 0x34, 0x3C, 0xB9, 0x0E, 0x01, 0x00, 0x00, "Nikon", "JAA817DA", "AF-S Nikkor 80-400mm f/4.5-5.6G ED VR"},
-      {0xB8, 0x40, 0x2D, 0x44, 0x2C, 0x34, 0xBA, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA818DA", "AF-S Nikkor 18-35mm f/3.5-4.5G ED"},
+      {0xAE, 0x54, 0x62, 0x62, 0x0C, 0x0C, 0xB0, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA338DA",
+       "AF-S Nikkor 85mm f/1.4G"},
+      {0xAF, 0x54, 0x44, 0x44, 0x0C, 0x0C, 0xB1, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA134DA",
+       "AF-S Nikkor 35mm f/1.4G"},
+      {0xB0, 0x4C, 0x50, 0x50, 0x14, 0x14, 0xB2, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA015DA",
+       "AF-S Nikkor 50mm f/1.8G"},
+      {0xB1, 0x48, 0x48, 0x48, 0x24, 0x24, 0xB3, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA638DA",
+       "AF-S DX Micro Nikkor 40mm f/2.8G"},
+      {0xB2, 0x48, 0x5C, 0x80, 0x30, 0x30, 0xB4, 0x0E, 0x01, 0x00, 0x00, "Nikon", "JAA815DA",
+       "AF-S Nikkor 70-200mm f/4G ED VR"},
+      {0xB3, 0x4C, 0x62, 0x62, 0x14, 0x14, 0xB5, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA341DA",
+       "AF-S Nikkor 85mm f/1.8G"},
+      {0xB4, 0x40, 0x37, 0x62, 0x2C, 0x34, 0xB6, 0x0E, 0x01, 0x00, 0x00, "Nikon", "JAA816DA",
+       "AF-S Nikkor 24-85mm f/3.5-4.5G ED VR"},
+      {0xB5, 0x4C, 0x3C, 0x3C, 0x14, 0x14, 0xB7, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA135DA",
+       "AF-S Nikkor 28mm f/1.8G"},
+      {0xB6, 0x3C, 0xB0, 0xB0, 0x3C, 0x3C, 0xB8, 0x0E, 0x01, 0x00, 0x00, "Nikon", "JAA531DA",
+       "AF-S VR Nikkor 800mm f/5.6E FL ED"},
+      {0xB6, 0x3C, 0xB0, 0xB0, 0x3C, 0x3C, 0xB8, 0x4E, 0x01, 0x00, 0x00, "Nikon", "JAA531DA",
+       "AF-S VR Nikkor 800mm f/5.6E FL ED"},
+      {0xB7, 0x44, 0x60, 0x98, 0x34, 0x3C, 0xB9, 0x0E, 0x01, 0x00, 0x00, "Nikon", "JAA817DA",
+       "AF-S Nikkor 80-400mm f/4.5-5.6G ED VR"},
+      {0xB8, 0x40, 0x2D, 0x44, 0x2C, 0x34, 0xBA, 0x06, 0x01, 0x00, 0x00, "Nikon", "JAA818DA",
+       "AF-S Nikkor 18-35mm f/3.5-4.5G ED"},
       {0xA0, 0x40, 0x2D, 0x74, 0x2C, 0x3C, 0xBB, 0x0E, 0x01, 0x00, 0x01, "Nikon", "JAA819DA",
        "AF-S DX Nikkor 18-140mm f/3.5-5.6G ED VR"},
-      {0xA1, 0x54, 0x55, 0x55, 0x0C, 0x0C, 0xBC, 0x06, 0x01, 0x00, 0x01, "Nikon", "JAA136DA", "AF-S Nikkor 58mm f/1.4G"},
+      {0xA1, 0x54, 0x55, 0x55, 0x0C, 0x0C, 0xBC, 0x06, 0x01, 0x00, 0x01, "Nikon", "JAA136DA",
+       "AF-S Nikkor 58mm f/1.4G"},
       {0xA2, 0x40, 0x2D, 0x53, 0x2C, 0x3C, 0xBD, 0x0E, 0x01, 0x00, 0x01, "Nikon", "JAA820DA",
        "AF-S DX Nikkor 18-55mm f/3.5-5.6G VR II"},
       {0xA4, 0x40, 0x2D, 0x8E, 0x2C, 0x40, 0xBF, 0x0E, 0x01, 0x00, 0x01, "Nikon", "JAA821DA",
        "AF-S DX Nikkor 18-300mm f/3.5-6.3G ED VR"},
-      {0xA5, 0x4C, 0x44, 0x44, 0x14, 0x14, 0xC0, 0x06, 0x01, 0x00, 0x01, "Nikon", "JAA137DA", "AF-S Nikkor 35mm f/1.8G ED"},
-      {0xA6, 0x48, 0x98, 0x98, 0x24, 0x24, 0xC1, 0x0E, 0x01, 0x00, 0x01, "Nikon", "JAA532DA", "AF-S Nikkor 400mm f/2.8E FL ED VR"},
+      {0xA5, 0x4C, 0x44, 0x44, 0x14, 0x14, 0xC0, 0x06, 0x01, 0x00, 0x01, "Nikon", "JAA137DA",
+       "AF-S Nikkor 35mm f/1.8G ED"},
+      {0xA6, 0x48, 0x98, 0x98, 0x24, 0x24, 0xC1, 0x0E, 0x01, 0x00, 0x01, "Nikon", "JAA532DA",
+       "AF-S Nikkor 400mm f/2.8E FL ED VR"},
       {0xA7, 0x3C, 0x53, 0x80, 0x30, 0x3C, 0xC2, 0x0E, 0x01, 0x00, 0x01, "Nikon", "JAA823DA",
        "AF-S DX Nikkor 55-200mm f/4-5.6G ED VR II"},
-      {0xA8, 0x48, 0x8E, 0x8E, 0x30, 0x30, 0xC3, 0x4E, 0x01, 0x00, 0x01, "Nikon", "JAA342DA", "AF-S Nikkor 300mm f/4E PF ED VR"},
-      {0xA8, 0x48, 0x8E, 0x8E, 0x30, 0x30, 0xC3, 0x0E, 0x01, 0x00, 0x01, "Nikon", "JAA342DA", "AF-S Nikkor 300mm f/4E PF ED VR"},
-      {0xA9, 0x4C, 0x31, 0x31, 0x14, 0x14, 0xC4, 0x06, 0x01, 0x00, 0x01, "Nikon", "JAA138DA", "AF-S Nikkor 20mm f/1.8G ED"},
-      {0xAA, 0x48, 0x37, 0x5C, 0x24, 0x24, 0xC5, 0x4E, 0x01, 0x00, 0x02, "Nikon", "JAA824DA", "AF-S Nikkor 24-70mm f/2.8E ED VR"},
-      {0xAA, 0x48, 0x37, 0x5C, 0x24, 0x24, 0xC5, 0x0E, 0x01, 0x00, 0x02, "Nikon", "JAA824DA", "AF-S Nikkor 24-70mm f/2.8E ED VR"},
-      {0xAB, 0x3C, 0xA0, 0xA0, 0x30, 0x30, 0xC6, 0x4E, 0x01, 0x00, 0x02, "Nikon", "JAA533DA", "AF-S Nikkor 500mm f/4E FL ED VR"},
-      {0xAC, 0x3C, 0xA6, 0xA6, 0x30, 0x30, 0xC7, 0x4E, 0x01, 0x00, 0x02, "Nikon", "JAA534DA", "AF-S Nikkor 600mm f/4E FL ED VR"},
-      {0xAD, 0x48, 0x28, 0x60, 0x24, 0x30, 0xC8, 0x4E, 0x01, 0x00, 0x02, "Nikon", "JAA825DA", "AF-S DX Nikkor 16-80mm f/2.8-4E ED VR"},
-      {0xAD, 0x48, 0x28, 0x60, 0x24, 0x30, 0xC8, 0x0E, 0x01, 0x00, 0x02, "Nikon", "JAA825DA", "AF-S DX Nikkor 16-80mm f/2.8-4E ED VR"},
-      {0xAE, 0x3C, 0x80, 0xA0, 0x3C, 0x3C, 0xC9, 0x4E, 0x01, 0x00, 0x02, "Nikon", "JAA822DA", "AF-S Nikkor 200-500mm f/5.6E ED VR"},
-      {0xAE, 0x3C, 0x80, 0xA0, 0x3C, 0x3C, 0xC9, 0x0E, 0x01, 0x00, 0x02, "Nikon", "JAA822DA", "AF-S Nikkor 200-500mm f/5.6E ED VR"},
-      {0xA0, 0x40, 0x2D, 0x53, 0x2C, 0x3C, 0xCA, 0x8E, 0x01, 0x00, 0x03, "Nikon", "JAA826DA", "AF-P DX Nikkor 18-55mm f/3.5-5.6G VR"},
-      {0xA0, 0x40, 0x2D, 0x53, 0x2C, 0x3C, 0xCA, 0x0E, 0x01, 0x00, 0x03, "Nikon", "JAA827DA", "AF-P DX Nikkor 18-55mm f/3.5-5.6G"},
+      {0xA8, 0x48, 0x8E, 0x8E, 0x30, 0x30, 0xC3, 0x4E, 0x01, 0x00, 0x01, "Nikon", "JAA342DA",
+       "AF-S Nikkor 300mm f/4E PF ED VR"},
+      {0xA8, 0x48, 0x8E, 0x8E, 0x30, 0x30, 0xC3, 0x0E, 0x01, 0x00, 0x01, "Nikon", "JAA342DA",
+       "AF-S Nikkor 300mm f/4E PF ED VR"},
+      {0xA9, 0x4C, 0x31, 0x31, 0x14, 0x14, 0xC4, 0x06, 0x01, 0x00, 0x01, "Nikon", "JAA138DA",
+       "AF-S Nikkor 20mm f/1.8G ED"},
+      {0xAA, 0x48, 0x37, 0x5C, 0x24, 0x24, 0xC5, 0x4E, 0x01, 0x00, 0x02, "Nikon", "JAA824DA",
+       "AF-S Nikkor 24-70mm f/2.8E ED VR"},
+      {0xAA, 0x48, 0x37, 0x5C, 0x24, 0x24, 0xC5, 0x0E, 0x01, 0x00, 0x02, "Nikon", "JAA824DA",
+       "AF-S Nikkor 24-70mm f/2.8E ED VR"},
+      {0xAB, 0x3C, 0xA0, 0xA0, 0x30, 0x30, 0xC6, 0x4E, 0x01, 0x00, 0x02, "Nikon", "JAA533DA",
+       "AF-S Nikkor 500mm f/4E FL ED VR"},
+      {0xAC, 0x3C, 0xA6, 0xA6, 0x30, 0x30, 0xC7, 0x4E, 0x01, 0x00, 0x02, "Nikon", "JAA534DA",
+       "AF-S Nikkor 600mm f/4E FL ED VR"},
+      {0xAD, 0x48, 0x28, 0x60, 0x24, 0x30, 0xC8, 0x4E, 0x01, 0x00, 0x02, "Nikon", "JAA825DA",
+       "AF-S DX Nikkor 16-80mm f/2.8-4E ED VR"},
+      {0xAD, 0x48, 0x28, 0x60, 0x24, 0x30, 0xC8, 0x0E, 0x01, 0x00, 0x02, "Nikon", "JAA825DA",
+       "AF-S DX Nikkor 16-80mm f/2.8-4E ED VR"},
+      {0xAE, 0x3C, 0x80, 0xA0, 0x3C, 0x3C, 0xC9, 0x4E, 0x01, 0x00, 0x02, "Nikon", "JAA822DA",
+       "AF-S Nikkor 200-500mm f/5.6E ED VR"},
+      {0xAE, 0x3C, 0x80, 0xA0, 0x3C, 0x3C, 0xC9, 0x0E, 0x01, 0x00, 0x02, "Nikon", "JAA822DA",
+       "AF-S Nikkor 200-500mm f/5.6E ED VR"},
+      {0xA0, 0x40, 0x2D, 0x53, 0x2C, 0x3C, 0xCA, 0x8E, 0x01, 0x00, 0x03, "Nikon", "JAA826DA",
+       "AF-P DX Nikkor 18-55mm f/3.5-5.6G VR"},
+      {0xA0, 0x40, 0x2D, 0x53, 0x2C, 0x3C, 0xCA, 0x0E, 0x01, 0x00, 0x03, "Nikon", "JAA827DA",
+       "AF-P DX Nikkor 18-55mm f/3.5-5.6G"},
       //                  CB
-      {0xAF, 0x4C, 0x37, 0x37, 0x14, 0x14, 0xCC, 0x06, 0x01, 0x00, 0x03, "Nikon", "JAA139DA", "AF-S Nikkor 24mm f/1.8G ED"},
+      {0xAF, 0x4C, 0x37, 0x37, 0x14, 0x14, 0xCC, 0x06, 0x01, 0x00, 0x03, "Nikon", "JAA139DA",
+       "AF-S Nikkor 24mm f/1.8G ED"},
       {0xA3, 0x38, 0x5C, 0x8E, 0x34, 0x40, 0xCE, 0x8E, 0x01, 0x00, 0x03, "Nikon", "JAA829DA",
        "AF-P DX Nikkor 70-300mm f/4.5-6.3G ED VR"},
-      {0xA3, 0x38, 0x5C, 0x8E, 0x34, 0x40, 0xCE, 0x0E, 0x01, 0x00, 0x03, "Nikon", "JAA828DA", "AF-P DX Nikkor 70-300mm f/4.5-6.3G ED"},
-      {0xA4, 0x48, 0x5C, 0x80, 0x24, 0x24, 0xCF, 0x4E, 0x01, 0x00, 0x03, "Nikon", "JAA830DA", "AF-S Nikkor 70-200mm f/2.8E FL ED VR"},
-      {0xA4, 0x48, 0x5C, 0x80, 0x24, 0x24, 0xCF, 0x0E, 0x01, 0x00, 0x03, "Nikon", "JAA830DA", "AF-S Nikkor 70-200mm f/2.8E FL ED VR"},
-      {0xA5, 0x54, 0x6A, 0x6A, 0x0C, 0x0C, 0xD0, 0x46, 0x01, 0x00, 0x03, "Nikon", "JAA343DA", "AF-S Nikkor 105mm f/1.4E ED"},
-      {0xA5, 0x54, 0x6A, 0x6A, 0x0C, 0x0C, 0xD0, 0x06, 0x01, 0x00, 0x03, "Nikon", "JAA343DA", "AF-S Nikkor 105mm f/1.4E ED"},
+      {0xA3, 0x38, 0x5C, 0x8E, 0x34, 0x40, 0xCE, 0x0E, 0x01, 0x00, 0x03, "Nikon", "JAA828DA",
+       "AF-P DX Nikkor 70-300mm f/4.5-6.3G ED"},
+      {0xA4, 0x48, 0x5C, 0x80, 0x24, 0x24, 0xCF, 0x4E, 0x01, 0x00, 0x03, "Nikon", "JAA830DA",
+       "AF-S Nikkor 70-200mm f/2.8E FL ED VR"},
+      {0xA4, 0x48, 0x5C, 0x80, 0x24, 0x24, 0xCF, 0x0E, 0x01, 0x00, 0x03, "Nikon", "JAA830DA",
+       "AF-S Nikkor 70-200mm f/2.8E FL ED VR"},
+      {0xA5, 0x54, 0x6A, 0x6A, 0x0C, 0x0C, 0xD0, 0x46, 0x01, 0x00, 0x03, "Nikon", "JAA343DA",
+       "AF-S Nikkor 105mm f/1.4E ED"},
+      {0xA5, 0x54, 0x6A, 0x6A, 0x0C, 0x0C, 0xD0, 0x06, 0x01, 0x00, 0x03, "Nikon", "JAA343DA",
+       "AF-S Nikkor 105mm f/1.4E ED"},
       {0xA6, 0x48, 0x2F, 0x2F, 0x30, 0x30, 0xD1, 0x46, 0x01, 0x00, 0x03, "Nikon", "JAA639DA", "PC Nikkor 19mm f/4E ED"},
       {0xA6, 0x48, 0x2F, 0x2F, 0x30, 0x30, 0xD1, 0x06, 0x01, 0x00, 0x03, "Nikon", "JAA639DA", "PC Nikkor 19mm f/4E ED"},
       {0xA7, 0x40, 0x11, 0x26, 0x2C, 0x34, 0xD2, 0x46, 0x01, 0x00, 0x03, "Nikon", "JAA831DA",
        "AF-S Fisheye Nikkor 8-15mm f/3.5-4.5E ED"},
       {0xA7, 0x40, 0x11, 0x26, 0x2C, 0x34, 0xD2, 0x06, 0x01, 0x00, 0x03, "Nikon", "JAA831DA",
        "AF-S Fisheye Nikkor 8-15mm f/3.5-4.5E ED"},
-      {0xA8, 0x38, 0x18, 0x30, 0x34, 0x3C, 0xD3, 0x8E, 0x01, 0x00, 0x03, "Nikon", "JAA832DA", "AF-P DX Nikkor 10-20mm f/4.5-5.6G VR"},
-      {0xA8, 0x38, 0x18, 0x30, 0x34, 0x3C, 0xD3, 0x0E, 0x01, 0x00, 0x03, "Nikon", "JAA832DA", "AF-P DX Nikkor 10-20mm f/4.5-5.6G VR"},
-      //A9                D4
-      //AA                D5
-      {0xAB, 0x44, 0x5C, 0x8E, 0x34, 0x3C, 0xD6, 0xCE, 0x01, 0x00, 0x03, "Nikon", "JAA833DA", "AF-P Nikkor 70-300mm f/4.5-5.6E ED VR"},
-      {0xAB, 0x44, 0x5C, 0x8E, 0x34, 0x3C, 0xD6, 0x0E, 0x01, 0x00, 0x03, "Nikon", "JAA833DA", "AF-P Nikkor 70-300mm f/4.5-5.6E ED VR"},
-      {0xAC, 0x54, 0x3C, 0x3C, 0x0C, 0x0C, 0xD7, 0x46, 0x01, 0x00, 0x03, "Nikon", "JAA140DA", "AF-S Nikkor 28mm f/1.4E ED"},
-      {0xAC, 0x54, 0x3C, 0x3C, 0x0C, 0x0C, 0xD7, 0x06, 0x01, 0x00, 0x03, "Nikon", "JAA140DA", "AF-S Nikkor 28mm f/1.4E ED"},
+      {0xA8, 0x38, 0x18, 0x30, 0x34, 0x3C, 0xD3, 0x8E, 0x01, 0x00, 0x03, "Nikon", "JAA832DA",
+       "AF-P DX Nikkor 10-20mm f/4.5-5.6G VR"},
+      {0xA8, 0x38, 0x18, 0x30, 0x34, 0x3C, 0xD3, 0x0E, 0x01, 0x00, 0x03, "Nikon", "JAA832DA",
+       "AF-P DX Nikkor 10-20mm f/4.5-5.6G VR"},
+      // A9                D4
+      // AA                D5
+      {0xAB, 0x44, 0x5C, 0x8E, 0x34, 0x3C, 0xD6, 0xCE, 0x01, 0x00, 0x03, "Nikon", "JAA833DA",
+       "AF-P Nikkor 70-300mm f/4.5-5.6E ED VR"},
+      {0xAB, 0x44, 0x5C, 0x8E, 0x34, 0x3C, 0xD6, 0x0E, 0x01, 0x00, 0x03, "Nikon", "JAA833DA",
+       "AF-P Nikkor 70-300mm f/4.5-5.6E ED VR"},
+      {0xAC, 0x54, 0x3C, 0x3C, 0x0C, 0x0C, 0xD7, 0x46, 0x01, 0x00, 0x03, "Nikon", "JAA140DA",
+       "AF-S Nikkor 28mm f/1.4E ED"},
+      {0xAC, 0x54, 0x3C, 0x3C, 0x0C, 0x0C, 0xD7, 0x06, 0x01, 0x00, 0x03, "Nikon", "JAA140DA",
+       "AF-S Nikkor 28mm f/1.4E ED"},
       //
       //
       //
@@ -1839,21 +2091,30 @@ std::ostream& Nikon3MakerNote::printLensId(std::ostream& os, const Value& value,
       // Sigma lenses by focal length, first fixed then zoom lenses
       //------------------------------------------------------------------------------
       //
-      {0xFE, 0x47, 0x00, 0x00, 0x24, 0x24, 0x4B, 0x06, 0x01, 0x00, 0x00, "Sigma", "486556", "4.5mm F2.8 EX DC HSM Circular Fisheye"},
+      {0xFE, 0x47, 0x00, 0x00, 0x24, 0x24, 0x4B, 0x06, 0x01, 0x00, 0x00, "Sigma", "486556",
+       "4.5mm F2.8 EX DC HSM Circular Fisheye"},
       {0x26, 0x48, 0x11, 0x11, 0x30, 0x30, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "483", "8mm F4 EX Circular Fisheye"},
-      {0x79, 0x40, 0x11, 0x11, 0x2C, 0x2C, 0x1C, 0x06, 0x00, 0x00, 0x00, "Sigma", "485597", "8mm F3.5 EX Circular Fisheye"},
-      {0xDC, 0x48, 0x19, 0x19, 0x24, 0x24, 0x4B, 0x06, 0x01, 0x00, 0x00, "Sigma", "477554", "10mm F2.8 EX DC HSM Fisheye"},
+      {0x79, 0x40, 0x11, 0x11, 0x2C, 0x2C, 0x1C, 0x06, 0x00, 0x00, 0x00, "Sigma", "485597",
+       "8mm F3.5 EX Circular Fisheye"},
+      {0xDC, 0x48, 0x19, 0x19, 0x24, 0x24, 0x4B, 0x06, 0x01, 0x00, 0x00, "Sigma", "477554",
+       "10mm F2.8 EX DC HSM Fisheye"},
       {0x02, 0x3F, 0x24, 0x24, 0x2C, 0x2C, 0x02, 0x00, 0x00, 0x00, 0x00, "Sigma", "468", "14mm F3.5"},
       {0x48, 0x48, 0x24, 0x24, 0x24, 0x24, 0x4B, 0x02, 0x01, 0x00, 0x00, "Sigma", "", "14mm F2.8 EX Aspherical HSM"},
-      {0x26, 0x48, 0x27, 0x27, 0x24, 0x24, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "476441", "15mm F2.8 EX Diagonal Fisheye"},
+      {0x26, 0x48, 0x27, 0x27, 0x24, 0x24, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "476441",
+       "15mm F2.8 EX Diagonal Fisheye"},
       {0xEA, 0x48, 0x27, 0x27, 0x24, 0x24, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "", "15mm F2.8 EX Diagonal Fisheye"},
-      //M                                         "Sigma" "410"    "18mm F3.5";
-      {0x26, 0x58, 0x31, 0x31, 0x14, 0x14, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "411442", "20mm F1.8 EX DG Aspherical RF"},
+      // M                                         "Sigma" "410"    "18mm F3.5";
+      {0x26, 0x58, 0x31, 0x31, 0x14, 0x14, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "411442",
+       "20mm F1.8 EX DG Aspherical RF"},
       {0x79, 0x54, 0x31, 0x31, 0x0C, 0x0C, 0x4B, 0x06, 0x00, 0x00, 0x00, "Sigma", "412555", "20mm F1.4 DG HSM | A"},
-      {0x26, 0x58, 0x37, 0x37, 0x14, 0x14, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "432447", "24mm F1.8 EX DG Aspherical Macro"},
-      {0xE1, 0x58, 0x37, 0x37, 0x14, 0x14, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "432447", "24mm F1.8 EX DG Aspherical Macro"},
-      {0x02, 0x46, 0x37, 0x37, 0x25, 0x25, 0x02, 0x00, 0x00, 0x00, 0x00, "Sigma", "438", "24mm F2.8 Super Wide II Macro"},
-      {0x26, 0x58, 0x3C, 0x3C, 0x14, 0x14, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "440442", "28mm F1.8 EX DG Aspherical Macro"},
+      {0x26, 0x58, 0x37, 0x37, 0x14, 0x14, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "432447",
+       "24mm F1.8 EX DG Aspherical Macro"},
+      {0xE1, 0x58, 0x37, 0x37, 0x14, 0x14, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "432447",
+       "24mm F1.8 EX DG Aspherical Macro"},
+      {0x02, 0x46, 0x37, 0x37, 0x25, 0x25, 0x02, 0x00, 0x00, 0x00, 0x00, "Sigma", "438",
+       "24mm F2.8 Super Wide II Macro"},
+      {0x26, 0x58, 0x3C, 0x3C, 0x14, 0x14, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "440442",
+       "28mm F1.8 EX DG Aspherical Macro"},
       {0x48, 0x54, 0x3E, 0x3E, 0x0C, 0x0C, 0x4B, 0x06, 0x01, 0x00, 0x00, "Sigma", "477554", "30mm F1.4 EX DC HSM"},
       {0xF8, 0x54, 0x3E, 0x3E, 0x0C, 0x0C, 0x4B, 0x06, 0x01, 0x00, 0x00, "Sigma", "477554", "30mm F1.4 EX DC HSM"},
       {0x91, 0x54, 0x44, 0x44, 0x0C, 0x0C, 0x4B, 0x06, 0x01, 0x00, 0x00, "Sigma", "", "35mm F1.4 DG HSM"},
@@ -1868,13 +2129,18 @@ std::ostream& Nikon3MakerNote::printLensId(std::ostream& os, const Value& value,
       {0x32, 0x54, 0x6A, 0x6A, 0x24, 0x24, 0x35, 0x02, 0x00, 0x02, 0x00, "Sigma", "256", "Macro 105mm F2.8 EX DG"},
       {0xE5, 0x54, 0x6A, 0x6A, 0x24, 0x24, 0x35, 0x02, 0x40, 0x00, 0x00, "Sigma", "257446", "Macro 105mm F2.8 EX DG"},
       {0x97, 0x48, 0x6A, 0x6A, 0x24, 0x24, 0x4B, 0x0E, 0x00, 0x00, 0x00, "Sigma", "", "Macro 105mm F2.8 EX DG OS HSM"},
-      {0x48, 0x48, 0x76, 0x76, 0x24, 0x24, 0x4B, 0x06, 0x43, 0x00, 0x00, "Sigma", "104559", "APO Macro 150mm F2.8 EX DG HSM"},
-      {0xF5, 0x48, 0x76, 0x76, 0x24, 0x24, 0x4B, 0x06, 0x43, 0x00, 0x00, "Sigma", "104559", "APO Macro 150mm F2.8 EX DG HSM"},
-      {0x99, 0x48, 0x76, 0x76, 0x24, 0x24, 0x4B, 0x0E, 0x43, 0x00, 0x00, "Sigma", "", "APO Macro 150mm F2.8 EX DG OS HSM"},
+      {0x48, 0x48, 0x76, 0x76, 0x24, 0x24, 0x4B, 0x06, 0x43, 0x00, 0x00, "Sigma", "104559",
+       "APO Macro 150mm F2.8 EX DG HSM"},
+      {0xF5, 0x48, 0x76, 0x76, 0x24, 0x24, 0x4B, 0x06, 0x43, 0x00, 0x00, "Sigma", "104559",
+       "APO Macro 150mm F2.8 EX DG HSM"},
+      {0x99, 0x48, 0x76, 0x76, 0x24, 0x24, 0x4B, 0x0E, 0x43, 0x00, 0x00, "Sigma", "",
+       "APO Macro 150mm F2.8 EX DG OS HSM"},
       {0x48, 0x4C, 0x7C, 0x7C, 0x2C, 0x2C, 0x4B, 0x02, 0x43, 0x00, 0x00, "Sigma", "", "APO Macro 180mm F3.5 EX DG HSM"},
-      {0x48, 0x4C, 0x7D, 0x7D, 0x2C, 0x2C, 0x4B, 0x02, 0x43, 0x00, 0x00, "Sigma", "105556", "APO Macro 180mm F3.5 EX DG HSM"},
-      {0x94, 0x48, 0x7C, 0x7C, 0x24, 0x24, 0x4B, 0x0E, 0x43, 0x00, 0x00, "Sigma", "", "APO Macro 180mm F2.8 EX DG OS HSM"},
-      //M                                         "Sigma" ""       "APO 300mm F2.8";
+      {0x48, 0x4C, 0x7D, 0x7D, 0x2C, 0x2C, 0x4B, 0x02, 0x43, 0x00, 0x00, "Sigma", "105556",
+       "APO Macro 180mm F3.5 EX DG HSM"},
+      {0x94, 0x48, 0x7C, 0x7C, 0x24, 0x24, 0x4B, 0x0E, 0x43, 0x00, 0x00, "Sigma", "",
+       "APO Macro 180mm F2.8 EX DG OS HSM"},
+      // M                                         "Sigma" ""       "APO 300mm F2.8";
       {0x48, 0x54, 0x8E, 0x8E, 0x24, 0x24, 0x4B, 0x02, 0x03, 0x00, 0x00, "Sigma", "", "APO 300mm F2.8 EX DG HSM"},
       {0xFB, 0x54, 0x8E, 0x8E, 0x24, 0x24, 0x4B, 0x02, 0x13, 0x00, 0x00, "Sigma", "195557", "APO 300mm F2.8 EX DG HSM"},
       {0x26, 0x48, 0x8E, 0x8E, 0x30, 0x30, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "", "APO Tele Macro 300mm F4"},
@@ -1886,25 +2152,33 @@ std::ostream& Nikon3MakerNote::printLensId(std::ostream& os, const Value& value,
       {0x02, 0x34, 0xA0, 0xA0, 0x44, 0x44, 0x02, 0x00, 0x00, 0x00, 0x00, "Sigma", "", "APO 500mm F7.2"},
       {0x02, 0x3C, 0xB0, 0xB0, 0x3C, 0x3C, 0x02, 0x00, 0x00, 0x00, 0x00, "Sigma", "", "APO 800mm F5.6"},
       {0x48, 0x3C, 0xB0, 0xB0, 0x3C, 0x3C, 0x4B, 0x02, 0x03, 0x00, 0x00, "Sigma", "", "APO 800mm F5.6 EX HSM"},
-      //M                                         "Sigma" "152550" "APO 800mm F5.6 EX DG HSM";
-      //M2    B8 B8 49 49 02" "00" "00" "00" "00" "Sigma" ""       "APO 1000mm F8.0";
+      // M                                         "Sigma" "152550" "APO 800mm F5.6 EX DG HSM";
+      // M2    B8 B8 49 49 02" "00" "00" "00" "00" "Sigma" ""       "APO 1000mm F8.0";
       //
       {0x9E, 0x38, 0x11, 0x29, 0x34, 0x3C, 0x4B, 0x06, 0x01, 0x00, 0x00, "Sigma", "", "8-16mm F4.5-5.6 DC HSM"},
       {0xA1, 0x41, 0x19, 0x31, 0x2C, 0x2C, 0x4B, 0x06, 0x01, 0x00, 0x00, "Sigma", "", "10-20mm F3.5 EX DC HSM"},
       {0x48, 0x3C, 0x19, 0x31, 0x30, 0x3C, 0x4B, 0x06, 0x01, 0x00, 0x00, "Sigma", "201555", "10-20mm F4-5.6 EX DC HSM"},
       {0xF9, 0x3C, 0x19, 0x31, 0x30, 0x3C, 0x4B, 0x06, 0x01, 0x00, 0x00, "Sigma", "201555", "10-20mm F4-5.6 EX DC HSM"},
-      {0x48, 0x38, 0x1F, 0x37, 0x34, 0x3C, 0x4B, 0x06, 0x00, 0x00, 0x00, "Sigma", "200558", "12-24mm F4.5-5.6 EX DG Aspherical HSM"},
-      {0xF0, 0x38, 0x1F, 0x37, 0x34, 0x3C, 0x4B, 0x06, 0x00, 0x00, 0x00, "Sigma", "200558", "12-24mm F4.5-5.6 EX DG Aspherical HSM"},
+      {0x48, 0x38, 0x1F, 0x37, 0x34, 0x3C, 0x4B, 0x06, 0x00, 0x00, 0x00, "Sigma", "200558",
+       "12-24mm F4.5-5.6 EX DG Aspherical HSM"},
+      {0xF0, 0x38, 0x1F, 0x37, 0x34, 0x3C, 0x4B, 0x06, 0x00, 0x00, 0x00, "Sigma", "200558",
+       "12-24mm F4.5-5.6 EX DG Aspherical HSM"},
       {0x96, 0x38, 0x1F, 0x37, 0x34, 0x3C, 0x4B, 0x06, 0x00, 0x00, 0x00, "Sigma", "", "12-24mm F4.5-5.6 II DG HSM"},
-      {0x26, 0x40, 0x27, 0x3F, 0x2C, 0x34, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "", "15-30mm F3.5-4.5 EX DG Aspherical DF"},
-      {0x48, 0x48, 0x2B, 0x44, 0x24, 0x30, 0x4B, 0x06, 0x00, 0x00, 0x00, "Sigma", "", "17-35mm F2.8-4 EX DG  Aspherical HSM"},
+      {0x26, 0x40, 0x27, 0x3F, 0x2C, 0x34, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "",
+       "15-30mm F3.5-4.5 EX DG Aspherical DF"},
+      {0x48, 0x48, 0x2B, 0x44, 0x24, 0x30, 0x4B, 0x06, 0x00, 0x00, 0x00, "Sigma", "",
+       "17-35mm F2.8-4 EX DG  Aspherical HSM"},
       {0x26, 0x54, 0x2B, 0x44, 0x24, 0x30, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "", "17-35mm F2.8-4 EX Aspherical"},
       {0x9D, 0x48, 0x2B, 0x50, 0x24, 0x24, 0x4B, 0x0E, 0x00, 0x00, 0x00, "Sigma", "", "17-50mm F2.8 EX DC OS HSM"},
       {0x8F, 0x48, 0x2B, 0x50, 0x24, 0x24, 0x4B, 0x0E, 0x00, 0x00, 0x00, "Sigma", "", "17-50mm F2.8 EX DC OS HSM"},
-      {0x7A, 0x47, 0x2B, 0x5C, 0x24, 0x34, 0x4B, 0x06, 0x00, 0x00, 0x00, "Sigma", "689599", "17-70mm F2.8-4.5 DC Macro Asp. IF HSM"},
-      {0x7A, 0x48, 0x2B, 0x5C, 0x24, 0x34, 0x4B, 0x06, 0x00, 0x00, 0x00, "Sigma", "689599", "17-70mm F2.8-4.5 DC Macro Asp. IF HSM"},
-      {0x7F, 0x48, 0x2B, 0x5C, 0x24, 0x34, 0x1C, 0x06, 0x00, 0x00, 0x00, "Sigma", "", "17-70mm F2.8-4.5 DC Macro Asp. IF"},
-      {0x8E, 0x3C, 0x2B, 0x5C, 0x24, 0x30, 0x4B, 0x0E, 0x00, 0x00, 0x00, "Sigma", "", "17-70mm F2.8-4 DC MACRO OS HSM | C"},
+      {0x7A, 0x47, 0x2B, 0x5C, 0x24, 0x34, 0x4B, 0x06, 0x00, 0x00, 0x00, "Sigma", "689599",
+       "17-70mm F2.8-4.5 DC Macro Asp. IF HSM"},
+      {0x7A, 0x48, 0x2B, 0x5C, 0x24, 0x34, 0x4B, 0x06, 0x00, 0x00, 0x00, "Sigma", "689599",
+       "17-70mm F2.8-4.5 DC Macro Asp. IF HSM"},
+      {0x7F, 0x48, 0x2B, 0x5C, 0x24, 0x34, 0x1C, 0x06, 0x00, 0x00, 0x00, "Sigma", "",
+       "17-70mm F2.8-4.5 DC Macro Asp. IF"},
+      {0x8E, 0x3C, 0x2B, 0x5C, 0x24, 0x30, 0x4B, 0x0E, 0x00, 0x00, 0x00, "Sigma", "",
+       "17-70mm F2.8-4 DC MACRO OS HSM | C"},
       {0xA0, 0x48, 0x2A, 0x5C, 0x24, 0x30, 0x4B, 0x0E, 0x00, 0x00, 0xFE, "Sigma", "", "17-70mm F2.8-4 DC Macro OS HSM"},
       {0x8B, 0x4C, 0x2D, 0x44, 0x14, 0x14, 0x4B, 0x06, 0x00, 0x00, 0x00, "Sigma", "", "18-35mm F1.8 DC HSM"},
       {0x26, 0x40, 0x2D, 0x44, 0x2B, 0x34, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "", "18-35mm F3.5-4.5 Aspherical"},
@@ -1916,19 +2190,24 @@ std::ostream& Nikon3MakerNote::printLensId(std::ostream& os, const Value& value,
       {0x26, 0x40, 0x2D, 0x50, 0x2C, 0x3C, 0x1C, 0x06, 0x00, 0x00, 0x00, "Sigma", "", "18-50mm F3.5-5.6 DC"},
       {0x7A, 0x40, 0x2D, 0x50, 0x2C, 0x3C, 0x4B, 0x06, 0x01, 0x00, 0x00, "Sigma", "551551", "18-50mm F3.5-5.6 DC HSM"},
       {0x26, 0x40, 0x2D, 0x70, 0x2B, 0x3C, 0x1C, 0x06, 0x00, 0x00, 0x00, "Sigma", "", "18-125mm F3.5-5.6 DC"},
-      {0xCD, 0x3D, 0x2D, 0x70, 0x2E, 0x3C, 0x4B, 0x0E, 0x01, 0x00, 0x00, "Sigma", "853556", "18-125mm F3.8-5.6 DC OS HSM"},
+      {0xCD, 0x3D, 0x2D, 0x70, 0x2E, 0x3C, 0x4B, 0x0E, 0x01, 0x00, 0x00, "Sigma", "853556",
+       "18-125mm F3.8-5.6 DC OS HSM"},
       {0x26, 0x40, 0x2D, 0x80, 0x2C, 0x40, 0x1C, 0x06, 0x00, 0x00, 0x00, "Sigma", "777555", "18-200mm F3.5-6.3 DC"},
       {0xFF, 0x40, 0x2D, 0x80, 0x2C, 0x40, 0x4B, 0x06, 0x00, 0x00, 0x00, "Sigma", "", "18-200mm F3.5-6.3 DC"},
-      {0x7A, 0x40, 0x2D, 0x80, 0x2C, 0x40, 0x4B, 0x0E, 0x01, 0x00, 0x00, "Sigma", "888558", "18-200mm F3.5-6.3 DC OS HSM"},
-      {0xED, 0x40, 0x2D, 0x80, 0x2C, 0x40, 0x4B, 0x0E, 0x01, 0x00, 0x00, "Sigma", "888558", "18-200mm F3.5-6.3 DC OS HSM"},
+      {0x7A, 0x40, 0x2D, 0x80, 0x2C, 0x40, 0x4B, 0x0E, 0x01, 0x00, 0x00, "Sigma", "888558",
+       "18-200mm F3.5-6.3 DC OS HSM"},
+      {0xED, 0x40, 0x2D, 0x80, 0x2C, 0x40, 0x4B, 0x0E, 0x01, 0x00, 0x00, "Sigma", "888558",
+       "18-200mm F3.5-6.3 DC OS HSM"},
       {0x90, 0x40, 0x2D, 0x80, 0x2C, 0x40, 0x4B, 0x0E, 0x01, 0x00, 0x00, "Sigma", "", "18-200mm F3.5-6.3 II DC OS HSM"},
       {0xA5, 0x40, 0x2D, 0x88, 0x2C, 0x40, 0x4B, 0x0E, 0x01, 0x00, 0x00, "Sigma", "", "18-250mm F3.5-6.3 DC OS HSM"},
-      {0x92, 0x39, 0x2D, 0x88, 0x2C, 0x40, 0x4B, 0x0E, 0x01, 0x00, 0x00, "Sigma", "", "18-250mm F3.5-6.3 DC OS Macro HSM"},
+      {0x92, 0x39, 0x2D, 0x88, 0x2C, 0x40, 0x4B, 0x0E, 0x01, 0x00, 0x00, "Sigma", "",
+       "18-250mm F3.5-6.3 DC OS Macro HSM"},
       {0x26, 0x48, 0x31, 0x49, 0x24, 0x24, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "", "20-40mm F2.8"},
       {0x02, 0x3A, 0x37, 0x50, 0x31, 0x3D, 0x02, 0x00, 0x00, 0x00, 0x00, "Sigma", "", "24-50mm F4-5.6 UC"},
       {0x26, 0x48, 0x37, 0x56, 0x24, 0x24, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "547448", "24-60mm F2.8 EX DG"},
       {0xB6, 0x48, 0x37, 0x56, 0x24, 0x24, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "547448", "24-60mm F2.8 EX DG"},
-      {0xA6, 0x48, 0x37, 0x5C, 0x24, 0x24, 0x4B, 0x06, 0x01, 0x00, 0x00, "Sigma", "571559", "24-70mm F2.8 IF EX DG HSM"},
+      {0xA6, 0x48, 0x37, 0x5C, 0x24, 0x24, 0x4B, 0x06, 0x01, 0x00, 0x00, "Sigma", "571559",
+       "24-70mm F2.8 IF EX DG HSM"},
       {0x26, 0x54, 0x37, 0x5C, 0x24, 0x24, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "", "24-70mm F2.8 EX DG Macro"},
       {0x67, 0x54, 0x37, 0x5C, 0x24, 0x24, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "548445", "24-70mm F2.8 EX DG Macro"},
       {0xE9, 0x54, 0x37, 0x5C, 0x24, 0x24, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "548445", "24-70mm F2.8 EX DG Macro"},
@@ -1945,74 +2224,102 @@ std::ostream& Nikon3MakerNote::printLensId(std::ostream& os, const Value& value,
        "28-80mm F3.5-5.6 Mini Zoom Macro II Aspherical"},
       {0x26, 0x40, 0x3C, 0x65, 0x2C, 0x3C, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "", "28-90mm F3.5-5.6 Macro"},
       {0x26, 0x48, 0x3C, 0x6A, 0x24, 0x30, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "", "28-105mm F2.8-4 Aspherical"},
-      {0x26, 0x3E, 0x3C, 0x6A, 0x2E, 0x3C, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "", "28-105mm F3.8-5.6 UC-III Aspherical IF"},
+      {0x26, 0x3E, 0x3C, 0x6A, 0x2E, 0x3C, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "",
+       "28-105mm F3.8-5.6 UC-III Aspherical IF"},
       {0x26, 0x40, 0x3C, 0x80, 0x2C, 0x3C, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "",
        "28-200mm F3.5-5.6 Compact Aspherical Hyperzoom Macro"},
       {0x26, 0x40, 0x3C, 0x80, 0x2B, 0x3C, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "",
        "28-200mm F3.5-5.6 Compact Aspherical Hyperzoom Macro"},
       {0x26, 0x3D, 0x3C, 0x80, 0x2F, 0x3D, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "", "28-300mm F3.8-5.6 Aspherical"},
-      {0x26, 0x41, 0x3C, 0x8E, 0x2C, 0x40, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "795443", "28-300mm F3.5-6.3 DG Macro"},
+      {0x26, 0x41, 0x3C, 0x8E, 0x2C, 0x40, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "795443",
+       "28-300mm F3.5-6.3 DG Macro"},
       {0xE6, 0x41, 0x3C, 0x8E, 0x2C, 0x40, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "", "28-300mm F3.5-6.3 DG Macro"},
       {0x26, 0x40, 0x3C, 0x8E, 0x2C, 0x40, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "", "28-300mm F3.5-6.3 Macro"},
       {0x02, 0x3B, 0x44, 0x61, 0x30, 0x3D, 0x02, 0x00, 0x00, 0x00, 0x00, "Sigma", "", "35-80mm F4-5.6"},
       {0x02, 0x40, 0x44, 0x73, 0x2B, 0x36, 0x02, 0x00, 0x00, 0x00, 0x00, "Sigma", "", "35-135mm F3.5-4.5 a"},
       {0xCC, 0x4C, 0x50, 0x68, 0x14, 0x14, 0x4B, 0x06, 0x00, 0x00, 0x00, "Sigma", "", "50-100mm F1.8 DC HSM | A"},
       {0x7A, 0x47, 0x50, 0x76, 0x24, 0x24, 0x4B, 0x06, 0x03, 0x00, 0x00, "Sigma", "", "50-150mm F2.8 EX APO DC HSM"},
-      {0xFD, 0x47, 0x50, 0x76, 0x24, 0x24, 0x4B, 0x06, 0x03, 0x00, 0x00, "Sigma", "691554", "50-150mm F2.8 EX APO DC HSM II"},
+      {0xFD, 0x47, 0x50, 0x76, 0x24, 0x24, 0x4B, 0x06, 0x03, 0x00, 0x00, "Sigma", "691554",
+       "50-150mm F2.8 EX APO DC HSM II"},
       {0x98, 0x48, 0x50, 0x76, 0x24, 0x24, 0x4B, 0x0E, 0x00, 0x00, 0x00, "Sigma", "", "50-150 f/2.8 EX DC APO OS HSM"},
-      {0x48, 0x3C, 0x50, 0xA0, 0x30, 0x40, 0x4B, 0x02, 0x03, 0x00, 0x00, "Sigma", "736552", "APO 50-500mm F4-6.3 EX HSM"},
-      {0x9F, 0x37, 0x50, 0xA0, 0x34, 0x40, 0x4B, 0x0E, 0x03, 0x00, 0x00, "Sigma", "", "50-500mm F4.5-6.3 APO DG OS HSM"},
-      //M                                         "Sigma" "686550" "50-200mm F4-5.6 DC OS HSM";
+      {0x48, 0x3C, 0x50, 0xA0, 0x30, 0x40, 0x4B, 0x02, 0x03, 0x00, 0x00, "Sigma", "736552",
+       "APO 50-500mm F4-6.3 EX HSM"},
+      {0x9F, 0x37, 0x50, 0xA0, 0x34, 0x40, 0x4B, 0x0E, 0x03, 0x00, 0x00, "Sigma", "",
+       "50-500mm F4.5-6.3 APO DG OS HSM"},
+      // M                                         "Sigma" "686550" "50-200mm F4-5.6 DC OS HSM";
       {0x26, 0x3C, 0x54, 0x80, 0x30, 0x3C, 0x1C, 0x06, 0x00, 0x00, 0x00, "Sigma", "", "55-200mm F4-5.6 DC"},
       {0x7A, 0x3B, 0x53, 0x80, 0x30, 0x3C, 0x4B, 0x06, 0x01, 0x00, 0x00, "Sigma", "", "55-200mm F4-5.6 DC HSM"},
       {0x48, 0x54, 0x5C, 0x80, 0x24, 0x24, 0x4B, 0x02, 0x00, 0x00, 0x00, "Sigma", "", "70-200mm F2.8 EX APO IF HSM"},
-      {0x7A, 0x48, 0x5C, 0x80, 0x24, 0x24, 0x4B, 0x06, 0x03, 0x00, 0x00, "Sigma", "", "70-200mm F2.8 EX APO DG Macro HSM II"},
-      {0xEE, 0x48, 0x5C, 0x80, 0x24, 0x24, 0x4B, 0x06, 0x03, 0x00, 0x00, "Sigma", "579555", "70-200mm F2.8 EX APO DG Macro HSM II"},
+      {0x7A, 0x48, 0x5C, 0x80, 0x24, 0x24, 0x4B, 0x06, 0x03, 0x00, 0x00, "Sigma", "",
+       "70-200mm F2.8 EX APO DG Macro HSM II"},
+      {0xEE, 0x48, 0x5C, 0x80, 0x24, 0x24, 0x4B, 0x06, 0x03, 0x00, 0x00, "Sigma", "579555",
+       "70-200mm F2.8 EX APO DG Macro HSM II"},
       {0x9C, 0x48, 0x5C, 0x80, 0x24, 0x24, 0x4B, 0x0E, 0x03, 0x00, 0x00, "Sigma", "", "70-200mm F2.8 EX DG OS HSM"},
       {0x02, 0x46, 0x5C, 0x82, 0x25, 0x25, 0x02, 0x00, 0x00, 0x00, 0x00, "Sigma", "", "70-210mm F2.8 APO"},
       {0x02, 0x40, 0x5C, 0x82, 0x2C, 0x35, 0x02, 0x00, 0x00, 0x00, 0x00, "Sigma", "", "APO 70-210mm F3.5-4.5"},
       {0x26, 0x3C, 0x5C, 0x82, 0x30, 0x3C, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "", "70-210mm F4-5.6 UC-II"},
       {0x26, 0x3C, 0x5C, 0x8E, 0x30, 0x3C, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "", "70-300mm F4-5.6 DG Macro"},
-      {0x56, 0x3C, 0x5C, 0x8E, 0x30, 0x3C, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "", "70-300mm F4-5.6 APO Macro Super II"},
-      {0xE0, 0x3C, 0x5C, 0x8E, 0x30, 0x3C, 0x4B, 0x06, 0x00, 0x00, 0x00, "Sigma", "508555", "APO 70-300mm F4-5.6 DG Macro"},
+      {0x56, 0x3C, 0x5C, 0x8E, 0x30, 0x3C, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "",
+       "70-300mm F4-5.6 APO Macro Super II"},
+      {0xE0, 0x3C, 0x5C, 0x8E, 0x30, 0x3C, 0x4B, 0x06, 0x00, 0x00, 0x00, "Sigma", "508555",
+       "APO 70-300mm F4-5.6 DG Macro"},
       {0xA3, 0x3C, 0x5C, 0x8E, 0x30, 0x3C, 0x4B, 0x0E, 0x00, 0x00, 0x00, "Sigma", "572556", "70-300mm F4-5.6 DG OS"},
       {0x02, 0x37, 0x5E, 0x8E, 0x35, 0x3D, 0x02, 0x00, 0x00, 0x00, 0x00, "Sigma", "", "75-300mm F4.5-5.6 APO"},
       {0x02, 0x3A, 0x5E, 0x8E, 0x32, 0x3D, 0x02, 0x00, 0x00, 0x00, 0x00, "Sigma", "", "75-300mm F4.0-5.6"},
       {0x77, 0x44, 0x61, 0x98, 0x34, 0x3C, 0x7B, 0x0E, 0x03, 0x00, 0x00, "Sigma", "", "80-400mm f4.5-5.6 EX OS"},
       {0x77, 0x44, 0x60, 0x98, 0x34, 0x3C, 0x7B, 0x0E, 0x03, 0x00, 0x00, "Sigma", "", "80-400mm f4.5-5.6 APO DG D OS"},
-      {0x48, 0x48, 0x68, 0x8E, 0x30, 0x30, 0x4B, 0x02, 0x03, 0x00, 0x00, "Sigma", "134556", "APO 100-300mm F4 EX IF HSM"},
-      {0xF3, 0x48, 0x68, 0x8E, 0x30, 0x30, 0x4B, 0x02, 0x13, 0x00, 0x00, "Sigma", "134556", "APO 100-300mm F4 EX IF HSM"},
+      {0x48, 0x48, 0x68, 0x8E, 0x30, 0x30, 0x4B, 0x02, 0x03, 0x00, 0x00, "Sigma", "134556",
+       "APO 100-300mm F4 EX IF HSM"},
+      {0xF3, 0x48, 0x68, 0x8E, 0x30, 0x30, 0x4B, 0x02, 0x13, 0x00, 0x00, "Sigma", "134556",
+       "APO 100-300mm F4 EX IF HSM"},
       {0x48, 0x54, 0x6F, 0x8E, 0x24, 0x24, 0x4B, 0x02, 0x03, 0x00, 0x00, "Sigma", "", "APO 120-300mm F2.8 EX DG HSM"},
-      {0x7A, 0x54, 0x6E, 0x8E, 0x24, 0x24, 0x4B, 0x02, 0x03, 0x00, 0x00, "Sigma", "135553", "APO 120-300mm F2.8 EX DG HSM"},
-      {0xFA, 0x54, 0x6E, 0x8E, 0x24, 0x24, 0x4B, 0x02, 0x03, 0x00, 0x00, "Sigma", "135553", "APO 120-300mm F2.8 EX DG HSM"},
-      {0xCF, 0x38, 0x6E, 0x98, 0x34, 0x3C, 0x4B, 0x0E, 0x03, 0x00, 0x00, "Sigma", "728557", "APO 120-400mm F4.5-5.6 DG OS HSM"},
+      {0x7A, 0x54, 0x6E, 0x8E, 0x24, 0x24, 0x4B, 0x02, 0x03, 0x00, 0x00, "Sigma", "135553",
+       "APO 120-300mm F2.8 EX DG HSM"},
+      {0xFA, 0x54, 0x6E, 0x8E, 0x24, 0x24, 0x4B, 0x02, 0x03, 0x00, 0x00, "Sigma", "135553",
+       "APO 120-300mm F2.8 EX DG HSM"},
+      {0xCF, 0x38, 0x6E, 0x98, 0x34, 0x3C, 0x4B, 0x0E, 0x03, 0x00, 0x00, "Sigma", "728557",
+       "APO 120-400mm F4.5-5.6 DG OS HSM"},
       {0xC3, 0x34, 0x68, 0x98, 0x38, 0x40, 0x4B, 0x4E, 0x03, 0x00, 0x00, "Sigma", "", "100-400mm F5-6.3 DG OS HSM C"},
       {0x8D, 0x48, 0x6E, 0x8E, 0x24, 0x24, 0x4B, 0x0E, 0x03, 0x00, 0x00, "Sigma", "", "120-300mm F2.8 DG OS HSM | S"},
-      {0x26, 0x44, 0x73, 0x98, 0x34, 0x3C, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "", "135-400mm F4.5-5.6 APO Aspherical"},
-      {0xCE, 0x34, 0x76, 0xA0, 0x38, 0x40, 0x4B, 0x0E, 0x03, 0x00, 0x00, "Sigma", "737559", "APO 150-500mm F5-6.3 DG OS HSM"},
-      {0x81, 0x34, 0x76, 0xA6, 0x38, 0x40, 0x4B, 0x0E, 0x03, 0x00, 0x00, "Sigma", "", "150-600mm F5-6.3 DG OS HSM Sports"},
-      {0x82, 0x34, 0x76, 0xA6, 0x38, 0x40, 0x4B, 0x0E, 0x03, 0x00, 0x00, "Sigma", "", "150-600mm F5-6.3 DG OS HSM Contemporary"},
-      {0x26, 0x40, 0x7B, 0xA0, 0x34, 0x40, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "", "APO 170-500mm F5-6.3 Aspherical RF"},
+      {0x26, 0x44, 0x73, 0x98, 0x34, 0x3C, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "",
+       "135-400mm F4.5-5.6 APO Aspherical"},
+      {0xCE, 0x34, 0x76, 0xA0, 0x38, 0x40, 0x4B, 0x0E, 0x03, 0x00, 0x00, "Sigma", "737559",
+       "APO 150-500mm F5-6.3 DG OS HSM"},
+      {0x81, 0x34, 0x76, 0xA6, 0x38, 0x40, 0x4B, 0x0E, 0x03, 0x00, 0x00, "Sigma", "",
+       "150-600mm F5-6.3 DG OS HSM Sports"},
+      {0x82, 0x34, 0x76, 0xA6, 0x38, 0x40, 0x4B, 0x0E, 0x03, 0x00, 0x00, "Sigma", "",
+       "150-600mm F5-6.3 DG OS HSM Contemporary"},
+      {0x26, 0x40, 0x7B, 0xA0, 0x34, 0x40, 0x1C, 0x02, 0x00, 0x00, 0x00, "Sigma", "",
+       "APO 170-500mm F5-6.3 Aspherical RF"},
       {0xA7, 0x49, 0x80, 0xA0, 0x24, 0x24, 0x4B, 0x06, 0x03, 0x00, 0x00, "Sigma", "", "APO 200-500mm F2.8 EX DG"},
-      {0x48, 0x3C, 0x8E, 0xB0, 0x3C, 0x3C, 0x4B, 0x02, 0x03, 0x00, 0x00, "Sigma", "595555", "APO 300-800mm F5.6 EX DG HSM"},
+      {0x48, 0x3C, 0x8E, 0xB0, 0x3C, 0x3C, 0x4B, 0x02, 0x03, 0x00, 0x00, "Sigma", "595555",
+       "APO 300-800mm F5.6 EX DG HSM"},
       //
       //------------------------------------------------------------------------------
       // Tamron lenses by focal length, first fixed then zoom lenses
       //------------------------------------------------------------------------------
       //
-      {0x00, 0x47, 0x25, 0x25, 0x24, 0x24, 0x00, 0x02, 0x00, 0x00, 0x00, "Tamron", "69E", "SP AF 14mm F/2.8 Aspherical (IF)"},
+      {0x00, 0x47, 0x25, 0x25, 0x24, 0x24, 0x00, 0x02, 0x00, 0x00, 0x00, "Tamron", "69E",
+       "SP AF 14mm F/2.8 Aspherical (IF)"},
       {0xE8, 0x4C, 0x44, 0x44, 0x14, 0x14, 0xDF, 0x0E, 0x00, 0x00, 0x00, "Tamron", "F012", "SP 35mm F/1.8 Di VC USD"},
       {0xE7, 0x4C, 0x4C, 0x4C, 0x14, 0x14, 0xDF, 0x0E, 0x00, 0x00, 0x00, "Tamron", "F013", "SP 45mm F/1.8 Di VC USD"},
-      {0xF4, 0x54, 0x56, 0x56, 0x18, 0x18, 0x84, 0x06, 0x01, 0x00, 0x00, "Tamron", "G005", "SP AF 60mm F/2 Di II LD (IF) Macro 1:1"},
+      {0xF4, 0x54, 0x56, 0x56, 0x18, 0x18, 0x84, 0x06, 0x01, 0x00, 0x00, "Tamron", "G005",
+       "SP AF 60mm F/2 Di II LD (IF) Macro 1:1"},
       {0x1E, 0x5D, 0x64, 0x64, 0x20, 0x20, 0x13, 0x00, 0x40, 0x00, 0x00, "Tamron", "52E", "SP AF 90mm F/2.5"},
       {0x20, 0x5A, 0x64, 0x64, 0x20, 0x20, 0x14, 0x00, 0x40, 0x00, 0x00, "Tamron", "152E", "SP AF 90mm F/2.5 Macro"},
       {0x22, 0x53, 0x64, 0x64, 0x24, 0x24, 0xE0, 0x02, 0x40, 0x00, 0x00, "Tamron", "72E", "SP AF 90mm F/2.8 Macro 1:1"},
-      {0x32, 0x53, 0x64, 0x64, 0x24, 0x24, 0x35, 0x02, 0x40, 0x01, 0x00, "Tamron", "172E", "SP AF 90mm F/2.8 Macro 1:1"},
-      {0x32, 0x53, 0x64, 0x64, 0x24, 0x24, 0x35, 0x02, 0x40, 0x02, 0x00, "Tamron", "272E", "SP AF 90mm F/2.8 Di Macro 1:1"},
-      {0xF8, 0x55, 0x64, 0x64, 0x24, 0x24, 0x84, 0x06, 0x41, 0x00, 0x00, "Tamron", "272NII", "SP AF 90mm F/2.8 Di Macro 1:1"},
-      {0xF8, 0x54, 0x64, 0x64, 0x24, 0x24, 0xDF, 0x06, 0x41, 0x00, 0x00, "Tamron", "272NII", "SP AF 90mm F/2.8 Di Macro 1:1"},
-      {0xFE, 0x54, 0x64, 0x64, 0x24, 0x24, 0xDF, 0x0E, 0x00, 0x00, 0x00, "Tamron", "F004", "SP 90mm F/2.8 Di VC USD MACRO 1:1"},
-      {0xE4, 0x54, 0x64, 0x64, 0x24, 0x24, 0xDF, 0x0E, 0x00, 0x00, 0x00, "Tamron", "F017", "SP 90mm f/2.8 Di VC USD Macro 1:1"},
+      {0x32, 0x53, 0x64, 0x64, 0x24, 0x24, 0x35, 0x02, 0x40, 0x01, 0x00, "Tamron", "172E",
+       "SP AF 90mm F/2.8 Macro 1:1"},
+      {0x32, 0x53, 0x64, 0x64, 0x24, 0x24, 0x35, 0x02, 0x40, 0x02, 0x00, "Tamron", "272E",
+       "SP AF 90mm F/2.8 Di Macro 1:1"},
+      {0xF8, 0x55, 0x64, 0x64, 0x24, 0x24, 0x84, 0x06, 0x41, 0x00, 0x00, "Tamron", "272NII",
+       "SP AF 90mm F/2.8 Di Macro 1:1"},
+      {0xF8, 0x54, 0x64, 0x64, 0x24, 0x24, 0xDF, 0x06, 0x41, 0x00, 0x00, "Tamron", "272NII",
+       "SP AF 90mm F/2.8 Di Macro 1:1"},
+      {0xFE, 0x54, 0x64, 0x64, 0x24, 0x24, 0xDF, 0x0E, 0x00, 0x00, 0x00, "Tamron", "F004",
+       "SP 90mm F/2.8 Di VC USD MACRO 1:1"},
+      {0xE4, 0x54, 0x64, 0x64, 0x24, 0x24, 0xDF, 0x0E, 0x00, 0x00, 0x00, "Tamron", "F017",
+       "SP 90mm f/2.8 Di VC USD Macro 1:1"},
       {0x00, 0x4C, 0x7C, 0x7C, 0x2C, 0x2C, 0x00, 0x02, 0x00, 0x00, 0x00, "Tamron", "B01", "SP AF 180mm F/3.5 Di Model"},
       {0x21, 0x56, 0x8E, 0x8E, 0x24, 0x24, 0x14, 0x00, 0x00, 0x00, 0x00, "Tamron", "60E", "SP AF 300mm F/2.8 LD-IF"},
       {0x27, 0x54, 0x8E, 0x8E, 0x24, 0x24, 0x1D, 0x02, 0x00, 0x00, 0x00, "Tamron", "360E", "SP AF 300mm F/2.8 LD-IF"},
@@ -2023,8 +2330,10 @@ std::ostream& Nikon3MakerNote::printLensId(std::ostream& os, const Value& value,
        "SP AF 10-24mm F/3.5-4.5 Di II LD Aspherical (IF)"},
       {0x00, 0x36, 0x1C, 0x2D, 0x34, 0x3C, 0x00, 0x06, 0x00, 0x00, 0x00, "Tamron", "A13",
        "SP AF 11-18mm F/4.5-5.6 Di II LD Aspherical (IF)"},
-      {0xE9, 0x48, 0x27, 0x3E, 0x24, 0x24, 0xDF, 0x0E, 0x00, 0x00, 0x00, "Tamron", "A012", "SP 15-30mm F/2.8 Di VC USD"},
-      {0xEA, 0x40, 0x29, 0x8E, 0x2C, 0x40, 0xDF, 0x0E, 0x00, 0x00, 0x00, "Tamron", "B016", "AF 16-300mm F/3.5-6.3 Di II VC PZD"},
+      {0xE9, 0x48, 0x27, 0x3E, 0x24, 0x24, 0xDF, 0x0E, 0x00, 0x00, 0x00, "Tamron", "A012",
+       "SP 15-30mm F/2.8 Di VC USD"},
+      {0xEA, 0x40, 0x29, 0x8E, 0x2C, 0x40, 0xDF, 0x0E, 0x00, 0x00, 0x00, "Tamron", "B016",
+       "AF 16-300mm F/3.5-6.3 Di II VC PZD"},
       {0x07, 0x46, 0x2B, 0x44, 0x24, 0x30, 0x03, 0x02, 0x00, 0x00, 0x00, "Tamron", "A05",
        "SP AF 17-35mm F/2.8-4 Di LD Aspherical (IF)"},
       {0x00, 0x53, 0x2B, 0x50, 0x24, 0x24, 0x00, 0x06, 0x00, 0x00, 0x00, "Tamron", "A16",
@@ -2043,167 +2352,231 @@ std::ostream& Nikon3MakerNote::printLensId(std::ostream& os, const Value& value,
        "AF 18-200mm F/3.5-6.3 XR Di II LD Aspherical (IF) Macro"},
       {0xFC, 0x40, 0x2D, 0x80, 0x2C, 0x40, 0xDF, 0x06, 0x01, 0x00, 0x00, "Tamron", "A14NII",
        "AF 18-200mm F/3.5-6.3 XR Di II LD Aspherical (IF) Macro"},
-      {0xE6, 0x40, 0x2D, 0x80, 0x2C, 0x40, 0xDF, 0x0E, 0x01, 0x00, 0x00, "Tamron", "B018", "AF 18-200mm f/3.5-6.3 Di II VC"},
+      {0xE6, 0x40, 0x2D, 0x80, 0x2C, 0x40, 0xDF, 0x0E, 0x01, 0x00, 0x00, "Tamron", "B018",
+       "AF 18-200mm f/3.5-6.3 Di II VC"},
       {0x00, 0x40, 0x2D, 0x88, 0x2C, 0x40, 0x62, 0x06, 0x00, 0x00, 0x00, "Tamron", "A18",
        "AF 18-250mm F/3.5-6.3 Di II LD Aspherical (IF) Macro"},
       {0x00, 0x40, 0x2D, 0x88, 0x2C, 0x40, 0x00, 0x06, 0x01, 0x00, 0x00, "Tamron", "A18NII",
        "AF 18-250mm F/3.5-6.3 Di II LD Aspherical (IF) Macro "},
       {0xF5, 0x40, 0x2C, 0x8A, 0x2C, 0x40, 0x40, 0x0E, 0x01, 0x00, 0x00, "Tamron", "B003",
        "AF 18-270mm F/3.5-6.3 Di II VC LD Aspherical (IF) Macro"},
-      {0xF0, 0x3F, 0x2D, 0x8A, 0x2C, 0x40, 0xDF, 0x0E, 0x01, 0x00, 0x00, "Tamron", "B008", "AF 18-270mm F/3.5-6.3 Di II VC PZD"},
-      {0xE0, 0x40, 0x2D, 0x98, 0x2C, 0x41, 0xDF, 0x4E, 0x01, 0x00, 0x00, "Tamron", "B028", "AF 18-400mm F/3.5-6.3 Di II VC HLD"},
+      {0xF0, 0x3F, 0x2D, 0x8A, 0x2C, 0x40, 0xDF, 0x0E, 0x01, 0x00, 0x00, "Tamron", "B008",
+       "AF 18-270mm F/3.5-6.3 Di II VC PZD"},
+      {0xE0, 0x40, 0x2D, 0x98, 0x2C, 0x41, 0xDF, 0x4E, 0x01, 0x00, 0x00, "Tamron", "B028",
+       "AF 18-400mm F/3.5-6.3 Di II VC HLD"},
       {0x07, 0x40, 0x2F, 0x44, 0x2C, 0x34, 0x03, 0x02, 0x00, 0x00, 0x00, "Tamron", "A10", "AF 19-35mm F/3.5-4.5"},
       {0x07, 0x40, 0x30, 0x45, 0x2D, 0x35, 0x03, 0x02, 0x00, 0x00, 0x00, "Tamron", "A10", "AF 19-35mm F/3.5-4.5"},
       {0x00, 0x49, 0x30, 0x48, 0x22, 0x2B, 0x00, 0x02, 0x00, 0x00, 0x00, "Tamron", "166D", "SP AF 20-40mm F/2.7-3.5"},
       {0x0E, 0x4A, 0x31, 0x48, 0x23, 0x2D, 0x0E, 0x02, 0x00, 0x00, 0x00, "Tamron", "166D", "SP AF 20-40mm F/2.7-3.5"},
-      //M                                         "Tamron" "266D"   "SP AF 20-40mm F/2.7-3.5 Aspherical-IF";
-      {0xFE, 0x48, 0x37, 0x5C, 0x24, 0x24, 0xDF, 0x0E, 0x01, 0x00, 0x00, "Tamron", "A007", "SP 24-70mm F/2.8 Di VC USD"},
-      //M                                         "Tamron" "73D"    "AF 24-70mm F/3.3-5.6 Aspherical";
-      {0xCE, 0x47, 0x37, 0x5C, 0x25, 0x25, 0xDF, 0x4E, 0x00, 0x00, 0x00, "Tamron", "A032", "SP 24-70mm F/2.8 Di VC USD G2"},
-      {0xCE, 0x47, 0x37, 0x5C, 0x25, 0x25, 0xDF, 0x0E, 0x00, 0x00, 0x00, "Tamron", "A032", "SP 24-70mm F/2.8 Di VC USD G2"},
+      // M                                         "Tamron" "266D"   "SP AF 20-40mm F/2.7-3.5 Aspherical-IF";
+      {0xFE, 0x48, 0x37, 0x5C, 0x24, 0x24, 0xDF, 0x0E, 0x01, 0x00, 0x00, "Tamron", "A007",
+       "SP 24-70mm F/2.8 Di VC USD"},
+      // M                                         "Tamron" "73D"    "AF 24-70mm F/3.3-5.6 Aspherical";
+      {0xCE, 0x47, 0x37, 0x5C, 0x25, 0x25, 0xDF, 0x4E, 0x00, 0x00, 0x00, "Tamron", "A032",
+       "SP 24-70mm F/2.8 Di VC USD G2"},
+      {0xCE, 0x47, 0x37, 0x5C, 0x25, 0x25, 0xDF, 0x0E, 0x00, 0x00, 0x00, "Tamron", "A032",
+       "SP 24-70mm F/2.8 Di VC USD G2"},
       {0x45, 0x41, 0x37, 0x72, 0x2C, 0x3C, 0x48, 0x02, 0x00, 0x00, 0x00, "Tamron", "190D",
        "SP AF 24-135mm F/3.5-5.6 AD Aspherical (IF) Macro"},
-      //M                                         "Tamron" "159D"   "AF 28-70mm F/3.5-4.5";
-      //M                                         "Tamron" "259D"   "AF 28-70mm F/3.5-4.5";
+      // M                                         "Tamron" "159D"   "AF 28-70mm F/3.5-4.5";
+      // M                                         "Tamron" "259D"   "AF 28-70mm F/3.5-4.5";
       {0x33, 0x54, 0x3C, 0x5E, 0x24, 0x24, 0x62, 0x02, 0x00, 0x00, 0x00, "Tamron", "A09",
        "SP AF 28-75mm F/2.8 XR Di LD Aspherical (IF) Macro"},
       {0xFA, 0x54, 0x3C, 0x5E, 0x24, 0x24, 0x84, 0x06, 0x01, 0x00, 0x00, "Tamron", "A09NII",
        "SP AF 28-75mm F/2.8 XR Di LD Aspherical (IF) Macro"},
       {0xFA, 0x54, 0x3C, 0x5E, 0x24, 0x24, 0xDF, 0x06, 0x01, 0x00, 0x00, "Tamron", "A09NII",
        "SP AF 28-75mm F/2.8 XR Di LD Aspherical (IF) Macro"},
-      {0x10, 0x3D, 0x3C, 0x60, 0x2C, 0x3C, 0xD2, 0x02, 0x00, 0x00, 0x00, "Tamron", "177D", "AF 28-80mm F/3.5-5.6 Aspherical"},
-      {0x45, 0x3D, 0x3C, 0x60, 0x2C, 0x3C, 0x48, 0x02, 0x00, 0x00, 0x00, "Tamron", "177D", "AF 28-80mm F/3.5-5.6 Aspherical"},
-      {0x00, 0x48, 0x3C, 0x6A, 0x24, 0x24, 0x00, 0x02, 0x00, 0x00, 0x00, "Tamron", "176D", "SP AF 28-105mm F/2.8 LD Aspherical IF"},
-      //M                                         "Tamron" "276D"   "SP AF 28-105mm F/2.8 LD Aspherical IF";
-      //M                                         "Tamron" "179D"   "AF 28-105mm F4.0-5.6 IF";
+      {0x10, 0x3D, 0x3C, 0x60, 0x2C, 0x3C, 0xD2, 0x02, 0x00, 0x00, 0x00, "Tamron", "177D",
+       "AF 28-80mm F/3.5-5.6 Aspherical"},
+      {0x45, 0x3D, 0x3C, 0x60, 0x2C, 0x3C, 0x48, 0x02, 0x00, 0x00, 0x00, "Tamron", "177D",
+       "AF 28-80mm F/3.5-5.6 Aspherical"},
+      {0x00, 0x48, 0x3C, 0x6A, 0x24, 0x24, 0x00, 0x02, 0x00, 0x00, 0x00, "Tamron", "176D",
+       "SP AF 28-105mm F/2.8 LD Aspherical IF"},
+      // M                                         "Tamron" "276D"   "SP AF 28-105mm F/2.8 LD Aspherical IF";
+      // M                                         "Tamron" "179D"   "AF 28-105mm F4.0-5.6 IF";
       {0x4D, 0x3E, 0x3C, 0x80, 0x2E, 0x3C, 0x62, 0x02, 0x00, 0x00, 0x00, "Tamron", "A03N",
        "AF 28-200mm F/3.8-5.6 XR Aspherical (IF) Macro"},
-      //M                                         "Tamron" "471D"   "AF 28-200mm F/3.8-5.6 Aspherical IF Super2 Silver";
+      // M                                         "Tamron" "471D"   "AF 28-200mm F/3.8-5.6 Aspherical IF Super2
+      // Silver";
       {0x0B, 0x3E, 0x3D, 0x7F, 0x2F, 0x3D, 0x0E, 0x00, 0x00, 0x00, 0x00, "Tamron", "71D", "AF 28-200mm F/3.8-5.6"},
       {0x0B, 0x3E, 0x3D, 0x7F, 0x2F, 0x3D, 0x0E, 0x02, 0x00, 0x00, 0x00, "Tamron", "171D", "AF 28-200mm F/3.8-5.6D"},
-      {0x12, 0x3D, 0x3C, 0x80, 0x2E, 0x3C, 0xDF, 0x02, 0x00, 0x00, 0x00, "Tamron", "271D", "AF 28-200mm F/3.8-5.6 LD Aspherical (IF)"},
+      {0x12, 0x3D, 0x3C, 0x80, 0x2E, 0x3C, 0xDF, 0x02, 0x00, 0x00, 0x00, "Tamron", "271D",
+       "AF 28-200mm F/3.8-5.6 LD Aspherical (IF)"},
       {0x4D, 0x41, 0x3C, 0x8E, 0x2B, 0x40, 0x62, 0x02, 0x00, 0x00, 0x00, "Tamron", "A061",
        "AF 28-300mm F/3.5-6.3 XR Di LD Aspherical (IF)"},
       {0x4D, 0x41, 0x3C, 0x8E, 0x2C, 0x40, 0x62, 0x02, 0x00, 0x00, 0x00, "Tamron", "185D",
        "AF 28-300mm F/3.5-6.3 XR LD Aspherical (IF)"},
-      //M                                         "Tamron" "285D"   "AF 28-300mm F/3.8-6.3 LD Aspherical IF Silver";
+      // M                                         "Tamron" "285D"   "AF 28-300mm F/3.8-6.3 LD Aspherical IF Silver";
       {0xF9, 0x40, 0x3C, 0x8E, 0x2C, 0x40, 0x40, 0x0E, 0x01, 0x00, 0x00, "Tamron", "A20",
        "AF 28-300mm F/3.5-6.3 XR Di VC LD Aspherical (IF) Macro"},
-      //M                                         "Tamron" "63D"    "AF 35-90mm F/4-5.6";
-      //M                                         "Tamron" "65D"    "SP AF 35-105mm F/2.8 Aspherical";
-      //M                                         "Tamron" ""       "AF 35-135mm F/3.5-4.5";
-      {0x00, 0x47, 0x53, 0x80, 0x30, 0x3C, 0x00, 0x06, 0x00, 0x00, 0x00, "Tamron", "A15", "AF 55-200mm F/4-5.6 Di II LD"},
-      {0xF7, 0x53, 0x5C, 0x80, 0x24, 0x24, 0x84, 0x06, 0x01, 0x00, 0x00, "Tamron", "A001", "SP AF 70-200mm F/2.8 Di LD (IF) Macro"},
-      {0xFE, 0x53, 0x5C, 0x80, 0x24, 0x24, 0x84, 0x06, 0x01, 0x00, 0x00, "Tamron", "A001", "SP AF 70-200mm F/2.8 Di LD (IF) Macro"},
-      {0xF7, 0x53, 0x5C, 0x80, 0x24, 0x24, 0x40, 0x06, 0x01, 0x00, 0x00, "Tamron", "A001", "SP AF 70-200mm F/2.8 Di LD (IF) Macro"},
-      {0xFE, 0x54, 0x5C, 0x80, 0x24, 0x24, 0xDF, 0x0E, 0x01, 0x00, 0x00, "Tamron", "A009", "SP 70-200mm F/2.8 Di VC USD"},
-      //M                                         "Tamron" "67D"    "SP AF 70-210mm f/2.8 LD";
-      //M                                         "Tamron" ""       "AF 70-210mm F/3.5-4.5";
-      //M                                         "Tamron" "158D"   "AF 70-210mm F/4-5.6";
-      //M                                         "Tamron" "258D"   "AF 70-210mm F/4-5.6";
-      //M                                         "Tamron" "172D"   "AF 70-300mm F/4-5.6";
-      //M                                         "Tamron" "472D"   "AF 70-300mm F/4-5.6 LD";
-      {0x69, 0x48, 0x5C, 0x8E, 0x30, 0x3C, 0x6F, 0x02, 0x00, 0x00, 0x00, "Tamron", "572D/772D", "AF 70-300mm F/4-5.6 LD Macro 1:2"},
-      {0x69, 0x47, 0x5C, 0x8E, 0x30, 0x3C, 0x00, 0x02, 0x00, 0x00, 0x00, "Tamron", "A17N", "AF 70-300mm F/4-5.6 Di LD Macro 1:2"},
-      {0x00, 0x48, 0x5C, 0x8E, 0x30, 0x3C, 0x00, 0x06, 0x01, 0x00, 0x00, "Tamron", "A17NII", "AF 70-300mm F/4-5.6 Di LD Macro 1:2"},
-      {0xF1, 0x47, 0x5C, 0x8E, 0x30, 0x3C, 0xDF, 0x0E, 0x00, 0x00, 0x00, "Tamron", "A005", "SP 70-300mm F4-5.6 Di VC USD"},
-      //M                                         "Tamron" "872D"   "AF 75-300mm F/4-5.6 LD";
-      //M                                         "Tamron" "278D"   "AF 80-210mm F/4.5-5.6";
-      //M                                         "Tamron" "62D"    "AF 90-300mm F/4.5-5.6";
-      //M                                         "Tamron" "186D"   "AF 100-300mm F/5-6.3";
-      {0xEB, 0x40, 0x76, 0xA6, 0x38, 0x40, 0xDF, 0x0E, 0x00, 0x00, 0x00, "Tamron", "A011", "SP AF 150-600mm F/5-6.3 VC USD"},
-      {0xE3, 0x40, 0x76, 0xA6, 0x38, 0x40, 0xDF, 0x4E, 0x00, 0x00, 0x00, "Tamron", "A022", "SP AF 150-600mm F/5-6.3 Di VC USD G2"},
+      // M                                         "Tamron" "63D"    "AF 35-90mm F/4-5.6";
+      // M                                         "Tamron" "65D"    "SP AF 35-105mm F/2.8 Aspherical";
+      // M                                         "Tamron" ""       "AF 35-135mm F/3.5-4.5";
+      {0x00, 0x47, 0x53, 0x80, 0x30, 0x3C, 0x00, 0x06, 0x00, 0x00, 0x00, "Tamron", "A15",
+       "AF 55-200mm F/4-5.6 Di II LD"},
+      {0xF7, 0x53, 0x5C, 0x80, 0x24, 0x24, 0x84, 0x06, 0x01, 0x00, 0x00, "Tamron", "A001",
+       "SP AF 70-200mm F/2.8 Di LD (IF) Macro"},
+      {0xFE, 0x53, 0x5C, 0x80, 0x24, 0x24, 0x84, 0x06, 0x01, 0x00, 0x00, "Tamron", "A001",
+       "SP AF 70-200mm F/2.8 Di LD (IF) Macro"},
+      {0xF7, 0x53, 0x5C, 0x80, 0x24, 0x24, 0x40, 0x06, 0x01, 0x00, 0x00, "Tamron", "A001",
+       "SP AF 70-200mm F/2.8 Di LD (IF) Macro"},
+      {0xFE, 0x54, 0x5C, 0x80, 0x24, 0x24, 0xDF, 0x0E, 0x01, 0x00, 0x00, "Tamron", "A009",
+       "SP 70-200mm F/2.8 Di VC USD"},
+      // M                                         "Tamron" "67D"    "SP AF 70-210mm f/2.8 LD";
+      // M                                         "Tamron" ""       "AF 70-210mm F/3.5-4.5";
+      // M                                         "Tamron" "158D"   "AF 70-210mm F/4-5.6";
+      // M                                         "Tamron" "258D"   "AF 70-210mm F/4-5.6";
+      // M                                         "Tamron" "172D"   "AF 70-300mm F/4-5.6";
+      // M                                         "Tamron" "472D"   "AF 70-300mm F/4-5.6 LD";
+      {0x69, 0x48, 0x5C, 0x8E, 0x30, 0x3C, 0x6F, 0x02, 0x00, 0x00, 0x00, "Tamron", "572D/772D",
+       "AF 70-300mm F/4-5.6 LD Macro 1:2"},
+      {0x69, 0x47, 0x5C, 0x8E, 0x30, 0x3C, 0x00, 0x02, 0x00, 0x00, 0x00, "Tamron", "A17N",
+       "AF 70-300mm F/4-5.6 Di LD Macro 1:2"},
+      {0x00, 0x48, 0x5C, 0x8E, 0x30, 0x3C, 0x00, 0x06, 0x01, 0x00, 0x00, "Tamron", "A17NII",
+       "AF 70-300mm F/4-5.6 Di LD Macro 1:2"},
+      {0xF1, 0x47, 0x5C, 0x8E, 0x30, 0x3C, 0xDF, 0x0E, 0x00, 0x00, 0x00, "Tamron", "A005",
+       "SP 70-300mm F4-5.6 Di VC USD"},
+      // M                                         "Tamron" "872D"   "AF 75-300mm F/4-5.6 LD";
+      // M                                         "Tamron" "278D"   "AF 80-210mm F/4.5-5.6";
+      // M                                         "Tamron" "62D"    "AF 90-300mm F/4.5-5.6";
+      // M                                         "Tamron" "186D"   "AF 100-300mm F/5-6.3";
+      {0xEB, 0x40, 0x76, 0xA6, 0x38, 0x40, 0xDF, 0x0E, 0x00, 0x00, 0x00, "Tamron", "A011",
+       "SP AF 150-600mm F/5-6.3 VC USD"},
+      {0xE3, 0x40, 0x76, 0xA6, 0x38, 0x40, 0xDF, 0x4E, 0x00, 0x00, 0x00, "Tamron", "A022",
+       "SP AF 150-600mm F/5-6.3 Di VC USD G2"},
       {0x20, 0x3C, 0x80, 0x98, 0x3D, 0x3D, 0x1E, 0x02, 0x00, 0x00, 0x00, "Tamron", "75D", "AF 200-400mm F/5.6 LD IF"},
-      {0x00, 0x3E, 0x80, 0xA0, 0x38, 0x3F, 0x00, 0x02, 0x00, 0x00, 0x00, "Tamron", "A08", "SP AF 200-500mm F/5-6.3 Di LD (IF)"},
+      {0x00, 0x3E, 0x80, 0xA0, 0x38, 0x3F, 0x00, 0x02, 0x00, 0x00, 0x00, "Tamron", "A08",
+       "SP AF 200-500mm F/5-6.3 Di LD (IF)"},
       {0x00, 0x3F, 0x80, 0xA0, 0x38, 0x3F, 0x00, 0x02, 0x00, 0x00, 0x00, "Tamron", "A08", "SP AF 200-500mm F/5-6.3 Di"},
       //
       //------------------------------------------------------------------------------
       // Tokina Lenses by focal length, first fixed then zoom lenses
       //------------------------------------------------------------------------------
       //
-      {0x00, 0x40, 0x2B, 0x2B, 0x2C, 0x2C, 0x00, 0x02, 0x00, 0x00, 0x00, "Tokina", "", "AT-X 17 AF PRO (AF 17mm f/3.5)"},
-      {0x00, 0x47, 0x44, 0x44, 0x24, 0x24, 0x00, 0x06, 0x40, 0x00, 0x00, "Tokina", "T303503", "AT-X M35 PRO DX (AF 35mm f/2.8 Macro)"},
+      {0x00, 0x40, 0x2B, 0x2B, 0x2C, 0x2C, 0x00, 0x02, 0x00, 0x00, 0x00, "Tokina", "",
+       "AT-X 17 AF PRO (AF 17mm f/3.5)"},
+      {0x00, 0x47, 0x44, 0x44, 0x24, 0x24, 0x00, 0x06, 0x40, 0x00, 0x00, "Tokina", "T303503",
+       "AT-X M35 PRO DX (AF 35mm f/2.8 Macro)"},
       {0x00, 0x54, 0x68, 0x68, 0x24, 0x24, 0x00, 0x02, 0x40, 0x00, 0x00, "Tokina", "T310003N",
        "AT-X M100 AF PRO D (AF 100mm f/2.8 Macro)"},
       {0x27, 0x48, 0x8E, 0x8E, 0x30, 0x30, 0x1D, 0x02, 0x00, 0x00, 0x00, "Tokina", "", "AT-X 304 AF (AF 300mm f/4.0)"},
-      {0x00, 0x54, 0x8E, 0x8E, 0x24, 0x24, 0x00, 0x02, 0x00, 0x00, 0x00, "Tokina", "", "AT-X 300 AF PRO (AF 300mm f/2.8)"},
-      {0x12, 0x3B, 0x98, 0x98, 0x3D, 0x3D, 0x09, 0x00, 0x00, 0x00, 0x00, "Tokina", "", "AT-X 400 AF SD (AF 400mm f/5.6)"},
+      {0x00, 0x54, 0x8E, 0x8E, 0x24, 0x24, 0x00, 0x02, 0x00, 0x00, 0x00, "Tokina", "",
+       "AT-X 300 AF PRO (AF 300mm f/2.8)"},
+      {0x12, 0x3B, 0x98, 0x98, 0x3D, 0x3D, 0x09, 0x00, 0x00, 0x00, 0x00, "Tokina", "",
+       "AT-X 400 AF SD (AF 400mm f/5.6)"},
       //
       {0x00, 0x40, 0x18, 0x2B, 0x2C, 0x34, 0x00, 0x06, 0x00, 0x00, 0x00, "Tokina", "T4101703",
        "AT-X 107 AF DX Fisheye (AF 10-17mm f/3.5-4.5)"},
-      {0x00, 0x48, 0x1C, 0x29, 0x24, 0x24, 0x00, 0x06, 0x00, 0x00, 0x00, "Tokina", "T4111603", "AT-X 116 PRO DX (AF 11-16mm f/2.8)"},
-      {0x7A, 0x48, 0x1C, 0x29, 0x24, 0x24, 0x7E, 0x06, 0x00, 0x00, 0x00, "Tokina", "", "AT-X 116 PRO DX II (AF 11-16mm f/2.8)"},
-      {0x7A, 0x48, 0x1C, 0x30, 0x24, 0x24, 0x7E, 0x06, 0x00, 0x00, 0x00, "Tokina", "", "AT-X 11-20 F2.8 PRO DX (AF 11-20mm f/2.8)"},
-      {0x00, 0x3C, 0x1F, 0x37, 0x30, 0x30, 0x00, 0x06, 0x00, 0x00, 0x00, "Tokina", "T4122403", "AT-X 124 AF PRO DX (AF 12-24mm f/4)"},
+      {0x00, 0x48, 0x1C, 0x29, 0x24, 0x24, 0x00, 0x06, 0x00, 0x00, 0x00, "Tokina", "T4111603",
+       "AT-X 116 PRO DX (AF 11-16mm f/2.8)"},
+      {0x7A, 0x48, 0x1C, 0x29, 0x24, 0x24, 0x7E, 0x06, 0x00, 0x00, 0x00, "Tokina", "",
+       "AT-X 116 PRO DX II (AF 11-16mm f/2.8)"},
+      {0x7A, 0x48, 0x1C, 0x30, 0x24, 0x24, 0x7E, 0x06, 0x00, 0x00, 0x00, "Tokina", "",
+       "AT-X 11-20 F2.8 PRO DX (AF 11-20mm f/2.8)"},
+      {0x00, 0x3C, 0x1F, 0x37, 0x30, 0x30, 0x00, 0x06, 0x00, 0x00, 0x00, "Tokina", "T4122403",
+       "AT-X 124 AF PRO DX (AF 12-24mm f/4)"},
       {0x7A, 0x3C, 0x1F, 0x37, 0x30, 0x30, 0x7E, 0x06, 0x01, 0x02, 0x00, "Tokina", "T4122423",
        "AT-X 124 AF PRO DX II (AF 12-24mm f/4)"},
-      {0x7A, 0x3C, 0x1F, 0x3C, 0x30, 0x30, 0x7E, 0x06, 0x00, 0x00, 0x00, "Tokina", "", "AT-X 12-28 PRO DX (AF 12-28mm F/4)"},
-      {0x00, 0x48, 0x29, 0x3C, 0x24, 0x24, 0x00, 0x06, 0x00, 0x00, 0x00, "Tokina", "", "AT-X 16-28 AF PRO FX (AF 16-28mm f/2.8)"},
-      {0x00, 0x48, 0x29, 0x50, 0x24, 0x24, 0x00, 0x06, 0x00, 0x00, 0x00, "Tokina", "", "AT-X 165 PRO DX (AF 16-50mm f/2.8)"},
-      {0x00, 0x40, 0x2A, 0x72, 0x2C, 0x3C, 0x00, 0x06, 0x00, 0x00, 0x00, "Tokina", "", "AT-X 16.5-135 DX (AF 16.5-135mm F3.5-5.6)"},
-      {0x00, 0x3C, 0x2B, 0x44, 0x30, 0x30, 0x00, 0x06, 0x00, 0x00, 0x00, "Tokina", "", "AT-X 17-35 F4 PRO FX (AF 17-35mm f/4)"},
+      {0x7A, 0x3C, 0x1F, 0x3C, 0x30, 0x30, 0x7E, 0x06, 0x00, 0x00, 0x00, "Tokina", "",
+       "AT-X 12-28 PRO DX (AF 12-28mm F/4)"},
+      {0x00, 0x48, 0x29, 0x3C, 0x24, 0x24, 0x00, 0x06, 0x00, 0x00, 0x00, "Tokina", "",
+       "AT-X 16-28 AF PRO FX (AF 16-28mm f/2.8)"},
+      {0x00, 0x48, 0x29, 0x50, 0x24, 0x24, 0x00, 0x06, 0x00, 0x00, 0x00, "Tokina", "",
+       "AT-X 165 PRO DX (AF 16-50mm f/2.8)"},
+      {0x00, 0x40, 0x2A, 0x72, 0x2C, 0x3C, 0x00, 0x06, 0x00, 0x00, 0x00, "Tokina", "",
+       "AT-X 16.5-135 DX (AF 16.5-135mm F3.5-5.6)"},
+      {0x00, 0x3C, 0x2B, 0x44, 0x30, 0x30, 0x00, 0x06, 0x00, 0x00, 0x00, "Tokina", "",
+       "AT-X 17-35 F4 PRO FX (AF 17-35mm f/4)"},
       {0x2F, 0x40, 0x30, 0x44, 0x2C, 0x34, 0x29, 0x02, 0x00, 0x02, 0x00, "Tokina", "", "AF 193 (AF 19-35mm f/3.5-4.5)"},
-      {0x2F, 0x48, 0x30, 0x44, 0x24, 0x24, 0x29, 0x02, 0x00, 0x02, 0x00, "Tokina", "", "AT-X 235 AF PRO (AF 20-35mm f/2.8)"},
-      //M                                         "Tokina" ""          "AF 235 (AF 20-35mm f/3.5-4.5)"
-      {0x2F, 0x40, 0x30, 0x44, 0x2C, 0x34, 0x29, 0x02, 0x00, 0x01, 0x00, "Tokina", "", "AF 235 II (AF 20-35mm f/3.5-4.5)"},
-      //M                                         "Tokina" ""          "AT-X 240 AF (AF 24-40mm f/2.8)"
-      {0x00, 0x48, 0x37, 0x5C, 0x24, 0x24, 0x00, 0x06, 0x00, 0x00, 0x00, "Tokina", "", "AT-X 24-70MM F2.8 PRO FX (AF 24-70mm f/2.8)"},
-      {0x00, 0x40, 0x37, 0x80, 0x2C, 0x3C, 0x00, 0x02, 0x00, 0x00, 0x00, "Tokina", "", "AT-X 242 AF (AF 24-200mm f/3.5-5.6)"},
-      {0x25, 0x48, 0x3C, 0x5C, 0x24, 0x24, 0x1B, 0x02, 0x00, 0x02, 0x00, "Tokina", "", "AT-X 270 AF PRO II (AF 28-70mm f/2.6-2.8)"},
-      {0x25, 0x48, 0x3C, 0x5C, 0x24, 0x24, 0x1B, 0x02, 0x00, 0x01, 0x00, "Tokina", "", "AT-X 287 AF PRO SV (AF 28-70mm f/2.8)"},
-      {0x07, 0x48, 0x3C, 0x5C, 0x24, 0x24, 0x03, 0x00, 0x00, 0x00, 0x00, "Tokina", "", "AT-X 287 AF (AF 28-70mm f/2.8)"},
-      {0x07, 0x47, 0x3C, 0x5C, 0x25, 0x35, 0x03, 0x00, 0x00, 0x00, 0x00, "Tokina", "", "AF 287 SD (AF 28-70mm f/2.8-4.5)"},
-      {0x07, 0x40, 0x3C, 0x5C, 0x2C, 0x35, 0x03, 0x00, 0x00, 0x00, 0x00, "Tokina", "", "AF 270 II (AF 28-70mm f/3.5-4.5)"},
-      {0x00, 0x48, 0x3C, 0x60, 0x24, 0x24, 0x00, 0x02, 0x00, 0x00, 0x00, "Tokina", "", "AT-X 280 AF PRO (AF 28-80mm f/2.8)"},
-      //M                                         "Tokina" ""          "AF 280 II EMZ (AF 28-80mm f/3.5-5.6)"
-      //M                                         "Tokina" ""          "AF 205 (AF 28-105mm f/3.5-4.5)"
-      //M                                         "Tokina" ""          "AF 282 (AF 28-200mm 3.5-5.6)"
-      //M                                         "Tokina" ""          "AF 282 EMZ II (AF 28-210mm f/4.2-6.5)"
-      //M                                         "Tokina" ""          "AF 370 (AF 35-70mm f/3.5-4.6)"
-      //M                                         "Tokina" ""          "AF 370 II (AF 35-70mm f/3.5-4.6)"
-      {0x25, 0x44, 0x44, 0x8E, 0x34, 0x42, 0x1B, 0x02, 0x00, 0x00, 0x00, "Tokina", "", "AF 353 (AF 35-300mm f/4.5-6.7)"},
-      {0x00, 0x48, 0x50, 0x72, 0x24, 0x24, 0x00, 0x06, 0x00, 0x00, 0x00, "Tokina", "", "AT-X 535 PRO DX (AF 50-135mm f/2.8)"},
-      {0x00, 0x3C, 0x5C, 0x80, 0x30, 0x30, 0x00, 0x0E, 0x00, 0x00, 0x00, "Tokina", "", "AT-X 70-200MM F4 FX VCM-S (AF 70-200mm f/4)"},
-      {0x00, 0x48, 0x5C, 0x80, 0x30, 0x30, 0x00, 0x0E, 0x00, 0x00, 0x00, "Tokina", "", "AT-X 70-200MM F4 FX VCM-S (AF 70-200mm f/4)"},
-      //M                                         "Tokina" ""          "AF 745 (AF 70-210mm f/4.5)"
-      //M                                         "Tokina" ""          "AF 210 (AF 70-210mm f/4.0-5.6)"
-      //M                                         "Tokina" ""          "AF 210 II SD (AF 70-210mm f/4.0-5.6)"
+      {0x2F, 0x48, 0x30, 0x44, 0x24, 0x24, 0x29, 0x02, 0x00, 0x02, 0x00, "Tokina", "",
+       "AT-X 235 AF PRO (AF 20-35mm f/2.8)"},
+      // M                                         "Tokina" ""          "AF 235 (AF 20-35mm f/3.5-4.5)"
+      {0x2F, 0x40, 0x30, 0x44, 0x2C, 0x34, 0x29, 0x02, 0x00, 0x01, 0x00, "Tokina", "",
+       "AF 235 II (AF 20-35mm f/3.5-4.5)"},
+      // M                                         "Tokina" ""          "AT-X 240 AF (AF 24-40mm f/2.8)"
+      {0x00, 0x48, 0x37, 0x5C, 0x24, 0x24, 0x00, 0x06, 0x00, 0x00, 0x00, "Tokina", "",
+       "AT-X 24-70MM F2.8 PRO FX (AF 24-70mm f/2.8)"},
+      {0x00, 0x40, 0x37, 0x80, 0x2C, 0x3C, 0x00, 0x02, 0x00, 0x00, 0x00, "Tokina", "",
+       "AT-X 242 AF (AF 24-200mm f/3.5-5.6)"},
+      {0x25, 0x48, 0x3C, 0x5C, 0x24, 0x24, 0x1B, 0x02, 0x00, 0x02, 0x00, "Tokina", "",
+       "AT-X 270 AF PRO II (AF 28-70mm f/2.6-2.8)"},
+      {0x25, 0x48, 0x3C, 0x5C, 0x24, 0x24, 0x1B, 0x02, 0x00, 0x01, 0x00, "Tokina", "",
+       "AT-X 287 AF PRO SV (AF 28-70mm f/2.8)"},
+      {0x07, 0x48, 0x3C, 0x5C, 0x24, 0x24, 0x03, 0x00, 0x00, 0x00, 0x00, "Tokina", "",
+       "AT-X 287 AF (AF 28-70mm f/2.8)"},
+      {0x07, 0x47, 0x3C, 0x5C, 0x25, 0x35, 0x03, 0x00, 0x00, 0x00, 0x00, "Tokina", "",
+       "AF 287 SD (AF 28-70mm f/2.8-4.5)"},
+      {0x07, 0x40, 0x3C, 0x5C, 0x2C, 0x35, 0x03, 0x00, 0x00, 0x00, 0x00, "Tokina", "",
+       "AF 270 II (AF 28-70mm f/3.5-4.5)"},
+      {0x00, 0x48, 0x3C, 0x60, 0x24, 0x24, 0x00, 0x02, 0x00, 0x00, 0x00, "Tokina", "",
+       "AT-X 280 AF PRO (AF 28-80mm f/2.8)"},
+      // M                                         "Tokina" ""          "AF 280 II EMZ (AF 28-80mm f/3.5-5.6)"
+      // M                                         "Tokina" ""          "AF 205 (AF 28-105mm f/3.5-4.5)"
+      // M                                         "Tokina" ""          "AF 282 (AF 28-200mm 3.5-5.6)"
+      // M                                         "Tokina" ""          "AF 282 EMZ II (AF 28-210mm f/4.2-6.5)"
+      // M                                         "Tokina" ""          "AF 370 (AF 35-70mm f/3.5-4.6)"
+      // M                                         "Tokina" ""          "AF 370 II (AF 35-70mm f/3.5-4.6)"
+      {0x25, 0x44, 0x44, 0x8E, 0x34, 0x42, 0x1B, 0x02, 0x00, 0x00, 0x00, "Tokina", "",
+       "AF 353 (AF 35-300mm f/4.5-6.7)"},
+      {0x00, 0x48, 0x50, 0x72, 0x24, 0x24, 0x00, 0x06, 0x00, 0x00, 0x00, "Tokina", "",
+       "AT-X 535 PRO DX (AF 50-135mm f/2.8)"},
+      {0x00, 0x3C, 0x5C, 0x80, 0x30, 0x30, 0x00, 0x0E, 0x00, 0x00, 0x00, "Tokina", "",
+       "AT-X 70-200MM F4 FX VCM-S (AF 70-200mm f/4)"},
+      {0x00, 0x48, 0x5C, 0x80, 0x30, 0x30, 0x00, 0x0E, 0x00, 0x00, 0x00, "Tokina", "",
+       "AT-X 70-200MM F4 FX VCM-S (AF 70-200mm f/4)"},
+      // M                                         "Tokina" ""          "AF 745 (AF 70-210mm f/4.5)"
+      // M                                         "Tokina" ""          "AF 210 (AF 70-210mm f/4.0-5.6)"
+      // M                                         "Tokina" ""          "AF 210 II SD (AF 70-210mm f/4.0-5.6)"
       {0x12, 0x44, 0x5E, 0x8E, 0x34, 0x3C, 0x09, 0x00, 0x00, 0x00, 0x00, "Tokina", "", "AF 730 (AF 75-300mm F4.5-5.6)"},
-      //M                                         "Tokina" ""          "AF 730 II (AF 75-300mm f/4.5-5.6)"
-      {0x14, 0x54, 0x60, 0x80, 0x24, 0x24, 0x0B, 0x00, 0x00, 0x00, 0x00, "Tokina", "", "AT-X 828 AF (AF 80-200mm f/2.8)"},
-      {0x24, 0x54, 0x60, 0x80, 0x24, 0x24, 0x1A, 0x02, 0x00, 0x00, 0x00, "Tokina", "", "AT-X 828 AF PRO (AF 80-200mm f/2.8)"},
-      //M                                         "Tokina" ""          "AT-X 840 AF (AF 80-400mm f/4.5-5.6)"
-      {0x24, 0x44, 0x60, 0x98, 0x34, 0x3C, 0x1A, 0x02, 0x00, 0x00, 0x00, "Tokina", "", "AT-X 840 AF-II (AF 80-400mm f/4.5-5.6)"},
-      {0x00, 0x44, 0x60, 0x98, 0x34, 0x3C, 0x00, 0x02, 0x00, 0x00, 0x00, "Tokina", "", "AT-X 840 D (AF 80-400mm f/4.5-5.6)"},
-      {0x14, 0x48, 0x68, 0x8E, 0x30, 0x30, 0x0B, 0x00, 0x00, 0x00, 0x00, "Tokina", "", "AT-X 340 AF (AF 100-300mm f/4)"},
-      //M                                         "Tokina" ""          "AT-X 340 AF-II (AF 100-300mm f/4)"
-      //M                                         "Tokina" ""          "AF 130 EMZ II (AF 100-300mm f/5.6-6.7)"
-      //M                                         "Tokina" ""          "AF 140 EMZ (AF 100-400mm f/4.5-6.3)"
+      // M                                         "Tokina" ""          "AF 730 II (AF 75-300mm f/4.5-5.6)"
+      {0x14, 0x54, 0x60, 0x80, 0x24, 0x24, 0x0B, 0x00, 0x00, 0x00, 0x00, "Tokina", "",
+       "AT-X 828 AF (AF 80-200mm f/2.8)"},
+      {0x24, 0x54, 0x60, 0x80, 0x24, 0x24, 0x1A, 0x02, 0x00, 0x00, 0x00, "Tokina", "",
+       "AT-X 828 AF PRO (AF 80-200mm f/2.8)"},
+      // M                                         "Tokina" ""          "AT-X 840 AF (AF 80-400mm f/4.5-5.6)"
+      {0x24, 0x44, 0x60, 0x98, 0x34, 0x3C, 0x1A, 0x02, 0x00, 0x00, 0x00, "Tokina", "",
+       "AT-X 840 AF-II (AF 80-400mm f/4.5-5.6)"},
+      {0x00, 0x44, 0x60, 0x98, 0x34, 0x3C, 0x00, 0x02, 0x00, 0x00, 0x00, "Tokina", "",
+       "AT-X 840 D (AF 80-400mm f/4.5-5.6)"},
+      {0x14, 0x48, 0x68, 0x8E, 0x30, 0x30, 0x0B, 0x00, 0x00, 0x00, 0x00, "Tokina", "",
+       "AT-X 340 AF (AF 100-300mm f/4)"},
+      // M                                         "Tokina" ""          "AT-X 340 AF-II (AF 100-300mm f/4)"
+      // M                                         "Tokina" ""          "AF 130 EMZ II (AF 100-300mm f/5.6-6.7)"
+      // M                                         "Tokina" ""          "AF 140 EMZ (AF 100-400mm f/4.5-6.3)"
       //
       //------------------------------------------------------------------------------
-      // Lenses from various other brands
+      //  Lenses from various other brands
       //------------------------------------------------------------------------------
       //
       {0x06, 0x3F, 0x68, 0x68, 0x2C, 0x2C, 0x06, 0x00, 0x00, 0x00, 0x00, "Cosina", "", "AF 100mm F3.5 Macro"},
-      {0x07, 0x36, 0x3D, 0x5F, 0x2C, 0x3C, 0x03, 0x00, 0x00, 0x00, 0x00, "Cosina", "", "AF Zoom 28-80mm F3.5-5.6 MC Macro"},
+      {0x07, 0x36, 0x3D, 0x5F, 0x2C, 0x3C, 0x03, 0x00, 0x00, 0x00, 0x00, "Cosina", "",
+       "AF Zoom 28-80mm F3.5-5.6 MC Macro"},
       {0x07, 0x46, 0x3D, 0x6A, 0x25, 0x2F, 0x03, 0x00, 0x00, 0x00, 0x00, "Cosina", "", "AF Zoom 28-105mm F2.8-3.8 MC"},
-      //M                                         "Cosina" "" "AF Zoom 28-210mm F3.5-5.6";
-      //M                                         "Cosina" "" "AF Zoom 28-210mm F4.2-6.5 Aspherical IF";
-      //M                                         "Cosina" "" "AF Zoom 28-300mm F4.0-6.3";
-      //M                                         "Cosina" "" "AF Zoom 70-210mm F2.8-4.0";
-      {0x12, 0x36, 0x5C, 0x81, 0x35, 0x3D, 0x09, 0x00, 0x00, 0x00, 0x00, "Cosina", "", "AF Zoom 70-210mm F4.5-5.6 MC Macro"},
-      {0x12, 0x39, 0x5C, 0x8E, 0x34, 0x3D, 0x08, 0x02, 0x00, 0x00, 0x00, "Cosina", "", "AF Zoom 70-300mm F4.5-5.6 MC Macro"},
-      {0x12, 0x3B, 0x68, 0x8D, 0x3D, 0x43, 0x09, 0x02, 0x00, 0x00, 0x00, "Cosina", "", "AF Zoom 100-300mm F5.6-6.7 MC Macro"},
-      //M                                         "Cosina" "" "AF Zoom 100-400mm F5.6-6.7 MC";
+      // M                                         "Cosina" "" "AF Zoom 28-210mm F3.5-5.6";
+      // M                                         "Cosina" "" "AF Zoom 28-210mm F4.2-6.5 Aspherical IF";
+      // M                                         "Cosina" "" "AF Zoom 28-300mm F4.0-6.3";
+      // M                                         "Cosina" "" "AF Zoom 70-210mm F2.8-4.0";
+      {0x12, 0x36, 0x5C, 0x81, 0x35, 0x3D, 0x09, 0x00, 0x00, 0x00, 0x00, "Cosina", "",
+       "AF Zoom 70-210mm F4.5-5.6 MC Macro"},
+      {0x12, 0x39, 0x5C, 0x8E, 0x34, 0x3D, 0x08, 0x02, 0x00, 0x00, 0x00, "Cosina", "",
+       "AF Zoom 70-300mm F4.5-5.6 MC Macro"},
+      {0x12, 0x3B, 0x68, 0x8D, 0x3D, 0x43, 0x09, 0x02, 0x00, 0x00, 0x00, "Cosina", "",
+       "AF Zoom 100-300mm F5.6-6.7 MC Macro"},
+      // M                                         "Cosina" "" "AF Zoom 100-400mm F5.6-6.7 MC";
       //
-      {0x12, 0x38, 0x69, 0x97, 0x35, 0x42, 0x09, 0x02, 0x00, 0x00, 0x00, "Promaster", "", "Spectrum 7 100-400mm 1:4.5-6.7"},
+      {0x12, 0x38, 0x69, 0x97, 0x35, 0x42, 0x09, 0x02, 0x00, 0x00, 0x00, "Promaster", "",
+       "Spectrum 7 100-400mm 1:4.5-6.7"},
       //
       {0x00, 0x40, 0x31, 0x31, 0x2C, 0x2C, 0x00, 0x00, 0x00, 0x00, 0x00, "Voigtlander", "BA295AN",
        "Color Skopar 20mm F3.5 SLII Aspherical"},
-      {0x00, 0x48, 0x3C, 0x3C, 0x24, 0x24, 0x00, 0x00, 0x00, 0x00, 0x00, "Voigtlander", "", "Color Skopar 28mm F2.8 SL II"},
-      {0x00, 0x54, 0x48, 0x48, 0x18, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, "Voigtlander", "BA229DN", "Ultron 40mm F2 SLII Aspherical"},
-      {0x00, 0x54, 0x55, 0x55, 0x0C, 0x0C, 0x00, 0x00, 0x00, 0x00, 0x00, "Voigtlander", "BA239BN", "Nokton 58mm F1.4 SLII"},
-      {0x00, 0x40, 0x64, 0x64, 0x2C, 0x2C, 0x00, 0x00, 0x00, 0x00, 0x00, "Voigtlander", "", "APO-Lanthar 90mm F3.5 SLII Close Focus"},
+      {0x00, 0x48, 0x3C, 0x3C, 0x24, 0x24, 0x00, 0x00, 0x00, 0x00, 0x00, "Voigtlander", "",
+       "Color Skopar 28mm F2.8 SL II"},
+      {0x00, 0x54, 0x48, 0x48, 0x18, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, "Voigtlander", "BA229DN",
+       "Ultron 40mm F2 SLII Aspherical"},
+      {0x00, 0x54, 0x55, 0x55, 0x0C, 0x0C, 0x00, 0x00, 0x00, 0x00, 0x00, "Voigtlander", "BA239BN",
+       "Nokton 58mm F1.4 SLII"},
+      {0x00, 0x40, 0x64, 0x64, 0x2C, 0x2C, 0x00, 0x00, 0x00, 0x00, 0x00, "Voigtlander", "",
+       "APO-Lanthar 90mm F3.5 SLII Close Focus"},
       //
       {0x00, 0x40, 0x2D, 0x2D, 0x2C, 0x2C, 0x00, 0x00, 0x00, 0x00, 0x00, "Carl Zeiss", "", "Distagon T* 3,5/18 ZF.2"},
       {0x00, 0x48, 0x32, 0x32, 0x24, 0x24, 0x00, 0x00, 0x00, 0x00, 0x00, "Carl Zeiss", "", "Distagon T* 2,8/21 ZF.2"},
@@ -2214,7 +2587,8 @@ std::ostream& Nikon3MakerNote::printLensId(std::ostream& os, const Value& value,
       {0x00, 0x54, 0x50, 0x50, 0x0C, 0x0C, 0x00, 0x00, 0x00, 0x00, 0x00, "Carl Zeiss", "", "Planar T* 1,4/50 ZF.2"},
       {0x00, 0x54, 0x50, 0x50, 0x18, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, "Carl Zeiss", "", "Makro-Planar T* 2/50 ZF.2"},
       {0x00, 0x54, 0x62, 0x62, 0x0C, 0x0C, 0x00, 0x00, 0x00, 0x00, 0x00, "Carl Zeiss", "", "Planar T* 1,4/85 ZF.2"},
-      {0x00, 0x54, 0x68, 0x68, 0x18, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, "Carl Zeiss", "", "Makro-Planar T* 2/100 ZF.2"},
+      {0x00, 0x54, 0x68, 0x68, 0x18, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, "Carl Zeiss", "",
+       "Makro-Planar T* 2/100 ZF.2"},
       {0x00, 0x54, 0x72, 0x72, 0x18, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, "Carl Zeiss", "", "Apo Sonnar T* 2/135 ZF.2"},
       {0x00, 0x54, 0x53, 0x53, 0x0C, 0x0C, 0x00, 0x00, 0x00, 0x00, 0x00, "Zeiss", "", "Otus 1.4/55"},
       {0x01, 0x54, 0x62, 0x62, 0x0C, 0x0C, 0x00, 0x00, 0x00, 0x00, 0x00, "Zeiss", "", "Otus 1.4/85"},
@@ -2233,7 +2607,8 @@ std::ostream& Nikon3MakerNote::printLensId(std::ostream& os, const Value& value,
       //
       {0x4A, 0x40, 0x11, 0x11, 0x2C, 0x0C, 0x4D, 0x02, 0x00, 0x00, 0x00, "Samyang", "", "8mm f/3.5 Fish-Eye CS"},
       {0x4A, 0x48, 0x24, 0x24, 0x24, 0x0C, 0x4D, 0x02, 0x00, 0x02, 0x00, "Samyang", "", "10mm f/2.8 ED AS NCS CS"},
-      {0x4A, 0x48, 0x1E, 0x1E, 0x24, 0x0C, 0x4D, 0x02, 0x00, 0x00, 0x00, "Samyang", "", "12mm f/2.8 ED AS NCS Fish-eye"},
+      {0x4A, 0x48, 0x1E, 0x1E, 0x24, 0x0C, 0x4D, 0x02, 0x00, 0x00, 0x00, "Samyang", "",
+       "12mm f/2.8 ED AS NCS Fish-eye"},
       {0x4A, 0x4C, 0x24, 0x24, 0x1E, 0x6C, 0x4D, 0x06, 0x00, 0x00, 0x00, "Samyang", "", "14mm f/2.4 Premium"},
       {0x4A, 0x48, 0x24, 0x24, 0x24, 0x0C, 0x4D, 0x02, 0x00, 0x01, 0x00, "Samyang", "", "AE 14mm f/2.8 ED AS IF UMC"},
       {0x4A, 0x54, 0x29, 0x29, 0x18, 0x0C, 0x4D, 0x02, 0x00, 0x00, 0x00, "Samyang", "", "16mm F2.0 ED AS UMC CS"},
@@ -2245,19 +2620,23 @@ std::ostream& Nikon3MakerNote::printLensId(std::ostream& os, const Value& value,
       //
       {0x02, 0x40, 0x44, 0x5C, 0x2C, 0x34, 0x02, 0x00, 0x00, 0x00, 0x00, "Exakta", "", "AF 35-70mm 1:3.5-4.5 MC"},
       {0x07, 0x3E, 0x30, 0x43, 0x2D, 0x35, 0x03, 0x00, 0x00, 0x00, 0x00, "Soligor", "", "AF Zoom 19-35mm 1:3.5-4.5 MC"},
-      {0x03, 0x43, 0x5C, 0x81, 0x35, 0x35, 0x02, 0x00, 0x00, 0x00, 0x00, "Soligor", "", "AF C/D Zoom UMCS 70-210mm 1:4.5"},
+      {0x03, 0x43, 0x5C, 0x81, 0x35, 0x35, 0x02, 0x00, 0x00, 0x00, 0x00, "Soligor", "",
+       "AF C/D Zoom UMCS 70-210mm 1:4.5"},
       {0x12, 0x4A, 0x5C, 0x81, 0x31, 0x3D, 0x09, 0x00, 0x00, 0x00, 0x00, "Soligor", "",
        "AF C/D Auto Zoom+Macro 70-210mm 1:4-5.6 UMCS"},
-      {0x12, 0x36, 0x69, 0x97, 0x35, 0x42, 0x09, 0x00, 0x00, 0x00, 0x00, "Soligor", "", "AF Zoom 100-400mm 1:4.5-6.7 MC"},
+      {0x12, 0x36, 0x69, 0x97, 0x35, 0x42, 0x09, 0x00, 0x00, 0x00, 0x00, "Soligor", "",
+       "AF Zoom 100-400mm 1:4.5-6.7 MC"},
       //
       {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, "Manual Lens", "", "No CPU"},
-      {0x00, 0x00, 0x48, 0x48, 0x53, 0x53, 0x00, 0x01, 0x00, 0x00, 0x00, "Loreo", "", "40mm F11-22 3D Lens in a Cap 9005"},
+      {0x00, 0x00, 0x48, 0x48, 0x53, 0x53, 0x00, 0x01, 0x00, 0x00, 0x00, "Loreo", "",
+       "40mm F11-22 3D Lens in a Cap 9005"},
       //
       //------------------------------------------------------------------------------
       //
       // Lenses, that were upgraded with custom CPU
       //
-      {0x00, 0x47, 0x10, 0x10, 0x24, 0x24, 0x00, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA604AC", "Fisheye Nikkor 8mm f/2.8 AiS"},
+      {0x00, 0x47, 0x10, 0x10, 0x24, 0x24, 0x00, 0x00, 0x00, 0x00, 0x00, "Nikon", "JAA604AC",
+       "Fisheye Nikkor 8mm f/2.8 AiS"},
       {0x00, 0x47, 0x3C, 0x3C, 0x24, 0x24, 0x00, 0x00, 0x00, 0x00, 0x00, "Nikon", "", "Nikkor 28mm f/2.8 AiS"},
       //"00 54 44 44 0C 0C 00" "00" "00" "00" "00" "Nikon"   "JAA115AD" "Nikkor 35mm f/1.4 AiS" double ID with Zeiss
       {0x00, 0x57, 0x50, 0x50, 0x14, 0x14, 0x00, 0x00, 0x00, 0x00, 0x00, "Nikon", "", "Nikkor 50mm f/1.8 AI"},
@@ -2270,7 +2649,8 @@ std::ostream& Nikon3MakerNote::printLensId(std::ostream& os, const Value& value,
       // https://github.com/Exiv2/exiv2/issues/743
       {0xc9, 0x48, 0x37, 0x5c, 0x24, 0x24, 0x4b, 0x4e, 0x01, 0x00, 0x00, "Sigma", "", "24-70mm F2.8 DG OS HSM Art"},
       //  https://github.com/Exiv2/exiv2/issues/598 , https://github.com/Exiv2/exiv2/pull/891
-      {0xCF, 0x47, 0x5C, 0x8E, 0x31, 0x3D, 0xDF, 0x0E, 0x00, 0x00, 0x00, "Tamron", "A030", "SP 70-300mm F/4-5.6 Di VC USD"},
+      {0xCF, 0x47, 0x5C, 0x8E, 0x31, 0x3D, 0xDF, 0x0E, 0x00, 0x00, 0x00, "Tamron", "A030",
+       "SP 70-300mm F/4-5.6 Di VC USD"},
       //
       {0xf4, 0x4c, 0x7c, 0x7c, 0x2c, 0x2c, 0x4b, 0x02, 0x00, 0x00, 0x00, "Sigma", "", "APO Macro 180mm F3.5 EX DG HSM"},
       // https://github.com/Exiv2/exiv2/issues/1078
@@ -2288,19 +2668,19 @@ std::ostream& Nikon3MakerNote::printLensId(std::ostream& os, const Value& value,
   // 8< - - - 8< do not remove this line >8 - - - >8
 
   /* if no meta obj is provided, try to use the value param that *may*
-  * be the pre-parsed lensid
-  */
+   * be the pre-parsed lensid
+   */
   if (metadata == nullptr) {
     const unsigned char vid = static_cast<unsigned>(value.toLong(0));
 
     /* the 'FMntLens' name is added to the annonymous struct for
-    * fmountlens[]
-    *
-    * remember to name the struct when importing/updating the lens info
-    * from:
-    *
-    * www.rottmerhusen.com/objektives/lensid/files/c-header/fmountlens4.h
-    */
+     * fmountlens[]
+     *
+     * remember to name the struct when importing/updating the lens info
+     * from:
+     *
+     * www.rottmerhusen.com/objektives/lensid/files/c-header/fmountlens4.h
+     */
     const struct FMntLens* pf = fmountlens;
     while (pf->lid && pf->lensname) {
       if (pf->lid == vid) {
@@ -2315,11 +2695,11 @@ std::ostream& Nikon3MakerNote::printLensId(std::ostream& os, const Value& value,
     return os << pf->manuf << " " << pf->lensname;
   }
 
-
   byte raw[] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
 
-  static const char* tags[] = {"LensIDNumber",          "LensFStops", "MinFocalLength", "MaxFocalLength", "MaxApertureAtMinFocal",
-                               "MaxApertureAtMaxFocal", "MCUVersion"};
+  static const char* tags[] = {
+      "LensIDNumber",          "LensFStops", "MinFocalLength", "MaxFocalLength", "MaxApertureAtMinFocal",
+      "MaxApertureAtMaxFocal", "MCUVersion"};
 
   const std::string pre = std::string("Exif.") + group + std::string(".");
   for (unsigned int i = 0; i < 7; ++i) {
@@ -2348,9 +2728,9 @@ std::ostream& Nikon3MakerNote::printLensId(std::ostream& os, const Value& value,
 
     if (raw[0] == fmountlens[i].lid
         // stps varies with focal length for some Sigma zoom lenses.
-        && (raw[1] == fmountlens[i].stps || strcmp(fmountlens[i].manuf, "Sigma") == 0) && raw[2] == fmountlens[i].focs &&
-        raw[3] == fmountlens[i].focl && raw[4] == fmountlens[i].aps && raw[5] == fmountlens[i].apl && raw[6] == fmountlens[i].lfw &&
-        raw[7] == fmountlens[i].ltype) {
+        && (raw[1] == fmountlens[i].stps || strcmp(fmountlens[i].manuf, "Sigma") == 0) &&
+        raw[2] == fmountlens[i].focs && raw[3] == fmountlens[i].focl && raw[4] == fmountlens[i].aps &&
+        raw[5] == fmountlens[i].apl && raw[6] == fmountlens[i].lfw && raw[7] == fmountlens[i].ltype) {
       // Lens found in database
       return os << fmountlens[i].manuf << " " << fmountlens[i].lensname;
     }
@@ -2359,7 +2739,7 @@ std::ostream& Nikon3MakerNote::printLensId(std::ostream& os, const Value& value,
   return os << value;
 #else
   return os << value;
-#endif // EXV_HAVE_LENSDATA
+#endif  // EXV_HAVE_LENSDATA
 }
 
 std::ostream& Nikon3MakerNote::printFocusDistance(std::ostream& os, const Value& value, const ExifData*) {
@@ -2491,7 +2871,8 @@ std::ostream& Nikon3MakerNote::printTimeZone(std::ostream& os, const Value& valu
   char sign = value.toLong() < 0 ? '-' : '+';
   long h = long(std::abs(static_cast<int>(value.toFloat() / 60.0F))) % 24;
   long min = long(std::abs(static_cast<int>(value.toFloat() - h * 60))) % 60;
-  os << std::fixed << "UTC " << sign << std::setw(2) << std::setfill('0') << h << ":" << std::setw(2) << std::setfill('0') << min;
+  os << std::fixed << "UTC " << sign << std::setw(2) << std::setfill('0') << h << ":" << std::setw(2)
+     << std::setfill('0') << min;
   os.copyfmt(oss);
   os.flags(f);
   return os;
@@ -2570,19 +2951,19 @@ std::ostream& Nikon3MakerNote::printLensId4ZMount(std::ostream& os, const Value&
       {1, "Nikon", "Nikkor Z 24-70mm f/4 S"},
       {2, "Nikon", "Nikkor Z 14-30mm f/4 S"},
       {4, "Nikon", "Nikkor Z 35mm f/1.8 S"},
-      {8, "Nikon", "Nikkor Z 58mm f/0.95 S Noct"}, // IB
+      {8, "Nikon", "Nikkor Z 58mm f/0.95 S Noct"},  // IB
       {9, "Nikon", "Nikkor Z 50mm f/1.8 S"},
       {11, "Nikon", "Nikkor Z DX 16-50mm f/3.5-6.3 VR"},
       {12, "Nikon", "Nikkor Z DX 50-250mm f/4.5-6.3 VR"},
       {13, "Nikon", "Nikkor Z 24-70mm f/2.8 S"},
       {14, "Nikon", "Nikkor Z 85mm f/1.8 S"},
-      {15, "Nikon", "Nikkor Z 24mm f/1.8 S"}, // IB
-      {16, "Nikon", "Nikkor Z 70-200mm f/2.8 VR S"}, // IB
-      {17, "Nikon", "Nikkor Z 20mm f/1.8 S"}, // IB
-      {18, "Nikon", "Nikkor Z 24-200mm f/4-6.3 VR"}, // IB
-      {21, "Nikon", "Nikkor Z 50mm f/1.2 S"}, // IB
-      {22, "Nikon", "Nikkor Z 24-50mm f/4-6.3"}, // IB
-      {23, "Nikon", "Nikkor Z 14-24mm f/2.8 S"}, // IB
+      {15, "Nikon", "Nikkor Z 24mm f/1.8 S"},         // IB
+      {16, "Nikon", "Nikkor Z 70-200mm f/2.8 VR S"},  // IB
+      {17, "Nikon", "Nikkor Z 20mm f/1.8 S"},         // IB
+      {18, "Nikon", "Nikkor Z 24-200mm f/4-6.3 VR"},  // IB
+      {21, "Nikon", "Nikkor Z 50mm f/1.2 S"},         // IB
+      {22, "Nikon", "Nikkor Z 24-50mm f/4-6.3"},      // IB
+      {23, "Nikon", "Nikkor Z 14-24mm f/2.8 S"},      // IB
   };
 
   auto lid = static_cast<uint16_t>(value.toLong());
@@ -2615,5 +2996,5 @@ std::ostream& Nikon3MakerNote::printFocalLd4(std::ostream& os, const Value& valu
   return os;
 }
 
-} // namespace Internal
-} // namespace Exiv2
+}  // namespace Internal
+}  // namespace Exiv2

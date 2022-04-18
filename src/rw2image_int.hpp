@@ -35,7 +35,7 @@ namespace Internal {
   @brief Panasonic RW2 header structure.
 */
 class Rw2Header : public TiffHeaderBase {
-public:
+ public:
   //! @name Creators
   //@{
   //! Default constructor
@@ -44,9 +44,9 @@ public:
   ~Rw2Header() override = default;
   //@}
 
-}; // class Rw2Header
+};  // class Rw2Header
 
-} // namespace Internal
-} // namespace Exiv2
+}  // namespace Internal
+}  // namespace Exiv2
 
-#endif // #ifndef RW2IMAGE_INT_HPP_
+#endif  // #ifndef RW2IMAGE_INT_HPP_

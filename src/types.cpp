@@ -22,7 +22,7 @@
 #include "types.hpp"
 
 #include "enforce.hpp"
-#include "i18n.h" // for _exvGettext
+#include "i18n.h"  // for _exvGettext
 #include "safe_op.hpp"
 #include "unused.h"
 
@@ -31,14 +31,18 @@ namespace {
 
 //! Information pertaining to the defined %Exiv2 value type identifiers.
 struct TypeInfoTable {
-  Exiv2::TypeId typeId_; //!< Type id
-  const char* name_; //!< Name of the type
-  long size_; //!< Bytes per data entry
+  Exiv2::TypeId typeId_;  //!< Type id
+  const char* name_;      //!< Name of the type
+  long size_;             //!< Bytes per data entry
   //! Comparison operator for \em typeId
-  bool operator==(Exiv2::TypeId typeId) const { return typeId_ == typeId; }
+  bool operator==(Exiv2::TypeId typeId) const {
+    return typeId_ == typeId;
+  }
   //! Comparison operator for \em name
-  bool operator==(const std::string& name) const { return 0 == strcmp(name_, name.c_str()); }
-}; // struct TypeInfoTable
+  bool operator==(const std::string& name) const {
+    return 0 == strcmp(name_, name.c_str());
+  }
+};  // struct TypeInfoTable
 
 //! Lookup list with information of Exiv2 types
 const TypeInfoTable typeInfoTable[] = {{Exiv2::invalidTypeId, "Invalid", 0},
@@ -66,7 +70,7 @@ const TypeInfoTable typeInfoTable[] = {{Exiv2::invalidTypeId, "Invalid", 0},
                                        {Exiv2::xmpSeq, "XmpSeq", 1},
                                        {Exiv2::langAlt, "LangAlt", 1}};
 
-} // namespace
+}  // namespace
 
 namespace Exiv2 {
 
@@ -241,12 +245,14 @@ uint32_t getULong(const byte* buf, ByteOrder byteOrder) {
 
 uint64_t getULongLong(const byte* buf, ByteOrder byteOrder) {
   if (byteOrder == littleEndian) {
-    return static_cast<uint64_t>(buf[7]) << 56 | static_cast<uint64_t>(buf[6]) << 48 | static_cast<uint64_t>(buf[5]) << 40 |
-           static_cast<uint64_t>(buf[4]) << 32 | static_cast<uint64_t>(buf[3]) << 24 | static_cast<uint64_t>(buf[2]) << 16 |
+    return static_cast<uint64_t>(buf[7]) << 56 | static_cast<uint64_t>(buf[6]) << 48 |
+           static_cast<uint64_t>(buf[5]) << 40 | static_cast<uint64_t>(buf[4]) << 32 |
+           static_cast<uint64_t>(buf[3]) << 24 | static_cast<uint64_t>(buf[2]) << 16 |
            static_cast<uint64_t>(buf[1]) << 8 | static_cast<uint64_t>(buf[0]);
   }
-  return static_cast<uint64_t>(buf[0]) << 56 | static_cast<uint64_t>(buf[1]) << 48 | static_cast<uint64_t>(buf[2]) << 40 |
-         static_cast<uint64_t>(buf[3]) << 32 | static_cast<uint64_t>(buf[4]) << 24 | static_cast<uint64_t>(buf[5]) << 16 |
+  return static_cast<uint64_t>(buf[0]) << 56 | static_cast<uint64_t>(buf[1]) << 48 |
+         static_cast<uint64_t>(buf[2]) << 40 | static_cast<uint64_t>(buf[3]) << 32 |
+         static_cast<uint64_t>(buf[4]) << 24 | static_cast<uint64_t>(buf[5]) << 16 |
          static_cast<uint64_t>(buf[6]) << 8 | static_cast<uint64_t>(buf[7]);
 }
 
@@ -300,12 +306,14 @@ double getDouble(const byte* buf, ByteOrder byteOrder) {
   } u;
   u.ull_ = 0;
   if (byteOrder == littleEndian) {
-    u.ull_ = static_cast<uint64_t>(buf[7]) << 56 | static_cast<uint64_t>(buf[6]) << 48 | static_cast<uint64_t>(buf[5]) << 40 |
-             static_cast<uint64_t>(buf[4]) << 32 | static_cast<uint64_t>(buf[3]) << 24 | static_cast<uint64_t>(buf[2]) << 16 |
+    u.ull_ = static_cast<uint64_t>(buf[7]) << 56 | static_cast<uint64_t>(buf[6]) << 48 |
+             static_cast<uint64_t>(buf[5]) << 40 | static_cast<uint64_t>(buf[4]) << 32 |
+             static_cast<uint64_t>(buf[3]) << 24 | static_cast<uint64_t>(buf[2]) << 16 |
              static_cast<uint64_t>(buf[1]) << 8 | static_cast<uint64_t>(buf[0]);
   } else {
-    u.ull_ = static_cast<uint64_t>(buf[0]) << 56 | static_cast<uint64_t>(buf[1]) << 48 | static_cast<uint64_t>(buf[2]) << 40 |
-             static_cast<uint64_t>(buf[3]) << 32 | static_cast<uint64_t>(buf[4]) << 24 | static_cast<uint64_t>(buf[5]) << 16 |
+    u.ull_ = static_cast<uint64_t>(buf[0]) << 56 | static_cast<uint64_t>(buf[1]) << 48 |
+             static_cast<uint64_t>(buf[2]) << 40 | static_cast<uint64_t>(buf[3]) << 32 |
+             static_cast<uint64_t>(buf[4]) << 24 | static_cast<uint64_t>(buf[5]) << 16 |
              static_cast<uint64_t>(buf[6]) << 8 | static_cast<uint64_t>(buf[7]);
   }
   return u.d_;
@@ -440,7 +448,7 @@ void hexdump(std::ostream& os, const byte* buf, long len, long offset) {
   }
   os << std::dec << std::setfill(' ');
   os.flags(f);
-} // hexdump
+}  // hexdump
 
 bool isHex(const std::string& str, size_t size, const std::string& prefix) {
   if (str.size() <= prefix.size() || str.substr(0, prefix.size()) != prefix)
@@ -453,7 +461,7 @@ bool isHex(const std::string& str, size_t size, const std::string& prefix) {
       return false;
   }
   return true;
-} // isHex
+}  // isHex
 
 int exifTime(const char* buf, struct tm* tm) {
   assert(buf != 0);
@@ -471,7 +479,7 @@ int exifTime(const char* buf, struct tm* tm) {
     rc = 0;
   }
   return rc;
-} // exifTime
+}  // exifTime
 
 const char* exvGettext(const char* str) {
 #ifdef EXV_ENABLE_NLS
@@ -504,8 +512,8 @@ std::wstring s2ws(const std::string& s) {
   return r;
 }
 
-#endif // EXV_UNICODE_PATH
-template<>
+#endif  // EXV_UNICODE_PATH
+template <>
 bool stringTo<bool>(const std::string& s, bool& ok) {
   std::string lcs(s); /* lowercase string */
   for (size_t i = 0; i < lcs.length(); i++) {
@@ -620,7 +628,7 @@ Rational floatToRationalCast(float f) {
   return {nom / g, den / g};
 }
 
-} // namespace Exiv2
+}  // namespace Exiv2
 
 #ifdef EXV_ENABLE_NLS
 // Declaration is in i18n.h
@@ -628,7 +636,7 @@ const char* _exvGettext(const char* str) {
   static bool exvGettextInitialized = false;
 
   if (!exvGettextInitialized) {
-    //bindtextdomain(EXV_PACKAGE_NAME, EXV_LOCALEDIR);
+    // bindtextdomain(EXV_PACKAGE_NAME, EXV_LOCALEDIR);
     const std::string localeDir =
         EXV_LOCALEDIR[0] == '/' ? EXV_LOCALEDIR : (Exiv2::getProcessPath() + EXV_SEPARATOR_STR + EXV_LOCALEDIR);
     bindtextdomain(EXV_PACKAGE_NAME, localeDir.c_str());
@@ -640,4 +648,4 @@ const char* _exvGettext(const char* str) {
 
   return dgettext(EXV_PACKAGE_NAME, str);
 }
-#endif // EXV_ENABLE_NLS
+#endif  // EXV_ENABLE_NLS

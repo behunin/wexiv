@@ -39,7 +39,7 @@ class ExifData;
           the XMP toolkit to do the job.
 */
 class EXIV2API XmpParser {
-public:
+ public:
   /*!
     @brief Decode XMP metadata from an XMP packet \em xmpPacket into
             \em xmpData. The format of the XMP packet must follow the
@@ -125,14 +125,14 @@ public:
   */
   static void terminate();
 
-private:
+ private:
   // DATA
-  static bool initialized_; //! Indicates if the XMP Toolkit has been initialized
+  static bool initialized_;  //! Indicates if the XMP Toolkit has been initialized
   static XmpLockFct xmpLockFct_;
   static void* pLockData_;
 
-}; // class XmpParser
+};  // class XmpParser
 
-} // namespace Exiv2
+}  // namespace Exiv2
 
-#endif // #ifndef XMP_HPP_
+#endif  // #ifndef XMP_HPP_

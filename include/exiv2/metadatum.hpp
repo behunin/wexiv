@@ -39,7 +39,7 @@ class ExifData;
           Keys are used to identify and group metadata.
 */
 class EXIV2API Key {
-public:
+ public:
   //! Shortcut for a %Key auto pointer.
   typedef std::unique_ptr<Key> UniquePtr;
 
@@ -80,10 +80,12 @@ public:
             the output operator for %Key,
             operator<<(std::ostream &os, const Key &key).
   */
-  std::ostream& write(std::ostream& os) const { return os << key(); }
+  std::ostream& write(std::ostream& os) const {
+    return os << key();
+  }
   //@}
 
-protected:
+ protected:
   //! @name Manipulators
   //@{
   /*!
@@ -93,11 +95,11 @@ protected:
   Key& operator=(const Key& rhs) = default;
   //@}
 
-private:
+ private:
   //! Internal virtual copy constructor.
   virtual Key* clone_() const = 0;
 
-}; // class Key
+};  // class Key
 
 //! Output operator for Key types
 inline std::ostream& operator<<(std::ostream& os, const Key& key) {
@@ -109,7 +111,7 @@ inline std::ostream& operator<<(std::ostream& os, const Key& key) {
           related to one metadata tag.
 */
 class EXIV2API Metadatum {
-public:
+ public:
   //! @name Creators
   //@{
   //! Default Constructor
@@ -261,7 +263,7 @@ public:
   virtual const Value& value() const = 0;
   //@}
 
-protected:
+ protected:
   //! @name Manipulators
   //@{
   /*!
@@ -271,7 +273,7 @@ protected:
   Metadatum& operator=(const Metadatum& rhs) = default;
   //@}
 
-}; // class Metadatum
+};  // class Metadatum
 
 /*!
   @brief Output operator for Metadatum types, writing the interpreted
@@ -292,6 +294,6 @@ EXIV2API bool cmpMetadataByTag(const Metadatum& lhs, const Metadatum& rhs);
 */
 EXIV2API bool cmpMetadataByKey(const Metadatum& lhs, const Metadatum& rhs);
 
-} // namespace Exiv2
+}  // namespace Exiv2
 
-#endif // #ifndef METADATUM_HPP_
+#endif  // #ifndef METADATUM_HPP_

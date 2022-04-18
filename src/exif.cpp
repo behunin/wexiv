@@ -32,7 +32,7 @@
 #include "metadatum.hpp"
 #include "tags.hpp"
 #include "tags_int.hpp"
-#include "tiffcomposite_int.hpp" // for Tag::root
+#include "tiffcomposite_int.hpp"  // for Tag::root
 #include "tiffimage.hpp"
 #include "tiffimage_int.hpp"
 #include "types.hpp"
@@ -43,19 +43,22 @@ namespace {
 
 //! Unary predicate that matches a Exifdatum with a given key
 class FindExifdatumByKey {
-public:
+ public:
   //! Constructor, initializes the object with the key to look for
-  explicit FindExifdatumByKey(const std::string& key) : key_(key) {}
+  explicit FindExifdatumByKey(const std::string& key) : key_(key) {
+  }
   /*!
     @brief Returns true if the key of \em exifdatum is equal
             to that of the object.
   */
-  bool operator()(const Exiv2::Exifdatum& exifdatum) const { return key_ == exifdatum.key(); }
+  bool operator()(const Exiv2::Exifdatum& exifdatum) const {
+    return key_ == exifdatum.key();
+  }
 
-private:
+ private:
   const std::string& key_;
 
-}; // class FindExifdatumByKey
+};  // class FindExifdatumByKey
 
 /*!
   @brief Exif %Thumbnail image. This abstract base class provides the
@@ -65,7 +68,7 @@ private:
           use an instance of ExifData to access the Exif thumbnail image.
 */
 class Thumbnail {
-public:
+ public:
   //! Shortcut for a %Thumbnail auto pointer.
   using UniquePtr = std::unique_ptr<Thumbnail>;
 
@@ -97,11 +100,11 @@ public:
   virtual const char* extension() const = 0;
   //@}
 
-}; // class Thumbnail
+};  // class Thumbnail
 
 //! Exif thumbnail image in TIFF format
 class TiffThumbnail : public Thumbnail {
-public:
+ public:
   //! Shortcut for a %TiffThumbnail auto pointer.
   using UniquePtr = std::unique_ptr<TiffThumbnail>;
 
@@ -117,11 +120,11 @@ public:
   const char* mimeType() const override;
   const char* extension() const override;
 
-}; // class TiffThumbnail
+};  // class TiffThumbnail
 
 //! Exif thumbnail image in JPEG format
 class JpegThumbnail : public Thumbnail {
-public:
+ public:
   //! Shortcut for a %JpegThumbnail auto pointer.
   using UniquePtr = std::unique_ptr<JpegThumbnail>;
 
@@ -138,7 +141,7 @@ public:
   const char* extension() const override;
   //@}
 
-}; // class JpegThumbnail
+};  // class JpegThumbnail
 
 //! Helper function to sum all components of the value of a metadatum
 long sumToLong(const Exiv2::Exifdatum& md);
@@ -146,7 +149,7 @@ long sumToLong(const Exiv2::Exifdatum& md);
 //! Helper function to delete all tags of a specific IFD from the metadata.
 void eraseIfd(Exiv2::ExifData& ed, Exiv2::Internal::IfdId ifdId);
 
-} // namespace
+}  // namespace
 
 namespace Exiv2 {
 
@@ -160,7 +163,7 @@ using namespace Internal;
   This is a helper function, called from Exifdatum members. It is meant to
   be used with T = (u)int16_t, (u)int32_t or (U)Rational. Do not use directly.
 */
-template<typename T>
+template <typename T>
 Exiv2::Exifdatum& setValue(Exiv2::Exifdatum& exifDatum, const T& value) {
   auto v = std::unique_ptr<Exiv2::ValueType<T>>(new Exiv2::ValueType<T>);
   v->value_.push_back(value);
@@ -175,9 +178,9 @@ Exifdatum::Exifdatum(const ExifKey& key, const Value* pValue) : key_(key.clone()
 
 Exifdatum::Exifdatum(const Exifdatum& rhs) : Metadatum(rhs) {
   if (rhs.key_.get() != nullptr)
-    key_ = rhs.key_->clone(); // deep copy
+    key_ = rhs.key_->clone();  // deep copy
   if (rhs.value_.get() != nullptr)
-    value_ = rhs.value_->clone(); // deep copy
+    value_ = rhs.value_->clone();  // deep copy
 }
 
 std::ostream& Exifdatum::write(std::ostream& os, const ExifData* pMetadata) const {
@@ -226,14 +229,14 @@ Exifdatum& Exifdatum::operator=(const Exifdatum& rhs) {
 
   key_.reset();
   if (rhs.key_.get() != nullptr)
-    key_ = rhs.key_->clone(); // deep copy
+    key_ = rhs.key_->clone();  // deep copy
 
   value_.reset();
   if (rhs.value_.get() != nullptr)
-    value_ = rhs.value_->clone(); // deep copy
+    value_ = rhs.value_->clone();  // deep copy
 
   return *this;
-} // Exifdatum::operator=
+}  // Exifdatum::operator=
 
 Exifdatum& Exifdatum::operator=(const std::string& value) {
   setValue(value);
@@ -420,13 +423,13 @@ void ExifData::sortByTag() {
 
 ByteOrder ExifParser::decode(emscripten::val& exifData, const byte* pData, uint32_t size) {
   auto iptcData = emscripten::val::object();
-  auto xmpData =  emscripten::val::object();
+  auto xmpData = emscripten::val::object();
   ByteOrder bo = TiffParser::decode(exifData, iptcData, xmpData, pData, size);
   return bo;
-} // ExifParser::decode
+}  // ExifParser::decode
 //! @endcond
 
-} // namespace Exiv2
+}  // namespace Exiv2
 
 namespace {
 
@@ -455,4 +458,4 @@ long sumToLong(const Exiv2::Exifdatum& md) {
   return sum;
 }
 //! @endcond
-} // namespace
+}  // namespace

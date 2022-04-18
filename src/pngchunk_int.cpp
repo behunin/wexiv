@@ -21,7 +21,7 @@
 // included header files
 #include "pngchunk_int.hpp"
 
-#include "../../externals/zlib/zlib.h" // To uncompress or compress text chunk
+#include "../../externals/zlib/zlib.h"  // To uncompress or compress text chunk
 #include "config.h"
 #include "enforce.hpp"
 #include "error.hpp"
@@ -54,20 +54,20 @@ void PngChunk::decodeIHDRChunk(const DataBuf& data, int* outWidth, int* outHeigh
   *outWidth = getLong(data.pData_, bigEndian);
   *outHeight = getLong(data.pData_ + 4, bigEndian);
 
-} // PngChunk::decodeIHDRChunk
+}  // PngChunk::decodeIHDRChunk
 
 void PngChunk::decodeTXTChunk(Image* pImage, const DataBuf& data, TxtChunkType type) {
   DataBuf key = keyTXTChunk(data);
   DataBuf arr = parseTXTChunk(data, key.size_, type);
   parseChunkContent(pImage, key.pData_, key.size_, arr);
 
-} // PngChunk::decodeTXTChunk
+}  // PngChunk::decodeTXTChunk
 
 DataBuf PngChunk::decodeTXTChunk(const DataBuf& data, TxtChunkType type) {
   DataBuf key = keyTXTChunk(data);
   return parseTXTChunk(data, key.size_, type);
 
-} // PngChunk::decodeTXTChunk
+}  // PngChunk::decodeTXTChunk
 
 DataBuf PngChunk::keyTXTChunk(const DataBuf& data, bool stripHeader) {
   // From a tEXt, zTXt, or iTXt chunk,
@@ -88,7 +88,7 @@ DataBuf PngChunk::keyTXTChunk(const DataBuf& data, bool stripHeader) {
 
   return DataBuf(key, keysize);
 
-} // PngChunk::keyTXTChunk
+}  // PngChunk::keyTXTChunk
 
 DataBuf PngChunk::parseTXTChunk(const DataBuf& data, int keysize, TxtChunkType type) {
   DataBuf arr;
@@ -137,11 +137,12 @@ DataBuf PngChunk::parseTXTChunk(const DataBuf& data, int keysize, TxtChunkType t
 
     // language description string after the compression technique spec
     const size_t languageTextMaxSize = data.size_ - keysize - 3;
-    std::string languageText =
-        string_from_unterminated(reinterpret_cast<const char*>(data.pData_ + Safe::add(keysize, 3)), languageTextMaxSize);
+    std::string languageText = string_from_unterminated(
+        reinterpret_cast<const char*>(data.pData_ + Safe::add(keysize, 3)), languageTextMaxSize);
     const size_t languageTextSize = languageText.size();
 
-    enforce(static_cast<unsigned long>(data.size_) >= Safe::add(static_cast<size_t>(Safe::add(keysize, 4)), languageTextSize),
+    enforce(static_cast<unsigned long>(data.size_) >=
+                Safe::add(static_cast<size_t>(Safe::add(keysize, 4)), languageTextSize),
             Exiv2::kerCorruptedMetadata);
     // translated keyword string after the language description
     std::string translatedKeyText =
@@ -150,12 +151,13 @@ DataBuf PngChunk::parseTXTChunk(const DataBuf& data, int keysize, TxtChunkType t
     const auto translatedKeyTextSize = static_cast<unsigned int>(translatedKeyText.size());
 
     if ((compressionFlag == 0x00) || (compressionFlag == 0x01 && compressionMethod == 0x00)) {
-      enforce(Safe::add(static_cast<unsigned int>(keysize + 3 + languageTextSize + 1), Safe::add(translatedKeyTextSize, 1U)) <=
-                  static_cast<unsigned int>(data.size_),
+      enforce(Safe::add(static_cast<unsigned int>(keysize + 3 + languageTextSize + 1),
+                        Safe::add(translatedKeyTextSize, 1U)) <= static_cast<unsigned int>(data.size_),
               Exiv2::kerCorruptedMetadata);
 
       const byte* text = data.pData_ + keysize + 3 + languageTextSize + 1 + translatedKeyTextSize + 1;
-      const long textsize = static_cast<long>(data.size_ - (keysize + 3 + languageTextSize + 1 + translatedKeyTextSize + 1));
+      const long textsize =
+          static_cast<long>(data.size_ - (keysize + 3 + languageTextSize + 1 + translatedKeyTextSize + 1));
 
       if (compressionFlag == 0x00) {
         // then it's an uncompressed iTXt chunk
@@ -178,12 +180,13 @@ DataBuf PngChunk::parseTXTChunk(const DataBuf& data, int keysize, TxtChunkType t
 
   return arr;
 
-} // PngChunk::parsePngChunk
+}  // PngChunk::parsePngChunk
 
 void PngChunk::parseChunkContent(Image* pImage, const byte* key, long keySize, const DataBuf& arr) {
   // We look if an ImageMagick EXIF raw profile exist.
 
-  if (keySize >= 21 && (memcmp("Raw profile type exif", key, 21) == 0 || memcmp("Raw profile type APP1", key, 21) == 0)) {
+  if (keySize >= 21 &&
+      (memcmp("Raw profile type exif", key, 21) == 0 || memcmp("Raw profile type APP1", key, 21) == 0)) {
     DataBuf exifData = readRawProfile(arr, false);
     long length = exifData.size_;
 
@@ -204,8 +207,8 @@ void PngChunk::parseChunkContent(Image* pImage, const byte* key, long keySize, c
 
       if (pos != -1) {
         pos = pos + sizeof(exifHeader);
-        ByteOrder bo =
-            TiffParser::decode(pImage->exifData(), pImage->iptcData(), pImage->xmpData(), exifData.pData_ + pos, length - pos);
+        ByteOrder bo = TiffParser::decode(pImage->exifData(), pImage->iptcData(), pImage->xmpData(),
+                                          exifData.pData_ + pos, length - pos);
         pImage->setByteOrder(bo);
       } else {
 #ifndef SUPPRESS_WARNINGS
@@ -227,14 +230,16 @@ void PngChunk::parseChunkContent(Image* pImage, const byte* key, long keySize, c
 
       const byte* pEnd = psData.pData_ + psData.size_;
       const byte* pCur = psData.pData_;
-      while (pCur < pEnd && 0 == Photoshop::locateIptcIrb(pCur, static_cast<long>(pEnd - pCur), &record, &sizeHdr, &sizeIptc)) {
+      while (pCur < pEnd &&
+             0 == Photoshop::locateIptcIrb(pCur, static_cast<long>(pEnd - pCur), &record, &sizeHdr, &sizeIptc)) {
         if (sizeIptc) {
           append(iptcBlob, record + sizeHdr, sizeIptc);
         }
         pCur = record + sizeHdr + sizeIptc;
         pCur += (sizeIptc & 1);
       }
-      if (!iptcBlob.empty() && IptcParser::decode(pImage->iptcData(), &iptcBlob[0], static_cast<uint32_t>(iptcBlob.size()))) {
+      if (!iptcBlob.empty() &&
+          IptcParser::decode(pImage->iptcData(), &iptcBlob[0], static_cast<uint32_t>(iptcBlob.size()))) {
 #ifndef SUPPRESS_WARNINGS
         EXV_WARNING << "Failed to decode IPTC metadata.\n";
 #endif
@@ -247,7 +252,7 @@ void PngChunk::parseChunkContent(Image* pImage, const byte* key, long keySize, c
 #endif
         pImage->clearIptcData();
       }
-    } // if (psData.size_ > 0)
+    }  // if (psData.size_ > 0)
   }
 
   // We look if an ImageMagick XMP raw profile exist.
@@ -303,10 +308,10 @@ void PngChunk::parseChunkContent(Image* pImage, const byte* key, long keySize, c
     // pImage->setComment(std::string(reinterpret_cast<char*>(arr.pData_), arr.size_));
   }
 
-} // PngChunk::parseChunkContent
+}  // PngChunk::parseChunkContent
 
 void PngChunk::zlibUncompress(const byte* compressedText, unsigned int compressedTextSize, DataBuf& arr) {
-  uLongf uncompressedLen = compressedTextSize * 2; // just a starting point
+  uLongf uncompressedLen = compressedTextSize * 2;  // just a starting point
   int zlibResult;
   int dos = 0;
 
@@ -334,7 +339,7 @@ void PngChunk::zlibUncompress(const byte* compressedText, unsigned int compresse
   if (zlibResult != Z_OK) {
     throw Error(kerFailedToReadImageData);
   }
-} // PngChunk::zlibUncompress
+}  // PngChunk::zlibUncompress
 
 DataBuf PngChunk::readRawProfile(const DataBuf& text, bool iTXt) {
   DataBuf info;
@@ -352,8 +357,8 @@ DataBuf PngChunk::readRawProfile(const DataBuf& text, bool iTXt) {
     return info;
   }
 
-  const char* sp = reinterpret_cast<char*>(text.pData_) + 1; // current byte (space pointer)
-  const char* eot = reinterpret_cast<char*>(text.pData_) + text.size_; // end of text
+  const char* sp = reinterpret_cast<char*>(text.pData_) + 1;            // current byte (space pointer)
+  const char* eot = reinterpret_cast<char*>(text.pData_) + text.size_;  // end of text
 
   if (sp >= eot) {
     return DataBuf();
@@ -366,7 +371,7 @@ DataBuf PngChunk::readRawProfile(const DataBuf& text, bool iTXt) {
       return DataBuf();
     }
   }
-  sp++; // step over '\n'
+  sp++;  // step over '\n'
   if (sp == eot) {
     return DataBuf();
   }
@@ -386,7 +391,7 @@ DataBuf PngChunk::readRawProfile(const DataBuf& text, bool iTXt) {
     // check for overflow.
     const unsigned long newlength = (10 * static_cast<unsigned long>(length)) + (*sp - '0');
     if (newlength > static_cast<unsigned long>(std::numeric_limits<long>::max())) {
-      return DataBuf(); // Integer overflow.
+      return DataBuf();  // Integer overflow.
     }
     length = static_cast<long>(newlength);
     sp++;
@@ -394,7 +399,7 @@ DataBuf PngChunk::readRawProfile(const DataBuf& text, bool iTXt) {
       return DataBuf();
     }
   }
-  sp++; // step over '\n'
+  sp++;  // step over '\n'
   if (sp == eot) {
     return DataBuf();
   }
@@ -403,24 +408,27 @@ DataBuf PngChunk::readRawProfile(const DataBuf& text, bool iTXt) {
 
   // Allocate space
   if (length == 0) {
-    throw Error(kerInvalidMalloc, "Exiv2::PngChunk::readRawProfile: Unable To Copy Raw Profile: invalid profile length");
+    throw Error(kerInvalidMalloc,
+                "Exiv2::PngChunk::readRawProfile: Unable To Copy Raw Profile: invalid profile length");
   }
   info.alloc(length);
   if (info.size_ != length) {
-    throw Error(kerInvalidMalloc, "Exiv2::PngChunk::readRawProfile: Unable To Copy Raw Profile: cannot allocate memory");
+    throw Error(kerInvalidMalloc,
+                "Exiv2::PngChunk::readRawProfile: Unable To Copy Raw Profile: cannot allocate memory");
     return DataBuf();
   }
 
   // Copy profile, skipping white space and column 1 "=" signs
 
-  unsigned char* dp = info.pData_; // decode pointer
+  unsigned char* dp = info.pData_;  // decode pointer
   unsigned int nibbles = length * 2;
 
   for (long i = 0; i < static_cast<long>(nibbles); i++) {
     enforce(sp < eot, Exiv2::kerCorruptedMetadata);
     while (*sp < '0' || (*sp > '9' && *sp < 'a') || *sp > 'f') {
       if (*sp == '\0') {
-        throw Error(kerMemoryTransferFailed, "Exiv2::PngChunk::readRawProfile: Unable To Copy Raw Profile: ran out of data");
+        throw Error(kerMemoryTransferFailed,
+                    "Exiv2::PngChunk::readRawProfile: Unable To Copy Raw Profile: ran out of data");
       }
 
       sp++;
@@ -435,7 +443,7 @@ DataBuf PngChunk::readRawProfile(const DataBuf& text, bool iTXt) {
 
   return info;
 
-} // PngChunk::readRawProfile
+}  // PngChunk::readRawProfile
 
-} // namespace Internal
-} // namespace Exiv2
+}  // namespace Internal
+}  // namespace Exiv2

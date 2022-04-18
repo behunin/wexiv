@@ -23,7 +23,7 @@
 #include <exiv2/wexiv.hpp>
 
 // include local header files which are not part of libexiv2
-#include "i18n.h" // NLS support.
+#include "i18n.h"  // NLS support.
 #include "utils.hpp"
 #include "xmp_exiv2.hpp"
 using namespace emscripten;
@@ -48,17 +48,18 @@ int EMSCRIPTEN_KEEPALIVE getmeta(unsigned char* arr, long length, const char* na
   textdomain(EXV_PACKAGE_NAME);
 #endif
 
-try {
-  image = Exiv2::ImageFactory::open(arr, length);
-  image->readMetadata();
+  try {
+    image = Exiv2::ImageFactory::open(arr, length);
+    image->readMetadata();
 
-  db_store(name, image->exifData().as_handle(), image->iptcData().as_handle(),image->xmpData().as_handle(), image->headData().as_handle());
+    db_store(name, image->exifData().as_handle(), image->iptcData().as_handle(), image->xmpData().as_handle(),
+             image->headData().as_handle());
 
-} catch(Exiv2::Error& e) {
-  std::string str{e.what()};
-  emscripten_log(EM_LOG_ERROR, "%s", &str);
-  return e.code();
-}
+  } catch (Exiv2::Error& e) {
+    std::string str{e.what()};
+    emscripten_log(EM_LOG_ERROR, "%s", &str);
+    return e.code();
+  }
 
   Exiv2::XmpParser::terminate();
 

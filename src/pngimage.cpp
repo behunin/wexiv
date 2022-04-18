@@ -27,7 +27,7 @@
 #include "tiffimage.hpp"
 #include "types.hpp"
 
-#include <zlib.h> // To uncompress IccProfiles
+#include <zlib.h>  // To uncompress IccProfiles
 
 // Signature from front of PNG file
 const unsigned char pngSignature[8] = {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A};
@@ -37,14 +37,14 @@ namespace Exiv2 {
 using namespace Internal;
 
 PngImage::PngImage(BasicIo::UniquePtr io) : Image(ImageType::png, mdExif | mdIptc | mdXmp | mdComment, std::move(io)) {
-} // PngImage::PngImage
+}  // PngImage::PngImage
 
 std::string PngImage::mimeType() const {
   return "image/png";
 }
 
 static bool zlibToDataBuf(const byte* bytes, long length, DataBuf& result) {
-  uLongf uncompressedLen = length * 2; // just a starting point
+  uLongf uncompressedLen = length * 2;  // just a starting point
   int zlibResult;
 
   do {
@@ -80,7 +80,7 @@ void readChunk(DataBuf& buffer, BasicIo& io) {
   if (bufRead != buffer.size_) {
     throw Error(kerInputDataReadFailed);
   }
-} // Exiv2::readChunk
+}  // Exiv2::readChunk
 
 void PngImage::readMetadata() {
   if (io_->open() != 0) {
@@ -91,13 +91,12 @@ void PngImage::readMetadata() {
     throw Error(kerNotAnImage, "PNG");
   }
 
-
   const long imgSize = static_cast<long>(io_->size());
-  DataBuf cheaderBuf(8); // Chunk header: 4 bytes (data size) + 4 bytes (chunk type).
+  DataBuf cheaderBuf(8);  // Chunk header: 4 bytes (data size) + 4 bytes (chunk type).
 
   while (!io_->eof()) {
     std::memset(cheaderBuf.pData_, 0x0, cheaderBuf.size_);
-    readChunk(cheaderBuf, *io_); // Read chunk header.
+    readChunk(cheaderBuf, *io_);  // Read chunk header.
 
     // Decode chunk data length.
     uint32_t chunkLength = Exiv2::getULong(cheaderBuf.pData_, Exiv2::bigEndian);
@@ -110,13 +109,13 @@ void PngImage::readMetadata() {
 
     /// \todo analyse remaining chunks of the standard
     // Perform a chunk triage for item that we need.
-    if (chunkType == "IEND" || chunkType == "IHDR" || chunkType == "tEXt" || chunkType == "zTXt" || chunkType == "eXIf" ||
-        chunkType == "iTXt" || chunkType == "iCCP") {
+    if (chunkType == "IEND" || chunkType == "IHDR" || chunkType == "tEXt" || chunkType == "zTXt" ||
+        chunkType == "eXIf" || chunkType == "iTXt" || chunkType == "iCCP") {
       DataBuf chunkData(chunkLength);
-      readChunk(chunkData, *io_); // Extract chunk data.
+      readChunk(chunkData, *io_);  // Extract chunk data.
 
       if (chunkType == "IEND") {
-        return; // Last chunk found: we stop parsing.
+        return;  // Last chunk found: we stop parsing.
       }
       if (chunkType == "IHDR" && chunkData.size_ >= 8) {
         PngChunk::decodeIHDRChunk(chunkData, &pixelWidth_, &pixelHeight_);
@@ -137,7 +136,7 @@ void PngImage::readMetadata() {
         } while (chunkData.pData_[iccOffset++] != 0x00);
 
         profileName_ = std::string(reinterpret_cast<char*>(chunkData.pData_), iccOffset - 1);
-        ++iccOffset; // +1 = 'compressed' flag
+        ++iccOffset;  // +1 = 'compressed' flag
         enforce(iccOffset <= chunkLength, Exiv2::kerCorruptedMetadata);
 
         zlibToDataBuf(chunkData.pData_ + iccOffset, chunkLength - iccOffset, iccProfile_);
@@ -148,14 +147,13 @@ void PngImage::readMetadata() {
       chunkLength = 0;
     }
 
-
     // Move to the next chunk: chunk data size + 4 CRC bytes.
     io_->seek(chunkLength + 4, BasicIo::cur);
     if (io_->error() || io_->eof()) {
       throw Error(kerFailedToReadImageData);
     }
   }
-} // PngImage::readMetadata
+}  // PngImage::readMetadata
 
 Image::UniquePtr newPngInstance(BasicIo::UniquePtr io, bool create) {
   Image::UniquePtr image(new PngImage(std::move(io)));
@@ -181,5 +179,5 @@ bool isPngType(BasicIo& iIo, bool advance) {
   }
 
   return rc == 0;
-} // Exiv2::isPngType
-} // namespace Exiv2
+}  // Exiv2::isPngType
+}  // namespace Exiv2

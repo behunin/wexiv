@@ -38,21 +38,21 @@ struct Iloc {
   uint32_t length_;
 
   std::string toString() const;
-}; // class Iloc
+};  // class Iloc
 
 // *****************************************************************************
 // class definitions
 
 // Add Base Media File Format to the supported image formats
 namespace ImageType {
-const int bmff = 19; //!< BMFF (bmff) image type (see class BMFF)
+const int bmff = 19;  //!< BMFF (bmff) image type (see class BMFF)
 }
 
 /*!
   @brief Class to access BMFF images.
   */
 class EXIV2API BmffImage : public Image {
-public:
+ public:
   //! @name Creators
   //@{
   /*!
@@ -108,7 +108,7 @@ public:
 
   Exiv2::ByteOrder endian_{Exiv2::bigEndian};
 
-private:
+ private:
   void openOrThrow();
   /*!
     @brief recursiveBoxHandler
@@ -119,7 +119,9 @@ private:
     @warning This function should only be called by readMetadata()
     */
   long boxHandler(Exiv2::PrintStructureOption option, const long pbox_end, int depth);
-  std::string indent(int i) { return std::string(2 * i, ' '); }
+  std::string indent(int i) {
+    return std::string(2 * i, ' ');
+  }
 
   uint32_t fileType_{0};
   std::set<uint64_t> visits_;
@@ -140,7 +142,7 @@ private:
   static bool fullBox(uint32_t box);
   static std::string uuidName(Exiv2::DataBuf& uuid);
 
-}; // class BmffImage
+};  // class BmffImage
 
 // *****************************************************************************
 // template, inline and free functions
@@ -156,4 +158,4 @@ EXIV2API Image::UniquePtr newBmffInstance(BasicIo::UniquePtr io, bool create);
 
 //! Check if the file iIo is a BMFF image.
 EXIV2API bool isBmffType(BasicIo& iIo, bool advance);
-} // namespace Exiv2
+}  // namespace Exiv2

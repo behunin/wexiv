@@ -25,7 +25,7 @@ bool Cr2Header::read(const byte* pData, uint32_t size) {
   offset2_ = getULong(pData + 12, byteOrder());
 
   return true;
-} // Cr2Header::read
+}  // Cr2Header::read
 
 bool Cr2Header::isImageTag(uint16_t tag, IfdId group, const PrimaryGroups* /*pPrimaryGroups*/) const {
   // CR2 image tags are all IFD2 and IFD3 tags
@@ -35,5 +35,5 @@ bool Cr2Header::isImageTag(uint16_t tag, IfdId group, const PrimaryGroups* /*pPr
   return isTiffImageTag(tag, group);
 }
 
-} // namespace Internal
-} // namespace Exiv2
+}  // namespace Internal
+}  // namespace Exiv2

@@ -39,9 +39,9 @@ namespace Exiv2 {
 
 // Supported JPEG image formats
 namespace ImageType {
-const int jpeg = 1; //!< JPEG image type (see class JpegImage)
-const int exv = 2; //!< EXV image type (see class ExvImage)
-} // namespace ImageType
+const int jpeg = 1;  //!< JPEG image type (see class JpegImage)
+const int exv = 2;   //!< EXV image type (see class ExvImage)
+}  // namespace ImageType
 
 /*!
   @brief Helper class, has methods to deal with %Photoshop "Information
@@ -49,11 +49,11 @@ const int exv = 2; //!< EXV image type (see class ExvImage)
   */
 struct EXIV2API Photoshop {
   // Todo: Public for now
-  static const char* const ps3Id_; //!< %Photoshop marker
-  static const std::array<const char*, 4> irbId_; //!< %Photoshop IRB markers
-  static const char* const bimId_; //!< %Photoshop IRB marker (deprecated)
-  static const uint16_t iptc_; //!< %Photoshop IPTC marker
-  static const uint16_t preview_; //!< %Photoshop preview marker
+  static const char* const ps3Id_;                 //!< %Photoshop marker
+  static const std::array<const char*, 4> irbId_;  //!< %Photoshop IRB markers
+  static const char* const bimId_;                 //!< %Photoshop IRB marker (deprecated)
+  static const uint16_t iptc_;                     //!< %Photoshop IPTC marker
+  static const uint16_t preview_;                  //!< %Photoshop preview marker
 
   /*!
     @brief Checks an IRB
@@ -90,18 +90,18 @@ struct EXIV2API Photoshop {
             3 if no data for psTag was found in pPsData;<BR>
             -2 if the pPsData buffer does not contain valid data.
   */
-  static int locateIrb(
-      const byte* pPsData, long sizePsData, uint16_t psTag, const byte** record, uint32_t* const sizeHdr, uint32_t* const sizeData);
+  static int locateIrb(const byte* pPsData, long sizePsData, uint16_t psTag, const byte** record,
+                       uint32_t* const sizeHdr, uint32_t* const sizeData);
   /*!
     @brief Forwards to locateIrb() with \em psTag = \em iptc_
     */
-  static int locateIptcIrb(
-      const byte* pPsData, long sizePsData, const byte** record, uint32_t* const sizeHdr, uint32_t* const sizeData);
+  static int locateIptcIrb(const byte* pPsData, long sizePsData, const byte** record, uint32_t* const sizeHdr,
+                           uint32_t* const sizeData);
   /*!
     @brief Forwards to locatePreviewIrb() with \em psTag = \em preview_
     */
-  static int locatePreviewIrb(
-      const byte* pPsData, long sizePsData, const byte** record, uint32_t* const sizeHdr, uint32_t* const sizeData);
+  static int locatePreviewIrb(const byte* pPsData, long sizePsData, const byte** record, uint32_t* const sizeHdr,
+                              uint32_t* const sizeData);
   /*!
     @brief Set the new IPTC IRB, keeps existing IRBs but removes the
             IPTC block if there is no new IPTC data to write.
@@ -113,13 +113,13 @@ struct EXIV2API Photoshop {
   */
   static DataBuf setIptcIrb(const byte* pPsData, long sizePsData, const IptcData& iptcData);
 
-}; // class Photoshop
+};  // class Photoshop
 
 /*!
       @brief Abstract helper base class to access JPEG images.
      */
 class EXIV2API JpegBase : public Image {
-public:
+ public:
   //! @name Manipulators
   //@{
   void readMetadata() override;
@@ -135,7 +135,7 @@ public:
   JpegBase& operator=(const JpegBase& rhs) = delete;
   //@}
 
-protected:
+ protected:
   //! @name Creators
   //@{
   /*!
@@ -178,35 +178,35 @@ protected:
   //@}
 
   // Constant Data
-  static const byte dht_; //!< JPEG DHT marker
-  static const byte dqt_; //!< JPEG DQT marker
-  static const byte dri_; //!< JPEG DRI marker
-  static const byte sos_; //!< JPEG SOS marker
-  static const byte eoi_; //!< JPEG EOI marker
-  static const byte app0_; //!< JPEG APP0 marker
-  static const byte app1_; //!< JPEG APP1 marker
-  static const byte app2_; //!< JPEG APP2 marker
-  static const byte app13_; //!< JPEG APP13 marker
-  static const byte com_; //!< JPEG Comment marker
-  static const byte sof0_; //!< JPEG Start-Of-Frame marker
-  static const byte sof1_; //!< JPEG Start-Of-Frame marker
-  static const byte sof2_; //!< JPEG Start-Of-Frame marker
-  static const byte sof3_; //!< JPEG Start-Of-Frame marker
-  static const byte sof5_; //!< JPEG Start-Of-Frame marker
-  static const byte sof6_; //!< JPEG Start-Of-Frame marker
-  static const byte sof7_; //!< JPEG Start-Of-Frame marker
-  static const byte sof9_; //!< JPEG Start-Of-Frame marker
-  static const byte sof10_; //!< JPEG Start-Of-Frame marker
-  static const byte sof11_; //!< JPEG Start-Of-Frame marker
-  static const byte sof13_; //!< JPEG Start-Of-Frame marker
-  static const byte sof14_; //!< JPEG Start-Of-Frame marker
-  static const byte sof15_; //!< JPEG Start-Of-Frame marker
-  static const char* const exifId_; //!< Exif identifier
-  static const char* const jfifId_; //!< JFIF identifier
-  static const char* const xmpId_; //!< XMP packet identifier
-  static const char* const iccId_; //!< ICC profile identifier
+  static const byte dht_;            //!< JPEG DHT marker
+  static const byte dqt_;            //!< JPEG DQT marker
+  static const byte dri_;            //!< JPEG DRI marker
+  static const byte sos_;            //!< JPEG SOS marker
+  static const byte eoi_;            //!< JPEG EOI marker
+  static const byte app0_;           //!< JPEG APP0 marker
+  static const byte app1_;           //!< JPEG APP1 marker
+  static const byte app2_;           //!< JPEG APP2 marker
+  static const byte app13_;          //!< JPEG APP13 marker
+  static const byte com_;            //!< JPEG Comment marker
+  static const byte sof0_;           //!< JPEG Start-Of-Frame marker
+  static const byte sof1_;           //!< JPEG Start-Of-Frame marker
+  static const byte sof2_;           //!< JPEG Start-Of-Frame marker
+  static const byte sof3_;           //!< JPEG Start-Of-Frame marker
+  static const byte sof5_;           //!< JPEG Start-Of-Frame marker
+  static const byte sof6_;           //!< JPEG Start-Of-Frame marker
+  static const byte sof7_;           //!< JPEG Start-Of-Frame marker
+  static const byte sof9_;           //!< JPEG Start-Of-Frame marker
+  static const byte sof10_;          //!< JPEG Start-Of-Frame marker
+  static const byte sof11_;          //!< JPEG Start-Of-Frame marker
+  static const byte sof13_;          //!< JPEG Start-Of-Frame marker
+  static const byte sof14_;          //!< JPEG Start-Of-Frame marker
+  static const byte sof15_;          //!< JPEG Start-Of-Frame marker
+  static const char* const exifId_;  //!< Exif identifier
+  static const char* const jfifId_;  //!< JFIF identifier
+  static const char* const xmpId_;   //!< XMP packet identifier
+  static const char* const iccId_;   //!< ICC profile identifier
 
-private:
+ private:
   //! @name Accessors
   //@{
   /*!
@@ -227,7 +227,7 @@ private:
     @return true if the marker is followed by a non-zero payload
     */
   static bool markerHasLength(byte marker);
-}; // class JpegBase
+};  // class JpegBase
 
 /*!
       @brief Class to access JPEG images
@@ -235,7 +235,7 @@ private:
 class EXIV2API JpegImage : public JpegBase {
   friend EXIV2API bool isJpegType(BasicIo& iIo, bool advance);
 
-public:
+ public:
   //! @name Creators
   //@{
   /*!
@@ -266,23 +266,23 @@ public:
   //! Assignment operator
   JpegImage& operator=(const JpegImage& rhs) = delete;
 
-protected:
+ protected:
   //! @name Accessors
   //@{
   bool isThisType(BasicIo& iIo, bool advance) const override;
   //@}
 
-private:
+ private:
   // Constant data
-  static const byte soi_; // SOI marker
-  static const byte blank_[]; // Minimal Jpeg image
-}; // class JpegImage
+  static const byte soi_;      // SOI marker
+  static const byte blank_[];  // Minimal Jpeg image
+};                             // class JpegImage
 
 //! Helper class to access %Exiv2 files
 class EXIV2API ExvImage : public JpegBase {
   friend EXIV2API bool isExvType(BasicIo& iIo, bool advance);
 
-public:
+ public:
   //! @name Creators
   //@{
   /*!
@@ -315,18 +315,18 @@ public:
   //! Assignment operator
   ExvImage& operator=(const ExvImage& rhs) = delete;
 
-protected:
+ protected:
   //! @name Accessors
   //@{
   bool isThisType(BasicIo& iIo, bool advance) const override;
   //@}
 
-private:
+ private:
   // Constant data
-  static const char exiv2Id_[]; // EXV identifier
-  static const byte blank_[]; // Minimal exiv2 file
+  static const char exiv2Id_[];  // EXV identifier
+  static const byte blank_[];    // Minimal exiv2 file
 
-}; // class ExvImage
+};  // class ExvImage
 
 // *****************************************************************************
 // template, inline and free functions
@@ -342,6 +342,6 @@ EXIV2API Image::UniquePtr newJpegInstance(BasicIo::UniquePtr io, bool create);
 //! Check if the file iIo is a JPEG image.
 EXIV2API bool isJpegType(BasicIo& iIo, bool advance);
 
-} // namespace Exiv2
+}  // namespace Exiv2
 
-#endif // #ifndef JPGIMAGE_HPP_
+#endif  // #ifndef JPGIMAGE_HPP_

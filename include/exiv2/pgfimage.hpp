@@ -35,7 +35,7 @@ namespace Exiv2 {
 
 // Add PGF to the supported image formats
 namespace ImageType {
-const int pgf = 17; //!< PGF image type (see class PgfImage)
+const int pgf = 17;  //!< PGF image type (see class PgfImage)
 }
 
 /*!
@@ -43,7 +43,7 @@ const int pgf = 17; //!< PGF image type (see class PgfImage)
       directly.
   */
 class EXIV2API PgfImage : public Image {
-public:
+ public:
   //! @name Creators
   //@{
   /*!
@@ -71,7 +71,9 @@ public:
 
   //! @name Accessors
   //@{
-  std::string mimeType() const override { return "image/pgf"; }
+  std::string mimeType() const override {
+    return "image/pgf";
+  }
   //@}
 
   //! @name NOT implemented
@@ -81,8 +83,8 @@ public:
   //! Assignment operator
   PgfImage& operator=(const PgfImage& rhs) = delete;
 
-private:
-  bool bSwap_; // true for bigEndian hardware, else false
+ private:
+  bool bSwap_;  // true for bigEndian hardware, else false
   //! Read Magick number. Only version >= 6 is supported.
   static byte readPgfMagicNumber(BasicIo& iIo);
   //! Read PGF Header size encoded in 32 bits integer.
@@ -91,7 +93,7 @@ private:
   DataBuf readPgfHeaderStructure(BasicIo& iIo, int& width, int& height) const;
   //@}
 
-}; // class PgfImage
+};  // class PgfImage
 
 // *****************************************************************************
 // template, inline and free functions
@@ -108,6 +110,6 @@ EXIV2API Image::UniquePtr newPgfInstance(BasicIo::UniquePtr io, bool create);
 //! Check if the file iIo is a PGF image.
 EXIV2API bool isPgfType(BasicIo& iIo, bool advance);
 
-} // namespace Exiv2
+}  // namespace Exiv2
 
-#endif // #ifndef PGFIMAGE_HPP_
+#endif  // #ifndef PGFIMAGE_HPP_

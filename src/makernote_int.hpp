@@ -43,11 +43,11 @@ std::string getExiv2ConfigPath();
 */
 std::string readExiv2Config(const std::string& section, const std::string& value, const std::string& def);
 
-
 // *****************************************************************************
 
 //! Type for a pointer to a function creating a makernote (image)
-using NewMnFct = TiffComponent* (*)(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size, ByteOrder byteOrder);
+using NewMnFct = TiffComponent* (*)(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size,
+                                    ByteOrder byteOrder);
 
 //! Type for a pointer to a function creating a makernote (group)
 using NewMnFct2 = TiffComponent* (*)(uint16_t tag, IfdId group, IfdId mnGroup);
@@ -67,17 +67,17 @@ struct TiffMnRegistry {
   bool operator==(IfdId key) const;
 
   // DATA
-  const char* make_; //!< Camera make
-  IfdId mnGroup_; //!< Group identifier
-  NewMnFct newMnFct_; //!< Makernote create function (image)
-  NewMnFct2 newMnFct2_; //!< Makernote create function (group)
+  const char* make_;     //!< Camera make
+  IfdId mnGroup_;        //!< Group identifier
+  NewMnFct newMnFct_;    //!< Makernote create function (image)
+  NewMnFct2 newMnFct2_;  //!< Makernote create function (group)
 };
 
 /*!
   @brief TIFF makernote factory for concrete TIFF makernotes.
 */
 class TiffMnCreator {
-public:
+ public:
   /*!
     @brief Create the Makernote for camera \em make and details from
             the makernote entry itself if needed. Return a pointer to
@@ -89,25 +89,26 @@ public:
             is used to indicate this transfer here in order to reduce
             file dependencies.
   */
-  static TiffComponent* create(
-      uint16_t tag, IfdId group, const std::string& make, const byte* pData, uint32_t size, ByteOrder byteOrder);
+  static TiffComponent* create(uint16_t tag, IfdId group, const std::string& make, const byte* pData, uint32_t size,
+                               ByteOrder byteOrder);
   /*!
     @brief Create the Makernote for a given group. This method is used
             when a makernote is written back from Exif tags.
   */
   static TiffComponent* create(uint16_t tag, IfdId group, IfdId mnGroup);
 
-protected:
+ protected:
   //! Prevent destruction (needed if used as a policy class)
-  ~TiffMnCreator() {}
+  ~TiffMnCreator() {
+  }
 
-private:
-  static const std::array<TiffMnRegistry, 25> registry_; //<! List of makernotes
-}; // class TiffMnCreator
+ private:
+  static const std::array<TiffMnRegistry, 25> registry_;  //<! List of makernotes
+};                                                        // class TiffMnCreator
 
 //! Makernote header interface. This class is used with TIFF makernotes.
 class MnHeader {
-public:
+ public:
   //! @name Creators
   //@{
   //! Virtual destructor.
@@ -145,11 +146,11 @@ public:
   virtual uint32_t baseOffset(uint32_t mnOffset) const;
   //@}
 
-}; // class MnHeader
+};  // class MnHeader
 
 //! Header of an Olympus Makernote
 class OlympusMnHeader : public MnHeader {
-public:
+ public:
   //! @name Creators
   //@{
   //! Default constructor
@@ -169,15 +170,15 @@ public:
   //! Return the size of the makernote header signature
   static uint32_t sizeOfSignature();
 
-private:
-  DataBuf header_; //!< Data buffer for the makernote header
-  static const byte signature_[]; //!< Olympus makernote header signature
+ private:
+  DataBuf header_;                 //!< Data buffer for the makernote header
+  static const byte signature_[];  //!< Olympus makernote header signature
 
-}; // class OlympusMnHeader
+};  // class OlympusMnHeader
 
 //! Header of an Olympus II Makernote
 class Olympus2MnHeader : public MnHeader {
-public:
+ public:
   //! @name Creators
   //@{
   //! Default constructor
@@ -198,15 +199,15 @@ public:
   //! Return the size of the makernote header signature
   static uint32_t sizeOfSignature();
 
-private:
-  DataBuf header_; //!< Data buffer for the makernote header
-  static const byte signature_[]; //!< Olympus makernote header signature
+ private:
+  DataBuf header_;                 //!< Data buffer for the makernote header
+  static const byte signature_[];  //!< Olympus makernote header signature
 
-}; // class Olympus2MnHeader
+};  // class Olympus2MnHeader
 
 //! Header of a Fujifilm Makernote
 class FujiMnHeader : public MnHeader {
-public:
+ public:
   //! @name Creators
   //@{
   //! Default constructor
@@ -229,17 +230,17 @@ public:
   //! Return the size of the makernote header signature
   static uint32_t sizeOfSignature();
 
-private:
-  DataBuf header_; //!< Data buffer for the makernote header
-  static const byte signature_[]; //!< Fujifilm makernote header signature
-  static const ByteOrder byteOrder_; //!< Byteorder for makernote (always II)
-  uint32_t start_; //!< Start of the mn IFD rel. to mn start
+ private:
+  DataBuf header_;                    //!< Data buffer for the makernote header
+  static const byte signature_[];     //!< Fujifilm makernote header signature
+  static const ByteOrder byteOrder_;  //!< Byteorder for makernote (always II)
+  uint32_t start_;                    //!< Start of the mn IFD rel. to mn start
 
-}; // class FujiMnHeader
+};  // class FujiMnHeader
 
 //! Header of a Nikon 2 Makernote
 class Nikon2MnHeader : public MnHeader {
-public:
+ public:
   //! @name Creators
   //@{
   //! Default constructor
@@ -259,16 +260,16 @@ public:
   //! Return the size of the makernote header signature
   static uint32_t sizeOfSignature();
 
-private:
-  DataBuf buf_; //!< Raw header data
-  uint32_t start_; //!< Start of the mn IFD rel. to mn start
-  static const byte signature_[]; //!< Nikon 2 makernote header signature
+ private:
+  DataBuf buf_;                    //!< Raw header data
+  uint32_t start_;                 //!< Start of the mn IFD rel. to mn start
+  static const byte signature_[];  //!< Nikon 2 makernote header signature
 
-}; // class Nikon2MnHeader
+};  // class Nikon2MnHeader
 
 //! Header of a Nikon 3 Makernote
 class Nikon3MnHeader : public MnHeader {
-public:
+ public:
   //! @name Creators
   //@{
   //! Default constructor
@@ -291,17 +292,17 @@ public:
   //! Return the size of the makernote header signature
   static uint32_t sizeOfSignature();
 
-private:
-  DataBuf buf_; //!< Raw header data
-  ByteOrder byteOrder_; //!< Byteorder for makernote
-  uint32_t start_; //!< Start of the mn IFD rel. to mn start
-  static const byte signature_[]; //!< Nikon 3 makernote header signature
+ private:
+  DataBuf buf_;                    //!< Raw header data
+  ByteOrder byteOrder_;            //!< Byteorder for makernote
+  uint32_t start_;                 //!< Start of the mn IFD rel. to mn start
+  static const byte signature_[];  //!< Nikon 3 makernote header signature
 
-}; // class Nikon3MnHeader
+};  // class Nikon3MnHeader
 
 //! Header of a Panasonic Makernote
 class PanasonicMnHeader : public MnHeader {
-public:
+ public:
   //! @name Creators
   //@{
   //! Default constructor
@@ -321,16 +322,16 @@ public:
   //! Return the size of the makernote header signature
   static uint32_t sizeOfSignature();
 
-private:
-  DataBuf buf_; //!< Raw header data
-  uint32_t start_; //!< Start of the mn IFD rel. to mn start
-  static const byte signature_[]; //!< Panasonic makernote header signature
+ private:
+  DataBuf buf_;                    //!< Raw header data
+  uint32_t start_;                 //!< Start of the mn IFD rel. to mn start
+  static const byte signature_[];  //!< Panasonic makernote header signature
 
-}; // class PanasonicMnHeader
+};  // class PanasonicMnHeader
 
 //! Header of an Pentax DNG Makernote
 class PentaxDngMnHeader : public MnHeader {
-public:
+ public:
   //! @name Creators
   //@{
   //! Default constructor
@@ -351,15 +352,15 @@ public:
   //! Return the size of the makernote header signature
   static uint32_t sizeOfSignature();
 
-private:
-  DataBuf header_; //!< Data buffer for the makernote header
-  static const byte signature_[]; //!< Pentax DNG makernote header signature
+ private:
+  DataBuf header_;                 //!< Data buffer for the makernote header
+  static const byte signature_[];  //!< Pentax DNG makernote header signature
 
-}; // class PentaxDngMnHeader
+};  // class PentaxDngMnHeader
 
 //! Header of an Pentax Makernote
 class PentaxMnHeader : public MnHeader {
-public:
+ public:
   //! @name Creators
   //@{
   //! Default constructor
@@ -379,15 +380,15 @@ public:
   //! Return the size of the makernote header signature
   static uint32_t sizeOfSignature();
 
-private:
-  DataBuf header_; //!< Data buffer for the makernote header
-  static const byte signature_[]; //!< Pentax makernote header signature
+ private:
+  DataBuf header_;                 //!< Data buffer for the makernote header
+  static const byte signature_[];  //!< Pentax makernote header signature
 
-}; // class PentaxMnHeader
+};  // class PentaxMnHeader
 
 //! Header of a Samsung Makernote, only used for the relative offset
 class SamsungMnHeader : public MnHeader {
-public:
+ public:
   //! @name Creators
   //@{
   //! Default constructor
@@ -403,11 +404,11 @@ public:
   uint32_t baseOffset(uint32_t mnOffset) const override;
   //@}
 
-}; // class SamsungMnHeader
+};  // class SamsungMnHeader
 
 //! Header of a Sigma Makernote
 class SigmaMnHeader : public MnHeader {
-public:
+ public:
   //! @name Creators
   //@{
   //! Default constructor
@@ -427,17 +428,17 @@ public:
   //! Return the size of the makernote header signature
   static uint32_t sizeOfSignature();
 
-private:
-  DataBuf buf_; //!< Raw header data
-  uint32_t start_; //!< Start of the mn IFD rel. to mn start
-  static const byte signature1_[]; //!< Sigma makernote header signature 1
-  static const byte signature2_[]; //!< Sigma makernote header signature 2
+ private:
+  DataBuf buf_;                     //!< Raw header data
+  uint32_t start_;                  //!< Start of the mn IFD rel. to mn start
+  static const byte signature1_[];  //!< Sigma makernote header signature 1
+  static const byte signature2_[];  //!< Sigma makernote header signature 2
 
-}; // class SigmaMnHeader
+};  // class SigmaMnHeader
 
 //! Header of a Sony Makernote
 class SonyMnHeader : public MnHeader {
-public:
+ public:
   //! @name Creators
   //@{
   //! Default constructor
@@ -457,16 +458,16 @@ public:
   //! Return the size of the makernote header signature
   static uint32_t sizeOfSignature();
 
-private:
-  DataBuf buf_; //!< Raw header data
-  uint32_t start_; //!< Start of the mn IFD rel. to mn start
-  static const byte signature_[]; //!< Sony makernote header signature
+ private:
+  DataBuf buf_;                    //!< Raw header data
+  uint32_t start_;                 //!< Start of the mn IFD rel. to mn start
+  static const byte signature_[];  //!< Sony makernote header signature
 
-}; // class SonyMnHeader
+};  // class SonyMnHeader
 
 //! Header of a Casio2 Makernote
 class Casio2MnHeader : public MnHeader {
-public:
+ public:
   //! @name Creators
   //@{
   //! Default constructor
@@ -487,24 +488,26 @@ public:
   //! Return the size of the makernote header signature
   static uint32_t sizeOfSignature();
 
-private:
-  DataBuf buf_; //!< Raw header data
-  uint32_t start_; //!< Start of the mn IFD rel. to mn start
-  static const byte signature_[]; //!< Casio makernote header signature
-  static const ByteOrder byteOrder_; //!< Byteorder for makernote (always big endian)
+ private:
+  DataBuf buf_;                       //!< Raw header data
+  uint32_t start_;                    //!< Start of the mn IFD rel. to mn start
+  static const byte signature_[];     //!< Casio makernote header signature
+  static const ByteOrder byteOrder_;  //!< Byteorder for makernote (always big endian)
 
-}; // class Casio2MnHeader
+};  // class Casio2MnHeader
 
 // *****************************************************************************
 
 //! Function to create a simple IFD makernote (Canon, Minolta, Nikon1)
-TiffComponent* newIfdMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size, ByteOrder byteOrder);
+TiffComponent* newIfdMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size,
+                        ByteOrder byteOrder);
 
 //! Function to create a simple IFD makernote (Canon, Minolta, Nikon1)
 TiffComponent* newIfdMn2(uint16_t tag, IfdId group, IfdId mnGroup);
 
 //! Function to create an Olympus makernote
-TiffComponent* newOlympusMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size, ByteOrder byteOrder);
+TiffComponent* newOlympusMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size,
+                            ByteOrder byteOrder);
 
 //! Function to create an Olympus makernote
 TiffComponent* newOlympusMn2(uint16_t tag, IfdId group, IfdId mnGroup);
@@ -513,7 +516,8 @@ TiffComponent* newOlympusMn2(uint16_t tag, IfdId group, IfdId mnGroup);
 TiffComponent* newOlympus2Mn2(uint16_t tag, IfdId group, IfdId mnGroup);
 
 //! Function to create a Fujifilm makernote
-TiffComponent* newFujiMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size, ByteOrder byteOrder);
+TiffComponent* newFujiMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size,
+                         ByteOrder byteOrder);
 
 //! Function to create a Fujifilm makernote
 TiffComponent* newFujiMn2(uint16_t tag, IfdId group, IfdId mnGroup);
@@ -522,7 +526,8 @@ TiffComponent* newFujiMn2(uint16_t tag, IfdId group, IfdId mnGroup);
       @brief Function to create a Nikon makernote. This will create the
              appropriate Nikon 1, 2 or 3 makernote, based on the arguments.
      */
-TiffComponent* newNikonMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size, ByteOrder byteOrder);
+TiffComponent* newNikonMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size,
+                          ByteOrder byteOrder);
 
 //! Function to create a Nikon2 makernote
 TiffComponent* newNikon2Mn2(uint16_t tag, IfdId group, IfdId mnGroup);
@@ -531,13 +536,15 @@ TiffComponent* newNikon2Mn2(uint16_t tag, IfdId group, IfdId mnGroup);
 TiffComponent* newNikon3Mn2(uint16_t tag, IfdId group, IfdId mnGroup);
 
 //! Function to create a Panasonic makernote
-TiffComponent* newPanasonicMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size, ByteOrder byteOrder);
+TiffComponent* newPanasonicMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size,
+                              ByteOrder byteOrder);
 
 //! Function to create a Panasonic makernote
 TiffComponent* newPanasonicMn2(uint16_t tag, IfdId group, IfdId mnGroup);
 
 //! Function to create an Pentax makernote
-TiffComponent* newPentaxMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size, ByteOrder byteOrder);
+TiffComponent* newPentaxMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size,
+                           ByteOrder byteOrder);
 
 //! Function to create an Pentax makernote
 TiffComponent* newPentaxMn2(uint16_t tag, IfdId group, IfdId mnGroup);
@@ -546,19 +553,22 @@ TiffComponent* newPentaxMn2(uint16_t tag, IfdId group, IfdId mnGroup);
 TiffComponent* newPentaxDngMn2(uint16_t tag, IfdId group, IfdId mnGroup);
 
 //! Function to create a Samsung makernote
-TiffComponent* newSamsungMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size, ByteOrder byteOrder);
+TiffComponent* newSamsungMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size,
+                            ByteOrder byteOrder);
 
 //! Function to create a Samsung makernote
 TiffComponent* newSamsungMn2(uint16_t tag, IfdId group, IfdId mnGroup);
 
 //! Function to create a Sigma makernote
-TiffComponent* newSigmaMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size, ByteOrder byteOrder);
+TiffComponent* newSigmaMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size,
+                          ByteOrder byteOrder);
 
 //! Function to create a Sigma makernote
 TiffComponent* newSigmaMn2(uint16_t tag, IfdId group, IfdId mnGroup);
 
 //! Function to create a Sony makernote
-TiffComponent* newSonyMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size, ByteOrder byteOrder);
+TiffComponent* newSonyMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size,
+                         ByteOrder byteOrder);
 
 //! Function to create a Sony1 makernote
 TiffComponent* newSony1Mn2(uint16_t tag, IfdId group, IfdId mnGroup);
@@ -567,7 +577,8 @@ TiffComponent* newSony1Mn2(uint16_t tag, IfdId group, IfdId mnGroup);
 TiffComponent* newSony2Mn2(uint16_t tag, IfdId group, IfdId mnGroup);
 
 //! Function to create a Casio2 makernote
-TiffComponent* newCasioMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size, ByteOrder byteOrder);
+TiffComponent* newCasioMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size,
+                          ByteOrder byteOrder);
 
 //! Function to create a Casio2 makernote
 TiffComponent* newCasio2Mn2(uint16_t tag, IfdId group, IfdId mnGroup);
@@ -667,7 +678,7 @@ int nikonAf2Selector(uint16_t tag, const byte* pData, uint32_t size, TiffCompone
 */
 DataBuf nikonCrypt(uint16_t tag, const byte* pData, uint32_t size, TiffComponent* const pRoot);
 
-} // namespace Internal
-} // namespace Exiv2
+}  // namespace Internal
+}  // namespace Exiv2
 
-#endif // #ifndef MAKERNOTE_INT_HPP_
+#endif  // #ifndef MAKERNOTE_INT_HPP_

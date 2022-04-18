@@ -32,7 +32,8 @@
 
 namespace Exiv2 {
 
-RafImage::RafImage(BasicIo::UniquePtr io, bool /*create*/) : Image(ImageType::raf, mdExif | mdIptc | mdXmp, std::move(io)) {
+RafImage::RafImage(BasicIo::UniquePtr io, bool /*create*/) :
+    Image(ImageType::raf, mdExif | mdIptc | mdXmp, std::move(io)) {
 }
 
 std::string RafImage::mimeType() const {
@@ -94,7 +95,7 @@ void RafImage::readMetadata() {
   if (io_->error() || io_->eof())
     throw Error(kerFailedToReadImageData);
 
-  io_->seek(0, BasicIo::beg); // rewind
+  io_->seek(0, BasicIo::beg);  // rewind
 
   ByteOrder bo = TiffParser::decode(exifData_, iptcData_, xmpData_, buf.pData_, buf.size_);
 
@@ -126,7 +127,7 @@ void RafImage::readMetadata() {
   if (!io_->error() && !io_->eof()) {
     TiffParser::decode(exifData_, iptcData_, xmpData_, tiff.pData_, tiff.size_);
   }
-} // RafImage::readMetadata
+}  // RafImage::readMetadata
 
 Image::UniquePtr newRafInstance(BasicIo::UniquePtr io, bool create) {
   Image::UniquePtr image(new RafImage(std::move(io), create));
@@ -148,6 +149,6 @@ bool isRafType(BasicIo& iIo, bool advance) {
     iIo.seek(-len, BasicIo::cur);
   }
   return rc == 0;
-} // Exiv2::isRafType
+}  // Exiv2::isRafType
 
-} // namespace Exiv2
+}  // namespace Exiv2

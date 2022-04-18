@@ -37,19 +37,19 @@ namespace Internal {
 //! TIFF value type.
 using TiffType = uint16_t;
 
-const TiffType ttUnsignedByte = 1; //!< Exif BYTE type
-const TiffType ttAsciiString = 2; //!< Exif ASCII type
-const TiffType ttUnsignedShort = 3; //!< Exif SHORT type
-const TiffType ttUnsignedLong = 4; //!< Exif LONG type
-const TiffType ttUnsignedRational = 5; //!< Exif RATIONAL type
-const TiffType ttSignedByte = 6; //!< Exif SBYTE type
-const TiffType ttUndefined = 7; //!< Exif UNDEFINED type
-const TiffType ttSignedShort = 8; //!< Exif SSHORT type
-const TiffType ttSignedLong = 9; //!< Exif SLONG type
-const TiffType ttSignedRational = 10; //!< Exif SRATIONAL type
-const TiffType ttTiffFloat = 11; //!< TIFF FLOAT type
-const TiffType ttTiffDouble = 12; //!< TIFF DOUBLE type
-const TiffType ttTiffIfd = 13; //!< TIFF IFD type
+const TiffType ttUnsignedByte = 1;      //!< Exif BYTE type
+const TiffType ttAsciiString = 2;       //!< Exif ASCII type
+const TiffType ttUnsignedShort = 3;     //!< Exif SHORT type
+const TiffType ttUnsignedLong = 4;      //!< Exif LONG type
+const TiffType ttUnsignedRational = 5;  //!< Exif RATIONAL type
+const TiffType ttSignedByte = 6;        //!< Exif SBYTE type
+const TiffType ttUndefined = 7;         //!< Exif UNDEFINED type
+const TiffType ttSignedShort = 8;       //!< Exif SSHORT type
+const TiffType ttSignedLong = 9;        //!< Exif SLONG type
+const TiffType ttSignedRational = 10;   //!< Exif SRATIONAL type
+const TiffType ttTiffFloat = 11;        //!< TIFF FLOAT type
+const TiffType ttTiffDouble = 12;       //!< TIFF DOUBLE type
+const TiffType ttTiffIfd = 13;          //!< TIFF IFD type
 
 //! Convert the \em tiffType of a \em tag and \em group to an Exiv2 \em typeId.
 TypeId toTypeId(TiffType tiffType, uint16_t tag, IfdId group);
@@ -60,44 +60,51 @@ TiffType toTiffType(TypeId typeId);
   Special TIFF tags for the use in TIFF structures only
 */
 namespace Tag {
-const uint32_t none = 0x10000; //!< Dummy tag
-const uint32_t root = 0x20000; //!< Special tag: root IFD
-const uint32_t next = 0x30000; //!< Special tag: next IFD
-const uint32_t all = 0x40000; //!< Special tag: all tags in a group
-const uint32_t pana = 0x80000; //!< Special tag: root IFD of Panasonic RAW images
-const uint32_t fuji = 0x100000; //!< Special tag: root IFD of Fujifilm RAF images
-const uint32_t cmt2 = 0x110000; //!< Special tag: root IFD of CR3 images
-const uint32_t cmt3 = 0x120000; //!< Special tag: root IFD of CR3 images
-const uint32_t cmt4 = 0x130000; //!< Special tag: root IFD of CR3 images
-} // namespace Tag
+const uint32_t none = 0x10000;   //!< Dummy tag
+const uint32_t root = 0x20000;   //!< Special tag: root IFD
+const uint32_t next = 0x30000;   //!< Special tag: next IFD
+const uint32_t all = 0x40000;    //!< Special tag: all tags in a group
+const uint32_t pana = 0x80000;   //!< Special tag: root IFD of Panasonic RAW images
+const uint32_t fuji = 0x100000;  //!< Special tag: root IFD of Fujifilm RAF images
+const uint32_t cmt2 = 0x110000;  //!< Special tag: root IFD of CR3 images
+const uint32_t cmt3 = 0x120000;  //!< Special tag: root IFD of CR3 images
+const uint32_t cmt4 = 0x130000;  //!< Special tag: root IFD of CR3 images
+}  // namespace Tag
 
 /*!
   @brief A tupel consisting of extended Tag and group used as an item in
         TIFF paths.
 */
 class TiffPathItem {
-public:
+ public:
   //! @name Creators
   //@{
   //! Constructor
-  TiffPathItem(uint32_t extendedTag, IfdId group) : extendedTag_(extendedTag), group_(group) {}
+  TiffPathItem(uint32_t extendedTag, IfdId group) : extendedTag_(extendedTag), group_(group) {
+  }
   //@}
 
   //! @name Accessors
   //@{
   //! Return the tag corresponding to the extended tag
-  uint16_t tag() const { return static_cast<uint16_t>(extendedTag_ & 0xffff); }
+  uint16_t tag() const {
+    return static_cast<uint16_t>(extendedTag_ & 0xffff);
+  }
   //! Return the extended tag (32 bit so that it can contain special tags)
-  uint32_t extendedTag() const { return extendedTag_; }
+  uint32_t extendedTag() const {
+    return extendedTag_;
+  }
   //! Return the group
-  IfdId group() const { return group_; }
+  IfdId group() const {
+    return group_;
+  }
   //@}
 
-private:
+ private:
   // DATA
   uint32_t extendedTag_;
   IfdId group_;
-}; // class TiffPathItem
+};  // class TiffPathItem
 
 /*!
   @brief Simple IO wrapper to ensure that the header is only written if there is
@@ -109,7 +116,7 @@ private:
   there is any other data.
 */
 class IoWrapper {
-public:
+ public:
   //! @name Creators
   //@{
   /*!
@@ -121,14 +128,14 @@ public:
   IoWrapper(BasicIo& io, const byte* pHeader, long size, OffsetWriter* pow);
   //@}
 
-private:
+ private:
   // DATA
-  BasicIo& io_; //! Reference for the IO instance.
-  const byte* pHeader_; //! Pointer to the header data.
-  long size_; //! Size of the header data.
-  bool wroteHeader_; //! Indicates if the header has been written.
-  OffsetWriter* pow_; //! Pointer to an offset-writer, if any, or 0
-}; // class IoWrapper
+  BasicIo& io_;          //! Reference for the IO instance.
+  const byte* pHeader_;  //! Pointer to the header data.
+  long size_;            //! Size of the header data.
+  bool wroteHeader_;     //! Indicates if the header has been written.
+  OffsetWriter* pow_;    //! Pointer to an offset-writer, if any, or 0
+};                       // class IoWrapper
 
 /*!
   @brief Interface class for components of a TIFF directory hierarchy
@@ -139,7 +146,7 @@ private:
         (Visitor pattern) to perform operations on all components.
 */
 class TiffComponent {
-public:
+ public:
   //! TiffComponent auto_ptr type
   using UniquePtr = std::unique_ptr<TiffComponent>;
   //! Container type to hold all metadata
@@ -179,17 +186,25 @@ public:
             component in a memory buffer. The buffer must be allocated and
             freed outside of this class.
   */
-  void setStart(const byte* pStart) { pStart_ = const_cast<byte*>(pStart); }
+  void setStart(const byte* pStart) {
+    pStart_ = const_cast<byte*>(pStart);
+  }
   //@}
 
   //! @name Accessors
   //@{
   //! Return the tag of this entry.
-  uint16_t tag() const { return tag_; }
+  uint16_t tag() const {
+    return tag_;
+  }
   //! Return the group id of this component
-  IfdId group() const { return group_; }
+  IfdId group() const {
+    return group_;
+  }
   //! Return a pointer to the start of the binary representation of the component
-  byte* start() const { return pStart_; }
+  byte* start() const {
+    return pStart_;
+  }
   /*!
     @brief Return an auto-pointer to a copy of itself (deep copy, but
           without any children). The caller owns this copy and the
@@ -227,7 +242,7 @@ public:
   virtual int idx() const;
   //@}
 
-protected:
+ protected:
   //! @name Protected Manipulators
   //@{
   //! Implements addPath(). The default implementation does nothing.
@@ -254,26 +269,27 @@ protected:
   virtual uint32_t doSizeImage() const = 0;
   //@}
 
-private:
+ private:
   // DATA
-  uint16_t tag_; //!< Tag that identifies the component
-  IfdId group_; //!< Group id for this component
+  uint16_t tag_;  //!< Tag that identifies the component
+  IfdId group_;   //!< Group id for this component
   /*!
     Pointer to the start of the binary representation of the component in
     a memory buffer. The buffer is allocated and freed outside of this class.
   */
   byte* pStart_;
 
-}; // class TiffComponent
+};  // class TiffComponent
 
 //! TIFF mapping table for functions to decode special cases
 struct TiffMappingInfo {
   //! Search key for TIFF mapping structures.
   struct Key {
-    Key(std::string m, uint32_t e, IfdId g) : m_(std::move(m)), e_(e), g_(g) {}
-    std::string m_; //!< Camera make
-    uint32_t e_; //!< Extended tag
-    IfdId g_; //!< %Group
+    Key(std::string m, uint32_t e, IfdId g) : m_(std::move(m)), e_(e), g_(g) {
+    }
+    std::string m_;  //!< Camera make
+    uint32_t e_;     //!< Extended tag
+    IfdId g_;        //!< %Group
   };
   /*!
     @brief Compare a TiffMappingInfo with a TiffMappingInfo::Key.
@@ -285,15 +301,17 @@ struct TiffMappingInfo {
   */
   bool operator==(const Key& key) const;
   //! Return the tag corresponding to the extended tag
-  uint16_t tag() const { return static_cast<uint16_t>(extendedTag_ & 0xffff); }
+  uint16_t tag() const {
+    return static_cast<uint16_t>(extendedTag_ & 0xffff);
+  }
 
   // DATA
-  const char* make_; //!< Camera make for which these mapping functions apply
-  uint32_t extendedTag_; //!< Tag (32 bit so that it can contain special tags)
-  IfdId group_; //!< Group that contains the tag
-  DecoderFct decoderFct_; //!< Decoder function for matching tags
+  const char* make_;       //!< Camera make for which these mapping functions apply
+  uint32_t extendedTag_;   //!< Tag (32 bit so that it can contain special tags)
+  IfdId group_;            //!< Group that contains the tag
+  DecoderFct decoderFct_;  //!< Decoder function for matching tags
 
-}; // struct TiffMappingInfo
+};  // struct TiffMappingInfo
 
 /*!
   @brief This abstract base class provides the common functionality of an
@@ -306,7 +324,7 @@ class TiffEntryBase : public TiffComponent {
   friend class TiffEncoder;
   friend int selectNikonLd(TiffBinaryArray* const, TiffComponent* const);
 
-public:
+ public:
   //! @name Creators
   //@{
   //! Default constructor.
@@ -319,7 +337,9 @@ public:
   //@{
   void encode(TiffEncoder& encoder, const Exifdatum* datum);
   //! Set the offset
-  void setOffset(int32_t offset) { offset_ = offset; }
+  void setOffset(int32_t offset) {
+    offset_ = offset;
+  }
   //! Set pointer and size of the entry's data (not taking ownership of the data).
   void setData(byte* pData, int32_t size);
   //! Set the entry's data buffer, taking ownership of the data buffer passed in.
@@ -339,12 +359,16 @@ public:
   //! @name Accessors
   //@{
   //! Return the TIFF type
-  TiffType tiffType() const { return tiffType_; }
+  TiffType tiffType() const {
+    return tiffType_;
+  }
   /*!
     @brief Return the offset to the data area relative to the base
           for the component (usually the start of the TIFF header)
   */
-  int32_t offset() const { return offset_; }
+  int32_t offset() const {
+    return offset_;
+  }
   /*!
     @brief Return the unique id of the entry in the image
   */
@@ -353,12 +377,16 @@ public:
     @brief Return a pointer to the binary representation of the
           value of this component.
   */
-  const byte* pData() const { return pData_; }
+  const byte* pData() const {
+    return pData_;
+  }
   //! Return a const pointer to the converted value of this component
-  const Value* pValue() const { return pValue_; }
+  const Value* pValue() const {
+    return pValue_;
+  }
   //@}
 
-protected:
+ protected:
   //! @name Protected Creators
   //@{
   //! Copy constructor (used to implement clone()).
@@ -368,9 +396,13 @@ protected:
   //! @name Protected Manipulators
   //@{
   //! Set the number of components in this entry
-  void setCount(uint32_t count) { count_ = count; }
+  void setCount(uint32_t count) {
+    count_ = count;
+  }
   //! Set the unique id of the entry in the image
-  void setIdx(int idx) { idx_ = idx; }
+  void setIdx(int idx) {
+    idx_ = idx;
+  }
   //@}
 
   //! @name Protected Accessors
@@ -385,7 +417,7 @@ protected:
   uint32_t doSizeImage() const override;
   //@}
 
-private:
+ private:
   //! @name NOT implemented
   //@{
   //! Assignment operator.
@@ -393,35 +425,36 @@ private:
   //@}
 
   // DATA
-  TiffType tiffType_; //!< Field TIFF type
-  uint32_t count_; //!< The number of values of the indicated type
-  int32_t offset_; //!< Offset to the data area
+  TiffType tiffType_;  //!< Field TIFF type
+  uint32_t count_;     //!< The number of values of the indicated type
+  int32_t offset_;     //!< Offset to the data area
   /*!
             Size of the data buffer holding the value in bytes, there is no
             minimum size.
           */
   uint32_t size_;
-  byte* pData_; //!< Pointer to the data area
-  bool isMalloced_; //!< True if this entry owns the value data
-  int idx_; //!< Unique id of the entry in the image
-  Value* pValue_; //!< Converted data value
+  byte* pData_;      //!< Pointer to the data area
+  bool isMalloced_;  //!< True if this entry owns the value data
+  int idx_;          //!< Unique id of the entry in the image
+  Value* pValue_;    //!< Converted data value
 
-}; // class TiffEntryBase
+};  // class TiffEntryBase
 
 /*!
   @brief A standard TIFF IFD entry.
 */
 class TiffEntry : public TiffEntryBase {
-public:
+ public:
   //! @name Creators
   //@{
   //! Constructor
-  TiffEntry(uint16_t tag, IfdId group) : TiffEntryBase(tag, group) {}
+  TiffEntry(uint16_t tag, IfdId group) : TiffEntryBase(tag, group) {
+  }
   //! Virtual destructor.
   ~TiffEntry() override = default;
   //@}
 
-protected:
+ protected:
   //! @name Manipulators
   //@{
   void doAccept(TiffVisitor& visitor) override;
@@ -432,7 +465,7 @@ protected:
   TiffEntry* doClone() const override;
   //@}
 
-}; // class TiffEntry
+};  // class TiffEntry
 
 /*!
   @brief Interface for a standard TIFF IFD entry consisting of a value
@@ -443,12 +476,13 @@ protected:
         (TiffDataEntry) or not (TiffImageEntry).
 */
 class TiffDataEntryBase : public TiffEntryBase {
-public:
+ public:
   //! @name Creators
   //@{
   //! Constructor
-  TiffDataEntryBase(uint16_t tag, IfdId group, uint16_t szTag, IfdId szGroup)
-    : TiffEntryBase(tag, group), szTag_(szTag), szGroup_(szGroup) {}
+  TiffDataEntryBase(uint16_t tag, IfdId group, uint16_t szTag, IfdId szGroup) :
+      TiffEntryBase(tag, group), szTag_(szTag), szGroup_(szGroup) {
+  }
   //! Virtual destructor.
   ~TiffDataEntryBase() override = default;
   //@}
@@ -469,17 +503,21 @@ public:
   //! @name Accessors
   //@{
   //! Return the group of the entry which has the size
-  uint16_t szTag() const { return szTag_; }
+  uint16_t szTag() const {
+    return szTag_;
+  }
   //! Return the group of the entry which has the size
-  IfdId szGroup() const { return szGroup_; }
+  IfdId szGroup() const {
+    return szGroup_;
+  }
   //@}
 
-private:
+ private:
   // DATA
-  const uint16_t szTag_; //!< Tag of the entry with the size
-  const IfdId szGroup_; //!< Group of the entry with the size
+  const uint16_t szTag_;  //!< Tag of the entry with the size
+  const IfdId szGroup_;   //!< Group of the entry with the size
 
-}; // class TiffDataEntryBase
+};  // class TiffDataEntryBase
 
 /*!
   @brief A standard TIFF IFD entry consisting of a value which is an offset
@@ -495,12 +533,13 @@ private:
 class TiffDataEntry : public TiffDataEntryBase {
   friend class TiffEncoder;
 
-public:
+ public:
   //! @name Creators
   //@{
   //! Constructor
-  TiffDataEntry(uint16_t tag, IfdId group, uint16_t szTag, IfdId szGroup)
-    : TiffDataEntryBase(tag, group, szTag, szGroup), pDataArea_(0), sizeDataArea_(0) {}
+  TiffDataEntry(uint16_t tag, IfdId group, uint16_t szTag, IfdId szGroup) :
+      TiffDataEntryBase(tag, group, szTag, szGroup), pDataArea_(0), sizeDataArea_(0) {
+  }
   //! Virtual destructor.
   ~TiffDataEntry() override = default;
   //@}
@@ -510,7 +549,7 @@ public:
   void setStrips(const Value* pSize, const byte* pData, uint32_t sizeData, uint32_t baseOffset) override;
   //@}
 
-protected:
+ protected:
   //! @name Protected Manipulators
   //@{
   void doAccept(TiffVisitor& visitor) override;
@@ -526,12 +565,12 @@ protected:
   // Using doSizeImage from base class
   //@}
 
-private:
+ private:
   // DATA
-  byte* pDataArea_; //!< Pointer to the data area (never alloc'd)
-  uint32_t sizeDataArea_; //!< Size of the data area
+  byte* pDataArea_;        //!< Pointer to the data area (never alloc'd)
+  uint32_t sizeDataArea_;  //!< Size of the data area
 
-}; // class TiffDataEntry
+};  // class TiffDataEntry
 
 /*!
   @brief A standard TIFF IFD entry consisting of a value which is an array
@@ -548,11 +587,13 @@ private:
 class TiffImageEntry : public TiffDataEntryBase {
   friend class TiffEncoder;
 
-public:
+ public:
   //! @name Creators
   //@{
   //! Constructor
-  TiffImageEntry(uint16_t tag, IfdId group, uint16_t szTag, IfdId szGroup) : TiffDataEntryBase(tag, group, szTag, szGroup) {}
+  TiffImageEntry(uint16_t tag, IfdId group, uint16_t szTag, IfdId szGroup) :
+      TiffDataEntryBase(tag, group, szTag, szGroup) {
+  }
   //! Virtual destructor.
   ~TiffImageEntry() override = default;
   //@}
@@ -562,7 +603,7 @@ public:
   void setStrips(const Value* pSize, const byte* pData, uint32_t sizeData, uint32_t baseOffset) override;
   //@}
 
-protected:
+ protected:
   //! @name Protected Manipulators
   //@{
   void doAccept(TiffVisitor& visitor) override;
@@ -579,14 +620,14 @@ protected:
   uint32_t doSizeImage() const override;
   //@}
 
-private:
+ private:
   //! Pointers to the image data (strips) and their sizes.
   using Strips = std::vector<std::pair<const byte*, uint32_t>>;
 
   // DATA
-  Strips strips_; //!< Image strips data (never alloc'd) and sizes
+  Strips strips_;  //!< Image strips data (never alloc'd) and sizes
 
-}; // class TiffImageEntry
+};  // class TiffImageEntry
 
 /*!
   @brief A TIFF IFD entry containing the size of a data area of a related
@@ -595,12 +636,13 @@ private:
         size of \em Exif.Thumbnail.JPEGInterchangeFormat.
 */
 class TiffSizeEntry : public TiffEntryBase {
-public:
+ public:
   //! @name Creators
   //@{
   //! Constructor
-  TiffSizeEntry(uint16_t tag, IfdId group, uint16_t dtTag, IfdId dtGroup)
-    : TiffEntryBase(tag, group), dtTag_(dtTag), dtGroup_(dtGroup) {}
+  TiffSizeEntry(uint16_t tag, IfdId group, uint16_t dtTag, IfdId dtGroup) :
+      TiffEntryBase(tag, group), dtTag_(dtTag), dtGroup_(dtGroup) {
+  }
   //! Virtual destructor.
   ~TiffSizeEntry() override = default;
   //@}
@@ -608,12 +650,16 @@ public:
   //! @name Accessors
   //@{
   //! Return the group of the related entry which has the data area
-  uint16_t dtTag() const { return dtTag_; }
+  uint16_t dtTag() const {
+    return dtTag_;
+  }
   //! Return the group of the related entry which has the data area
-  IfdId dtGroup() const { return dtGroup_; }
+  IfdId dtGroup() const {
+    return dtGroup_;
+  }
   //@}
 
-protected:
+ protected:
   //! @name Protected Manipulators
   //@{
   void doAccept(TiffVisitor& visitor) override;
@@ -624,12 +670,12 @@ protected:
   TiffSizeEntry* doClone() const override;
   //@}
 
-private:
+ private:
   // DATA
-  const uint16_t dtTag_; //!< Tag of the entry with the data area
-  const IfdId dtGroup_; //!< Group of the entry with the data area
+  const uint16_t dtTag_;  //!< Tag of the entry with the data area
+  const IfdId dtGroup_;   //!< Group of the entry with the data area
 
-}; // class TiffSizeEntry
+};  // class TiffSizeEntry
 
 /*!
   @brief This class models a TIFF directory (%Ifd). It is a composite
@@ -639,11 +685,13 @@ class TiffDirectory : public TiffComponent {
   friend class TiffEncoder;
   friend class TiffDecoder;
 
-public:
+ public:
   //! @name Creators
   //@{
   //! Default constructor
-  TiffDirectory(uint16_t tag, IfdId group, bool hasNext = true) : TiffComponent(tag, group), hasNext_(hasNext), pNext_(0) {}
+  TiffDirectory(uint16_t tag, IfdId group, bool hasNext = true) :
+      TiffComponent(tag, group), hasNext_(hasNext), pNext_(0) {
+  }
   //! Virtual destructor
   ~TiffDirectory() override;
   //@}
@@ -651,10 +699,12 @@ public:
   //! @name Accessors
   //@{
   //! Return true if the directory has a next pointer
-  bool hasNext() const { return hasNext_; }
+  bool hasNext() const {
+    return hasNext_;
+  }
   //@}
 
-protected:
+ protected:
   //! @name Protected Creators
   //@{
   //! Copy constructor (used to implement clone()).
@@ -693,20 +743,20 @@ protected:
   uint32_t doSizeImage() const override;
   //@}
 
-private:
+ private:
   //! @name NOT implemented
   //@{
   //! Assignment operator.
   TiffDirectory& operator=(const TiffDirectory& rhs);
   //@}
 
-private:
+ private:
   // DATA
-  Components components_; //!< List of components in this directory
-  const bool hasNext_; //!< True if the directory has a next pointer
-  TiffComponent* pNext_; //!< Pointer to the next IFD
+  Components components_;  //!< List of components in this directory
+  const bool hasNext_;     //!< True if the directory has a next pointer
+  TiffComponent* pNext_;   //!< Pointer to the next IFD
 
-}; // class TiffDirectory
+};  // class TiffDirectory
 
 /*!
   @brief This class models a TIFF sub-directory (sub-IFD). A sub-IFD
@@ -718,7 +768,7 @@ private:
 class TiffSubIfd : public TiffEntryBase {
   friend class TiffReader;
 
-public:
+ public:
   //! @name Creators
   //@{
   //! Default constructor
@@ -727,7 +777,7 @@ public:
   ~TiffSubIfd() override;
   //@}
 
-protected:
+ protected:
   //! @name Protected Creators
   //@{
   //! Copy constructor (used to implement clone()).
@@ -751,7 +801,7 @@ protected:
   uint32_t doSizeImage() const override;
   //@}
 
-private:
+ private:
   //! @name NOT implemented
   //@{
   //! Assignment operator.
@@ -762,10 +812,10 @@ private:
   using Ifds = std::vector<TiffDirectory*>;
 
   // DATA
-  IfdId newGroup_; //!< Start of the range of group numbers for the sub-IFDs
-  Ifds ifds_; //!< The subdirectories
+  IfdId newGroup_;  //!< Start of the range of group numbers for the sub-IFDs
+  Ifds ifds_;       //!< The subdirectories
 
-}; // class TiffSubIfd
+};  // class TiffSubIfd
 
 /*!
   @brief This class is the basis for Makernote support in TIFF. It contains
@@ -779,7 +829,7 @@ class TiffMnEntry : public TiffEntryBase {
   friend class TiffDecoder;
   friend class TiffEncoder;
 
-public:
+ public:
   //! @name Creators
   //@{
   //! Default constructor
@@ -788,7 +838,7 @@ public:
   ~TiffMnEntry() override;
   //@}
 
-protected:
+ protected:
   //! @name Protected Manipulators
   //@{
   TiffComponent* doAddChild(TiffComponent::UniquePtr tiffComponent) override;
@@ -811,7 +861,7 @@ protected:
   // Using doSizeImage from base class
   //@}
 
-private:
+ private:
   //! @name NOT implemented
   //@{
   //! Copy constructor.
@@ -821,10 +871,10 @@ private:
   //@}
 
   // DATA
-  IfdId mnGroup_; //!< New group for concrete mn
-  TiffComponent* mn_; //!< The Makernote
+  IfdId mnGroup_;      //!< New group for concrete mn
+  TiffComponent* mn_;  //!< The Makernote
 
-}; // class TiffMnEntry
+};  // class TiffMnEntry
 
 /*!
   @brief Tiff IFD Makernote. This is a concrete class suitable for all
@@ -838,7 +888,7 @@ private:
 class TiffIfdMakernote : public TiffComponent {
   friend class TiffReader;
 
-public:
+ public:
   //! @name Creators
   //@{
   //! Default constructor
@@ -862,7 +912,9 @@ public:
   /*!
     @brief Set the byte order used for the image.
   */
-  void setImageByteOrder(ByteOrder byteOrder) { imageByteOrder_ = byteOrder; }
+  void setImageByteOrder(ByteOrder byteOrder) {
+    imageByteOrder_ = byteOrder;
+  }
   //@}
 
   //! @name Accessors
@@ -892,7 +944,9 @@ public:
   /*!
     @brief Return the byte order used for the image.
   */
-  ByteOrder imageByteOrder() const { return imageByteOrder_; }
+  ByteOrder imageByteOrder() const {
+    return imageByteOrder_;
+  }
   /*!
     @brief Return the base offset for use with the makernote IFD entries
           relative to the start of the TIFF header.
@@ -901,7 +955,7 @@ public:
   uint32_t baseOffset() const;
   //@}
 
-protected:
+ protected:
   //! @name Protected Manipulators
   //@{
   TiffComponent* doAddChild(TiffComponent::UniquePtr tiffComponent) override;
@@ -934,7 +988,7 @@ protected:
   uint32_t doSizeImage() const override;
   //@}
 
-private:
+ private:
   /*!
     @name NOT implemented
 
@@ -950,12 +1004,12 @@ private:
   //@}
 
   // DATA
-  MnHeader* pHeader_; //!< Makernote header
-  TiffDirectory ifd_; //!< Makernote IFD
-  uint32_t mnOffset_; //!< Makernote offset
-  ByteOrder imageByteOrder_; //!< Byte order for the image
+  MnHeader* pHeader_;         //!< Makernote header
+  TiffDirectory ifd_;         //!< Makernote IFD
+  uint32_t mnOffset_;         //!< Makernote offset
+  ByteOrder imageByteOrder_;  //!< Byte order for the image
 
-}; // class TiffIfdMakernote
+};  // class TiffIfdMakernote
 
 /*!
   @brief Function pointer type for a function to determine which cfg + def
@@ -969,13 +1023,15 @@ using CryptFct = DataBuf (*)(uint16_t, const byte*, uint32_t, TiffComponent* con
 //! Defines one tag in a binary array
 struct ArrayDef {
   //! Comparison with idx
-  bool operator==(uint32_t idx) const { return idx_ == idx; }
+  bool operator==(uint32_t idx) const {
+    return idx_ == idx;
+  }
   //! Get the size in bytes of a tag.
   uint32_t size(uint16_t tag, IfdId group) const;
   // DATA
-  uint32_t idx_; //!< Index in bytes from the start
-  TiffType tiffType_; //!< TIFF type of the element
-  uint32_t count_; //!< Number of components
+  uint32_t idx_;       //!< Index in bytes from the start
+  TiffType tiffType_;  //!< TIFF type of the element
+  uint32_t count_;     //!< Number of components
 };
 
 //! Additional configuration for a binary array.
@@ -984,23 +1040,25 @@ struct ArrayCfg {
     @brief Return the size of the default tag, which is used
           to calculate tag numbers as idx/tagStep
   */
-  uint32_t tagStep() const { return elDefaultDef_.size(0, group_); }
-  //DATA
-  IfdId group_; //!< Group for the elements
-  ByteOrder byteOrder_; //!< Byte order, invalidByteOrder to inherit
-  TiffType elTiffType_; //!< Type for the array entry and the size element, if any
-  CryptFct cryptFct_; //!< Crypt function, 0 if not used
-  bool hasSize_; //!< If true, first tag is the size element
-  bool hasFillers_; //!< If true, write all defined tags
-  bool concat_; //!< If true, concatenate gaps between defined tags to single tags
-  ArrayDef elDefaultDef_; //!< Default element
+  uint32_t tagStep() const {
+    return elDefaultDef_.size(0, group_);
+  }
+  // DATA
+  IfdId group_;            //!< Group for the elements
+  ByteOrder byteOrder_;    //!< Byte order, invalidByteOrder to inherit
+  TiffType elTiffType_;    //!< Type for the array entry and the size element, if any
+  CryptFct cryptFct_;      //!< Crypt function, 0 if not used
+  bool hasSize_;           //!< If true, first tag is the size element
+  bool hasFillers_;        //!< If true, write all defined tags
+  bool concat_;            //!< If true, concatenate gaps between defined tags to single tags
+  ArrayDef elDefaultDef_;  //!< Default element
 };
 
 //! Combination of array configuration and definition for arrays
 struct ArraySet {
-  const ArrayCfg cfg_; //!< Binary array configuration
-  const ArrayDef* def_; //!< Binary array definition array
-  const int defSize_; //!< Size of the array definition array
+  const ArrayCfg cfg_;   //!< Binary array configuration
+  const ArrayDef* def_;  //!< Binary array definition array
+  const int defSize_;    //!< Size of the array definition array
 };
 
 /*!
@@ -1009,7 +1067,7 @@ struct ArraySet {
         component are of type TiffBinaryElement.
 */
 class TiffBinaryArray : public TiffEntryBase {
-public:
+ public:
   //! @name Creators
   //@{
   //! Constructor
@@ -1048,22 +1106,32 @@ public:
   //! Update the original data buffer and its size, return true if successful.
   bool updOrigDataBuf(const byte* pData, uint32_t size);
   //! Set a flag to indicate if the array was decoded
-  void setDecoded(bool decoded) { decoded_ = decoded; }
+  void setDecoded(bool decoded) {
+    decoded_ = decoded;
+  }
   //@}
 
   //! @name Accessors
   //@{
   //! Return a pointer to the configuration
-  const ArrayCfg* cfg() const { return arrayCfg_; }
+  const ArrayCfg* cfg() const {
+    return arrayCfg_;
+  }
   //! Return a pointer to the definition
-  const ArrayDef* def() const { return arrayDef_; }
+  const ArrayDef* def() const {
+    return arrayDef_;
+  }
   //! Return the number of elements in the definition
-  int defSize() const { return defSize_; }
+  int defSize() const {
+    return defSize_;
+  }
   //! Return the flag which indicates if the array was decoded
-  bool decoded() const { return decoded_; }
+  bool decoded() const {
+    return decoded_;
+  }
   //@}
 
-protected:
+ protected:
   //! @name Protected Creators
   //@{
   //! Copy constructor (used to implement clone()).
@@ -1090,7 +1158,7 @@ protected:
   // Using doSizeImage from base class
   //@}
 
-private:
+ private:
   //! @name NOT implemented
   //@{
   //! Assignment operator.
@@ -1098,25 +1166,25 @@ private:
   //@}
 
   // DATA
-  const CfgSelFct cfgSelFct_; //!< Pointer to a function to determine which cfg to use (may be 0)
-  const ArraySet* arraySet_; //!< Pointer to the array set, if any (may be 0)
-  const ArrayCfg* arrayCfg_; //!< Pointer to the array configuration
+  const CfgSelFct cfgSelFct_;  //!< Pointer to a function to determine which cfg to use (may be 0)
+  const ArraySet* arraySet_;   //!< Pointer to the array set, if any (may be 0)
+  const ArrayCfg* arrayCfg_;   //!< Pointer to the array configuration
   //!< (must not be 0, except for unrecognized complex binary arrays)
-  const ArrayDef* arrayDef_; //!< Pointer to the array definition (may be 0)
-  int defSize_; //!< Size of the array definition array (may be 0)
-  int setSize_; //!< Size of the array set (may be 0)
-  Components elements_; //!< List of elements in this composite
-  byte* origData_; //!< Pointer to the original data buffer (unencrypted)
-  uint32_t origSize_; //!< Size of the original data buffer
-  TiffComponent* pRoot_; //!< Pointer to the root component of the TIFF tree. (Only used for intrusive writing.)
-  bool decoded_; //!< Flag to indicate if the array was decoded
-}; // class TiffBinaryArray
+  const ArrayDef* arrayDef_;  //!< Pointer to the array definition (may be 0)
+  int defSize_;               //!< Size of the array definition array (may be 0)
+  int setSize_;               //!< Size of the array set (may be 0)
+  Components elements_;       //!< List of elements in this composite
+  byte* origData_;            //!< Pointer to the original data buffer (unencrypted)
+  uint32_t origSize_;         //!< Size of the original data buffer
+  TiffComponent* pRoot_;      //!< Pointer to the root component of the TIFF tree. (Only used for intrusive writing.)
+  bool decoded_;              //!< Flag to indicate if the array was decoded
+};                            // class TiffBinaryArray
 
 /*!
   @brief Element of a TiffBinaryArray.
 */
 class TiffBinaryElement : public TiffEntryBase {
-public:
+ public:
   //! @name Creators
   //@{
   //! Constructor
@@ -1130,11 +1198,15 @@ public:
   /*!
             @brief Set the array definition for this element.
           */
-  void setElDef(const ArrayDef& def) { elDef_ = def; }
+  void setElDef(const ArrayDef& def) {
+    elDef_ = def;
+  }
   /*!
             @brief Set the byte order of this element.
           */
-  void setElByteOrder(ByteOrder byteOrder) { elByteOrder_ = byteOrder; }
+  void setElByteOrder(ByteOrder byteOrder) {
+    elByteOrder_ = byteOrder;
+  }
   //@}
 
   //! @name Accessors
@@ -1142,14 +1214,18 @@ public:
   /*!
             @brief Return the array definition of this element.
           */
-  const ArrayDef* elDef() const { return &elDef_; }
+  const ArrayDef* elDef() const {
+    return &elDef_;
+  }
   /*!
             @brief Return the byte order of this element.
           */
-  ByteOrder elByteOrder() const { return elByteOrder_; }
+  ByteOrder elByteOrder() const {
+    return elByteOrder_;
+  }
   //@}
 
-protected:
+ protected:
   //! @name Protected Manipulators
   //@{
   void doAccept(TiffVisitor& visitor) override;
@@ -1173,12 +1249,12 @@ protected:
   // Using doSizeImage from base class
   //@}
 
-private:
+ private:
   // DATA
-  ArrayDef elDef_; //!< The array element definition
-  ByteOrder elByteOrder_; //!< Byte order to read/write the element
+  ArrayDef elDef_;         //!< The array element definition
+  ByteOrder elByteOrder_;  //!< Byte order to read/write the element
 
-}; // class TiffBinaryElement
+};  // class TiffBinaryElement
 
 // *****************************************************************************
 // template, inline and free functions
@@ -1196,87 +1272,71 @@ bool cmpTagLt(TiffComponent const* lhs, TiffComponent const* rhs);
 bool cmpGroupLt(TiffComponent const* lhs, TiffComponent const* rhs);
 
 //! Function to create and initialize a new TIFF entry
-    TiffComponent::UniquePtr newTiffEntry(uint16_t tag, IfdId group);
+TiffComponent::UniquePtr newTiffEntry(uint16_t tag, IfdId group);
 
-    //! Function to create and initialize a new TIFF makernote entry
-    TiffComponent::UniquePtr newTiffMnEntry(uint16_t tag, IfdId group);
+//! Function to create and initialize a new TIFF makernote entry
+TiffComponent::UniquePtr newTiffMnEntry(uint16_t tag, IfdId group);
 
-    //! Function to create and initialize a new binary array element
-    TiffComponent::UniquePtr newTiffBinaryElement(uint16_t tag, IfdId group);
+//! Function to create and initialize a new binary array element
+TiffComponent::UniquePtr newTiffBinaryElement(uint16_t tag, IfdId group);
 
-    //! Function to create and initialize a new TIFF directory
-    template<IfdId newGroup>
-    TiffComponent::UniquePtr newTiffDirectory(uint16_t tag, IfdId /*group*/)
-    {
-        return TiffComponent::UniquePtr(new TiffDirectory(tag, newGroup));
-    }
+//! Function to create and initialize a new TIFF directory
+template <IfdId newGroup>
+TiffComponent::UniquePtr newTiffDirectory(uint16_t tag, IfdId /*group*/) {
+  return TiffComponent::UniquePtr(new TiffDirectory(tag, newGroup));
+}
 
-    //! Function to create and initialize a new TIFF sub-directory
-    template<IfdId newGroup>
-    TiffComponent::UniquePtr newTiffSubIfd(uint16_t tag, IfdId group)
-    {
-        return TiffComponent::UniquePtr(new TiffSubIfd(tag, group, newGroup));
-    }
+//! Function to create and initialize a new TIFF sub-directory
+template <IfdId newGroup>
+TiffComponent::UniquePtr newTiffSubIfd(uint16_t tag, IfdId group) {
+  return TiffComponent::UniquePtr(new TiffSubIfd(tag, group, newGroup));
+}
 
-    //! Function to create and initialize a new binary array entry
-    template<const ArrayCfg* arrayCfg, int N, const ArrayDef (&arrayDef)[N]>
-    TiffComponent::UniquePtr newTiffBinaryArray0(uint16_t tag, IfdId group)
-    {
-        // *& acrobatics is a workaround for a MSVC 7.1 bug
-        return TiffComponent::UniquePtr(
-            new TiffBinaryArray(tag, group, arrayCfg, *(&arrayDef), N));
-    }
+//! Function to create and initialize a new binary array entry
+template <const ArrayCfg* arrayCfg, int N, const ArrayDef (&arrayDef)[N]>
+TiffComponent::UniquePtr newTiffBinaryArray0(uint16_t tag, IfdId group) {
+  // *& acrobatics is a workaround for a MSVC 7.1 bug
+  return TiffComponent::UniquePtr(new TiffBinaryArray(tag, group, arrayCfg, *(&arrayDef), N));
+}
 
-    //! Function to create and initialize a new simple binary array entry
-    template<const ArrayCfg* arrayCfg>
-    TiffComponent::UniquePtr newTiffBinaryArray1(uint16_t tag, IfdId group)
-    {
-        return TiffComponent::UniquePtr(
-            new TiffBinaryArray(tag, group, arrayCfg, 0, 0));
-    }
+//! Function to create and initialize a new simple binary array entry
+template <const ArrayCfg* arrayCfg>
+TiffComponent::UniquePtr newTiffBinaryArray1(uint16_t tag, IfdId group) {
+  return TiffComponent::UniquePtr(new TiffBinaryArray(tag, group, arrayCfg, 0, 0));
+}
 
-    //! Function to create and initialize a new complex binary array entry
-    template<const ArraySet* arraySet, int N, CfgSelFct cfgSelFct>
-    TiffComponent::UniquePtr newTiffBinaryArray2(uint16_t tag, IfdId group)
-    {
-        return TiffComponent::UniquePtr(
-            new TiffBinaryArray(tag, group, arraySet, N, cfgSelFct));
-    }
+//! Function to create and initialize a new complex binary array entry
+template <const ArraySet* arraySet, int N, CfgSelFct cfgSelFct>
+TiffComponent::UniquePtr newTiffBinaryArray2(uint16_t tag, IfdId group) {
+  return TiffComponent::UniquePtr(new TiffBinaryArray(tag, group, arraySet, N, cfgSelFct));
+}
 
-    //! Function to create and initialize a new TIFF entry for a thumbnail (data)
-    template<uint16_t szTag, IfdId szGroup>
-    TiffComponent::UniquePtr newTiffThumbData(uint16_t tag, IfdId group)
-    {
-        return TiffComponent::UniquePtr(
-            new TiffDataEntry(tag, group, szTag, szGroup));
-    }
+//! Function to create and initialize a new TIFF entry for a thumbnail (data)
+template <uint16_t szTag, IfdId szGroup>
+TiffComponent::UniquePtr newTiffThumbData(uint16_t tag, IfdId group) {
+  return TiffComponent::UniquePtr(new TiffDataEntry(tag, group, szTag, szGroup));
+}
 
-    //! Function to create and initialize a new TIFF entry for a thumbnail (size)
-    template<uint16_t dtTag, IfdId dtGroup>
-    TiffComponent::UniquePtr newTiffThumbSize(uint16_t tag, IfdId group)
-    {
-        return TiffComponent::UniquePtr(
-            new TiffSizeEntry(tag, group, dtTag, dtGroup));
-    }
+//! Function to create and initialize a new TIFF entry for a thumbnail (size)
+template <uint16_t dtTag, IfdId dtGroup>
+TiffComponent::UniquePtr newTiffThumbSize(uint16_t tag, IfdId group) {
+  return TiffComponent::UniquePtr(new TiffSizeEntry(tag, group, dtTag, dtGroup));
+}
 
-    //! Function to create and initialize a new TIFF entry for image data
-    template<uint16_t szTag, IfdId szGroup>
-    TiffComponent::UniquePtr newTiffImageData(uint16_t tag, IfdId group)
-    {
-        return TiffComponent::UniquePtr(
-            new TiffImageEntry(tag, group, szTag, szGroup));
-    }
+//! Function to create and initialize a new TIFF entry for image data
+template <uint16_t szTag, IfdId szGroup>
+TiffComponent::UniquePtr newTiffImageData(uint16_t tag, IfdId group) {
+  return TiffComponent::UniquePtr(new TiffImageEntry(tag, group, szTag, szGroup));
+}
 
-    //! Function to create and initialize a new TIFF entry for image data (size)
-    template<uint16_t dtTag, IfdId dtGroup>
-    TiffComponent::UniquePtr newTiffImageSize(uint16_t tag, IfdId group)
-    {
-        // Todo: Same as newTiffThumbSize - consolidate (rename)?
-        return TiffComponent::UniquePtr(
-            new TiffSizeEntry(tag, group, dtTag, dtGroup));
-    }
+//! Function to create and initialize a new TIFF entry for image data (size)
+template <uint16_t dtTag, IfdId dtGroup>
+TiffComponent::UniquePtr newTiffImageSize(uint16_t tag, IfdId group) {
+  // Todo: Same as newTiffThumbSize - consolidate (rename)?
+  return TiffComponent::UniquePtr(new TiffSizeEntry(tag, group, dtTag, dtGroup));
+}
 
-} // namespace Internal
-} // namespace Exiv2
+}  // namespace Internal
+}  // namespace Exiv2
 
-#endif // #ifndef TIFFCOMPOSITE_INT_HPP_
+#endif  // #ifndef TIFFCOMPOSITE_INT_HPP_

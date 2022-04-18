@@ -35,7 +35,7 @@ namespace Exiv2 {
 
 // Add TARGA to the supported image formats
 namespace ImageType {
-const int tga = 13; //!< Truevision TARGA (tga) image type (see class TgaImage)
+const int tga = 13;  //!< Truevision TARGA (tga) image type (see class TgaImage)
 }
 
 /*!
@@ -43,7 +43,7 @@ const int tga = 13; //!< Truevision TARGA (tga) image type (see class TgaImage)
       read width and height.
   */
 class EXIV2API TgaImage : public Image {
-public:
+ public:
   //! @name NOT Implemented
   //@{
   //! Copy constructor
@@ -79,7 +79,7 @@ public:
   std::string mimeType() const override;
   //@}
 
-}; // class TgaImage
+};  // class TgaImage
 
 // *****************************************************************************
 // template, inline and free functions
@@ -96,6 +96,6 @@ EXIV2API Image::UniquePtr newTgaInstance(BasicIo::UniquePtr io, bool create);
 //! Check if the file iIo is a Targa v2 image.
 EXIV2API bool isTgaType(BasicIo& iIo, bool advance);
 
-} // namespace Exiv2
+}  // namespace Exiv2
 
-#endif // #ifndef TGAIMAGE_HPP_
+#endif  // #ifndef TGAIMAGE_HPP_

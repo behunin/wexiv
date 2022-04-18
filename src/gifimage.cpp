@@ -31,7 +31,7 @@
 namespace Exiv2 {
 
 GifImage::GifImage(BasicIo::UniquePtr io) : Image(ImageType::gif, mdNone, std::move(io)) {
-} // GifImage::GifImage
+}  // GifImage::GifImage
 
 std::string GifImage::mimeType() const {
   return "image/gif";
@@ -49,13 +49,12 @@ void GifImage::readMetadata() {
     throw Error(kerNotAnImage, "GIF");
   }
 
-
   byte buf[4];
   if (io_->read(buf, sizeof(buf)) == sizeof(buf)) {
     pixelWidth_ = getShort(buf, littleEndian);
     pixelHeight_ = getShort(buf + 2, littleEndian);
   }
-} // GifImage::readMetadata
+}  // GifImage::readMetadata
 
 Image::UniquePtr newGifInstance(BasicIo::UniquePtr io, bool /*create*/) {
   Image::UniquePtr image(new GifImage(std::move(io)));
@@ -80,4 +79,4 @@ bool isGifType(BasicIo& iIo, bool advance) {
   }
   return matched;
 }
-} // namespace Exiv2
+}  // namespace Exiv2

@@ -26,5 +26,5 @@ namespace Internal {
 Rw2Header::Rw2Header() : TiffHeaderBase(0x0055, 24, littleEndian, 0x00000018) {
 }
 
-} // namespace Internal
-} // namespace Exiv2
+}  // namespace Internal
+}  // namespace Exiv2

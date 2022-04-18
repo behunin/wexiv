@@ -20,10 +20,11 @@
 /*!
   @file    olympusmn_int.hpp
   @brief   Olympus makernote tags.<br>References:<br>
-           [1] <a href="http://park2.wakwak.com/%7Etsuruzoh/Computer/Digicams/exif-e.html#APP1">Exif file format, Appendix 1: MakerNote of Olympus Digicams</a> by TsuruZoh Tachibanaya<br>
-           [2] <a href="http://www.sno.phy.queensu.ca/~phil/exiftool/">ExifTool</a> by Phil Harvey<br>
-           [3] <a href="http://www.ozhiker.com/electronics/pjmt/jpeg_info/olympus_mn.html">Olympus Makernote Format Specification</a> by Evan Hunter<br>
-           [4] email communication with <a href="mailto:wstokes@gmail.com">Will Stokes</a>
+           [1] <a href="http://park2.wakwak.com/%7Etsuruzoh/Computer/Digicams/exif-e.html#APP1">Exif file format,
+  Appendix 1: MakerNote of Olympus Digicams</a> by TsuruZoh Tachibanaya<br> [2] <a
+  href="http://www.sno.phy.queensu.ca/~phil/exiftool/">ExifTool</a> by Phil Harvey<br> [3] <a
+  href="http://www.ozhiker.com/electronics/pjmt/jpeg_info/olympus_mn.html">Olympus Makernote Format Specification</a> by
+  Evan Hunter<br> [4] email communication with <a href="mailto:wstokes@gmail.com">Will Stokes</a>
 */
 #ifndef OLYMPUSMN_INT_HPP_
 #define OLYMPUSMN_INT_HPP_
@@ -41,7 +42,7 @@ namespace Internal {
 
 //! MakerNote for Olympus cameras
 class OlympusMakerNote {
-public:
+ public:
   //! Return read-only list of built-in Olympus tags
   static const TagInfo* tagList();
   //! Return read-only list of built-in Olympus Camera Settings tags
@@ -93,7 +94,7 @@ public:
   static std::ostream& printGeneric(std::ostream& os, const Value& value, const ExifData*);
   //@}
 
-private:
+ private:
   //! Tag information
   static const TagInfo tagInfo_[];
   static const TagInfo tagInfoCs_[];
@@ -105,9 +106,9 @@ private:
   static const TagInfo tagInfoFe_[];
   static const TagInfo tagInfoRi_[];
 
-}; // class OlympusMakerNote
+};  // class OlympusMakerNote
 
-} // namespace Internal
-} // namespace Exiv2
+}  // namespace Internal
+}  // namespace Exiv2
 
-#endif // #ifndef OLYMPUSMN_INT_HPP_
+#endif  // #ifndef OLYMPUSMN_INT_HPP_

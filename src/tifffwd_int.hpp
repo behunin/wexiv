@@ -83,7 +83,7 @@ using TiffPath = std::stack<TiffPathItem>;
 
 //! Type for a list of primary image groups
 using PrimaryGroups = std::vector<IfdId>;
-} // namespace Internal
-} // namespace Exiv2
+}  // namespace Internal
+}  // namespace Exiv2
 
-#endif // #ifndef TIFFFWD_INT_HPP_
+#endif  // #ifndef TIFFFWD_INT_HPP_

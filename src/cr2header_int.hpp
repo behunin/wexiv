@@ -38,7 +38,7 @@ namespace Internal {
 
 /// @brief Canon CR2 header structure.
 class Cr2Header : public TiffHeaderBase {
-public:
+ public:
   //! @name Creators
   //@{
   //! Default constructor
@@ -58,15 +58,17 @@ public:
   //@}
 
   //! Return the address of offset2 from the start of the header
-  static uint32_t offset2addr() { return 12; }
+  static uint32_t offset2addr() {
+    return 12;
+  }
 
-private:
+ private:
   // DATA
-  uint32_t offset2_; //!< Bytes 12-15 from the header
-  static constexpr auto cr2sig_ = "CR\2\0"; //!< Signature for CR2 type TIFF
-}; // class Cr2Header
+  uint32_t offset2_;                         //!< Bytes 12-15 from the header
+  static constexpr auto cr2sig_ = "CR\2\0";  //!< Signature for CR2 type TIFF
+};                                           // class Cr2Header
 
-} // namespace Internal
-} // namespace Exiv2
+}  // namespace Internal
+}  // namespace Exiv2
 
-#endif // #ifndef CR2IMAGE_INT_HPP_
+#endif  // #ifndef CR2IMAGE_INT_HPP_

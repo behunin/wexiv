@@ -40,7 +40,7 @@ namespace Exiv2 {
 
 // Add RAF to the supported image formats
 namespace ImageType {
-const int raf = 8; //!< RAF image type (see class RafImage)
+const int raf = 8;  //!< RAF image type (see class RafImage)
 }
 
 /*!
@@ -48,7 +48,7 @@ const int raf = 8; //!< RAF image type (see class RafImage)
       supported directly, IPTC is read from the Exif data, if present.
   */
 class EXIV2API RafImage : public Image {
-public:
+ public:
   //! @name Creators
   //@{
   /*!
@@ -89,7 +89,7 @@ public:
   RafImage& operator=(const RafImage& rhs) = delete;
   //@}
 
-}; // class RafImage
+};  // class RafImage
 
 // *****************************************************************************
 // template, inline and free functions
@@ -106,6 +106,6 @@ EXIV2API Image::UniquePtr newRafInstance(BasicIo::UniquePtr io, bool create);
 //! Check if the file iIo is a RAF image.
 EXIV2API bool isRafType(BasicIo& iIo, bool advance);
 
-} // namespace Exiv2
+}  // namespace Exiv2
 
-#endif // #ifndef RAFIMAGE_HPP_
+#endif  // #ifndef RAFIMAGE_HPP_

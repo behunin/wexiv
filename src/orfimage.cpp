@@ -33,10 +33,10 @@ namespace Exiv2 {
 
 using namespace Internal;
 
-OrfImage::OrfImage(BasicIo::UniquePtr io, bool create)
-  : TiffImage(/*ImageType::orf, mdExif | mdIptc | mdXmp,*/ std::move(io), create) {
+OrfImage::OrfImage(BasicIo::UniquePtr io, bool create) :
+    TiffImage(/*ImageType::orf, mdExif | mdIptc | mdXmp,*/ std::move(io), create) {
   setTypeSupported(ImageType::orf, mdExif | mdIptc | mdXmp);
-} // OrfImage::OrfImage
+}  // OrfImage::OrfImage
 
 std::string OrfImage::mimeType() const {
   return "image/x-olympus-orf";
@@ -70,11 +70,13 @@ void OrfImage::readMetadata() {
 
   ByteOrder bo = OrfParser::decode(exifData_, iptcData_, xmpData_, io_->mmap(), static_cast<uint32_t>(io_->size()));
   setByteOrder(bo);
-} // OrfImage::readMetadata
+}  // OrfImage::readMetadata
 
-ByteOrder OrfParser::decode(emscripten::val& exifData, emscripten::val& iptcData, emscripten::val& xmpData, const byte* pData, uint32_t size) {
+ByteOrder OrfParser::decode(emscripten::val& exifData, emscripten::val& iptcData, emscripten::val& xmpData,
+                            const byte* pData, uint32_t size) {
   OrfHeader orfHeader;
-  return TiffParserWorker::decode(exifData, iptcData, xmpData, pData, size, Tag::root, TiffMapping::findDecoder, &orfHeader);
+  return TiffParserWorker::decode(exifData, iptcData, xmpData, pData, size, Tag::root, TiffMapping::findDecoder,
+                                  &orfHeader);
 }
 
 Image::UniquePtr newOrfInstance(BasicIo::UniquePtr io, bool create) {
@@ -100,4 +102,4 @@ bool isOrfType(BasicIo& iIo, bool advance) {
   return rc;
 }
 
-} // namespace Exiv2
+}  // namespace Exiv2

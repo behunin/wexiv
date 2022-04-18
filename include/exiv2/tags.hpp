@@ -56,36 +56,36 @@ typedef const TagInfo* (*TagListFct)();
 //! The details of an Exif group. Groups include IFDs and binary arrays.
 struct EXIV2API GroupInfo {
   struct GroupName;
-  bool operator==(int ifdId) const; //!< Comparison operator for IFD id
-  bool operator==(const GroupName& groupName) const; //!< Comparison operator for group name
-  int ifdId_; //!< IFD id
-  const char* ifdName_; //!< IFD name
-  const char* groupName_; //!< Group name, unique for each group.
-  TagListFct tagList_; //!< Tag list
+  bool operator==(int ifdId) const;                   //!< Comparison operator for IFD id
+  bool operator==(const GroupName& groupName) const;  //!< Comparison operator for group name
+  int ifdId_;                                         //!< IFD id
+  const char* ifdName_;                               //!< IFD name
+  const char* groupName_;                             //!< Group name, unique for each group.
+  TagListFct tagList_;                                //!< Tag list
 };
 
 //! Search key to find a GroupInfo by its group name.
 struct EXIV2API GroupInfo::GroupName {
   explicit GroupName(std::string groupName);
-  std::string g_; //!< Group name
+  std::string g_;  //!< Group name
 };
 
 //! Tag information
 struct EXIV2API TagInfo {
-  uint16_t tag_; //!< Tag
-  const char* name_; //!< One word tag label
-  const char* title_; //!< Tag title
-  const char* desc_; //!< Short tag description
-  int ifdId_; //!< Link to the (preferred) IFD
-  int sectionId_; //!< Section id
-  TypeId typeId_; //!< Type id
-  int16_t count_; //!< The number of values (not bytes!), 0=any, -1=count not known.
-  PrintFct printFct_; //!< Pointer to tag print function
-}; // struct TagInfo
+  uint16_t tag_;       //!< Tag
+  const char* name_;   //!< One word tag label
+  const char* title_;  //!< Tag title
+  const char* desc_;   //!< Short tag description
+  int ifdId_;          //!< Link to the (preferred) IFD
+  int sectionId_;      //!< Section id
+  TypeId typeId_;      //!< Type id
+  int16_t count_;      //!< The number of values (not bytes!), 0=any, -1=count not known.
+  PrintFct printFct_;  //!< Pointer to tag print function
+};                     // struct TagInfo
 
 //! Access to Exif group and tag lists and misc. tag reference methods, implemented as a static class.
 class EXIV2API ExifTags {
-public:
+ public:
   //! Prevent construction: not implemented.
   ExifTags() = delete;
   //! Prevent copy-construction: not implemented.
@@ -120,13 +120,13 @@ public:
   */
   static bool isExifGroup(const std::string& groupName);
 
-}; // class ExifTags
+};  // class ExifTags
 
 /*!
   @brief Concrete keys for Exif metadata and access to Exif tag reference data.
   */
 class EXIV2API ExifKey : public Key {
-public:
+ public:
   //! Shortcut for an %ExifKey auto pointer.
   typedef std::unique_ptr<ExifKey> UniquePtr;
 
@@ -186,16 +186,16 @@ public:
   uint16_t tag() const override;
   std::string tagLabel() const override;
   //! Return the tag description.
-  std::string tagDesc() const; // Todo: should be in the base class
+  std::string tagDesc() const;  // Todo: should be in the base class
   //! Return the default type id for this tag.
-  TypeId defaultTypeId() const; // Todo: should be in the base class
+  TypeId defaultTypeId() const;  // Todo: should be in the base class
 
   UniquePtr clone() const;
   //! Return the index (unique id of this key within the original Exif data, 0 if not set)
   int idx() const;
   //@}
 
-private:
+ private:
   //! Internal virtual copy constructor.
   ExifKey* clone_() const override;
 
@@ -203,7 +203,7 @@ private:
   struct Impl;
   std::unique_ptr<Impl> p_;
 
-}; // class ExifKey
+};  // class ExifKey
 
 // *****************************************************************************
 // free functions
@@ -211,6 +211,6 @@ private:
 //! Output operator for TagInfo
 EXIV2API std::ostream& operator<<(std::ostream& os, const TagInfo& ti);
 
-} // namespace Exiv2
+}  // namespace Exiv2
 
-#endif // #ifndef TAGS_HPP_
+#endif  // #ifndef TAGS_HPP_

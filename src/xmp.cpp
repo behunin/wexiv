@@ -78,4 +78,4 @@ void XmpParser::terminate() {
   }
 }
 
-} // namespace Exiv2
+}  // namespace Exiv2

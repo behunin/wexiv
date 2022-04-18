@@ -42,7 +42,7 @@ namespace Exiv2 {
 
 // Add Windows Bitmap (BMP) to the supported image formats
 namespace ImageType {
-const int bmp = 14; //!< Windows bitmap (bmp) image type (see class BmpImage)
+const int bmp = 14;  //!< Windows bitmap (bmp) image type (see class BmpImage)
 }
 
 /*!
@@ -50,7 +50,7 @@ const int bmp = 14; //!< Windows bitmap (bmp) image type (see class BmpImage)
           read width and height.
      */
 class EXIV2API BmpImage : public Image {
-public:
+ public:
   //! @name NOT Implemented
   //@{
   //! Copy constructor
@@ -86,7 +86,7 @@ public:
   std::string mimeType() const override;
   //@}
 
-}; // class BmpImage
+};  // class BmpImage
 
 // *****************************************************************************
 // template, inline and free functions
@@ -103,6 +103,6 @@ EXIV2API Image::UniquePtr newBmpInstance(BasicIo::UniquePtr io, bool create);
 //! Check if the file iIo is a Windows Bitmap image.
 EXIV2API bool isBmpType(BasicIo& iIo, bool advance);
 
-} // namespace Exiv2
+}  // namespace Exiv2
 
-#endif // #ifndef BMPIMAGE_HPP_
+#endif  // #ifndef BMPIMAGE_HPP_

@@ -33,14 +33,13 @@
 #include "tags_int.hpp"
 #include "value.hpp"
 
-
 // *****************************************************************************
 namespace Exiv2 {
 
 using namespace Internal;
 
 CrwImage::CrwImage(BasicIo::UniquePtr io, bool /*create*/) : Image(ImageType::crw, mdExif | mdComment, std::move(io)) {
-} // CrwImage::CrwImage
+}  // CrwImage::CrwImage
 
 std::string CrwImage::mimeType() const {
   return "image/x-canon-crw";
@@ -77,7 +76,7 @@ void CrwImage::readMetadata() {
 
   CrwParser::decode(this, io_->mmap(), static_cast<uint32_t>(io_->size()));
 
-} // CrwImage::readMetadata
+}  // CrwImage::readMetadata
 
 void CrwParser::decode(CrwImage* pCrwImage, const byte* pData, uint32_t size) {
   assert(pCrwImage != 0);
@@ -95,7 +94,7 @@ void CrwParser::decode(CrwImage* pCrwImage, const byte* pData, uint32_t size) {
     pCrwImage->exifData().set("Exif.Image2.JPEGInterchangeFormat", tmp);
     pCrwImage->exifData().set("Exif.Image2.JPEGInterchangeFormatLength", preview->size());
   }
-} // CrwParser::decode
+}  // CrwParser::decode
 
 Image::UniquePtr newCrwInstance(BasicIo::UniquePtr io, bool create) {
   Image::UniquePtr image(new CrwImage(std::move(io), create));
@@ -123,4 +122,4 @@ bool isCrwType(BasicIo& iIo, bool advance) {
   return result;
 }
 
-} // namespace Exiv2
+}  // namespace Exiv2

@@ -35,7 +35,7 @@ namespace Internal {
 
 //! MakerNote for Sony cameras
 class SonyMakerNote {
-public:
+ public:
   //! Return read-only list of built-in Sony tags
   static const TagInfo* tagList();
   //! Return read-only list of built-in Sony Standard Camera Settings tags
@@ -82,7 +82,7 @@ public:
   //! Print Full and Preview Image size
   static std::ostream& printImageSize(std::ostream&, const Value&, const ExifData*);
 
-private:
+ private:
   //! Tag information
   static const TagInfo tagInfo_[];
   static const TagInfo tagInfoCs_[];
@@ -94,12 +94,12 @@ private:
   static const TagInfo tagInfoSonySInfo1_[];
   static const TagInfo tagInfo2010e_[];
 
-}; // class SonyMakerNote
+};  // class SonyMakerNote
 
 DataBuf sonyTagDecipher(uint16_t, const byte*, uint32_t, TiffComponent* const);
 DataBuf sonyTagEncipher(uint16_t, const byte*, uint32_t, TiffComponent* const);
 
-} // namespace Internal
-} // namespace Exiv2
+}  // namespace Internal
+}  // namespace Exiv2
 
-#endif // #ifndef SONYMN_INT_HPP_
+#endif  // #ifndef SONYMN_INT_HPP_

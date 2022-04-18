@@ -35,7 +35,7 @@ static char tzfilehid[] = "@(#)tzfile.h	7.14";
 
 #ifndef TZDIR
 #define TZDIR "/usr/local/etc/zoneinfo" /* Time zone object file directory */
-#endif /* !defined TZDIR */
+#endif                                  /* !defined TZDIR */
 
 #ifndef TZDEFAULT
 #define TZDEFAULT "localtime"
@@ -52,14 +52,14 @@ static char tzfilehid[] = "@(#)tzfile.h	7.14";
 #define TZ_MAGIC "TZif"
 
 struct tzhead {
-  char tzh_magic[4]; /* TZ_MAGIC */
-  char tzh_reserved[16]; /* reserved for future use */
+  char tzh_magic[4];      /* TZ_MAGIC */
+  char tzh_reserved[16];  /* reserved for future use */
   char tzh_ttisgmtcnt[4]; /* coded number of trans. time flags */
   char tzh_ttisstdcnt[4]; /* coded number of trans. time flags */
-  char tzh_leapcnt[4]; /* coded number of leap seconds */
-  char tzh_timecnt[4]; /* coded number of transition times */
-  char tzh_typecnt[4]; /* coded number of local time types */
-  char tzh_charcnt[4]; /* coded number of abbr. chars */
+  char tzh_leapcnt[4];    /* coded number of leap seconds */
+  char tzh_timecnt[4];    /* coded number of transition times */
+  char tzh_typecnt[4];    /* coded number of local time types */
+  char tzh_charcnt[4];    /* coded number of abbr. chars */
 };
 
 /*
@@ -105,15 +105,15 @@ struct tzhead {
 #ifndef TZ_MAX_TYPES
 #ifndef NOSOLAR
 #define TZ_MAX_TYPES 256 /* Limited by what (unsigned char)'s can hold */
-#endif /* !defined NOSOLAR */
+#endif                   /* !defined NOSOLAR */
 #ifdef NOSOLAR
 /*
 ** Must be at least 14 for Europe/Riga as of Jan 12 1995,
 ** as noted by Earl Chew <earl@hpato.aus.hp.com>.
 */
 #define TZ_MAX_TYPES 20 /* Maximum number of local time types */
-#endif /* !defined NOSOLAR */
-#endif /* !defined TZ_MAX_TYPES */
+#endif                  /* !defined NOSOLAR */
+#endif                  /* !defined TZ_MAX_TYPES */
 
 #ifndef TZ_MAX_CHARS
 #define TZ_MAX_CHARS 50 /* Maximum number of abbreviation characters */
@@ -122,7 +122,7 @@ struct tzhead {
 
 #ifndef TZ_MAX_LEAPS
 #define TZ_MAX_LEAPS 50 /* Maximum number of leap second corrections */
-#endif /* !defined TZ_MAX_LEAPS */
+#endif                  /* !defined TZ_MAX_LEAPS */
 
 #define SECSPERMIN 60
 #define MINSPERHOUR 60

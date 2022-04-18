@@ -22,7 +22,7 @@
 #include "sonymn_int.hpp"
 
 #include "exif.hpp"
-#include "i18n.h" // NLS support.
+#include "i18n.h"  // NLS support.
 #include "minoltamn_int.hpp"
 #include "tags_int.hpp"
 #include "tiffcomposite_int.hpp"
@@ -158,10 +158,12 @@ constexpr TagDetails sonyExposureMode[] = {{0, N_("Auto")},
                                            {65535, N_("n/a")}};
 
 //! Lookup table to translate Sony JPEG Quality values to readable labels
-constexpr TagDetails sonyJPEGQuality[] = {{0, N_("Normal")}, {1, N_("Fine")}, {2, N_("Extra Fine")}, {65535, N_("n/a")}};
+constexpr TagDetails sonyJPEGQuality[] = {
+    {0, N_("Normal")}, {1, N_("Fine")}, {2, N_("Extra Fine")}, {65535, N_("n/a")}};
 
 //! Lookup table to translate Sony anti-blur values to readable labels
-constexpr TagDetails sonyAntiBlur[] = {{0, N_("Off")}, {1, N_("On (Continuous)")}, {2, N_("On (Shooting)")}, {65535, N_("n/a")}};
+constexpr TagDetails sonyAntiBlur[] = {
+    {0, N_("Off")}, {1, N_("On (Continuous)")}, {2, N_("On (Shooting)")}, {65535, N_("n/a")}};
 
 //! Lookup table to translate Sony dynamic range optimizer values to readable labels
 constexpr TagDetails print0xb04f[] = {{0, N_("Off")}, {1, N_("Standard")}, {2, N_("Plus")}};
@@ -202,8 +204,11 @@ constexpr TagDetails sonyMacroMode[] = {{0, N_("Off")}, {1, N_("On")}, {2, N_("C
 constexpr TagDetails sonyFlashLevel[] = {{-32768, N_("Low")}, {-1, N_("n/a")}, {0, N_("Normal")}, {32767, N_("High")}};
 
 //! Lookup table to translate Sony release mode values to readable labels
-constexpr TagDetails sonyReleaseMode[] = {
-    {0, N_("Normal")}, {2, N_("Burst")}, {5, N_("Exposure Bracketing")}, {6, N_("White Balance Bracketing")}, {65535, N_("n/a")}};
+constexpr TagDetails sonyReleaseMode[] = {{0, N_("Normal")},
+                                          {2, N_("Burst")},
+                                          {5, N_("Exposure Bracketing")},
+                                          {6, N_("White Balance Bracketing")},
+                                          {65535, N_("n/a")}};
 
 //! Lookup table to translate Sony Release Mode 2 values to readable labels
 constexpr TagDetails sonyReleaseMode2[] = {{0, N_("Normal")},
@@ -276,28 +281,31 @@ std::ostream& SonyMakerNote::printImageSize(std::ostream& os, const Value& value
 
 // Sony MakerNote Tag Info
 constexpr TagInfo SonyMakerNote::tagInfo_[] = {
-    {0x0102, "Quality", N_("Image Quality"), N_("Image quality"), sony1Id, makerTags, unsignedLong, -1, printMinoltaSonyImageQuality},
-    {0x0104, "FlashExposureComp", N_("Flash Exposure Compensation"), N_("Flash exposure compensation in EV"), sony1Id, makerTags,
-     signedRational, -1, print0x9204},
-    {0x0105, "Teleconverter", N_("Teleconverter Model"), N_("Teleconverter Model"), sony1Id, makerTags, unsignedLong, -1,
-     printMinoltaSonyTeleconverterModel},
-    {0x0112, "WhiteBalanceFineTune", N_("White Balance Fine Tune"), N_("White Balance Fine Tune Value"), sony1Id, makerTags,
-     unsignedLong, -1, printValue},
-    {0x0114, "CameraSettings", N_("Camera Settings"), N_("Camera Settings"), sony1Id, makerTags, undefined, -1, printValue},
+    {0x0102, "Quality", N_("Image Quality"), N_("Image quality"), sony1Id, makerTags, unsignedLong, -1,
+     printMinoltaSonyImageQuality},
+    {0x0104, "FlashExposureComp", N_("Flash Exposure Compensation"), N_("Flash exposure compensation in EV"), sony1Id,
+     makerTags, signedRational, -1, print0x9204},
+    {0x0105, "Teleconverter", N_("Teleconverter Model"), N_("Teleconverter Model"), sony1Id, makerTags, unsignedLong,
+     -1, printMinoltaSonyTeleconverterModel},
+    {0x0112, "WhiteBalanceFineTune", N_("White Balance Fine Tune"), N_("White Balance Fine Tune Value"), sony1Id,
+     makerTags, unsignedLong, -1, printValue},
+    {0x0114, "CameraSettings", N_("Camera Settings"), N_("Camera Settings"), sony1Id, makerTags, undefined, -1,
+     printValue},
     {0x0115, "WhiteBalance", N_("White Balance"), N_("White balance"), sony1Id, makerTags, unsignedLong, -1,
      printMinoltaSonyWhiteBalanceStd},
     {0x0116, "0x0116", "0x0116", N_("Unknown"), sony1Id, makerTags, undefined, -1, printValue},
     {0x0E00, "PrintIM", N_("Print IM"), N_("PrintIM information"), sony1Id, makerTags, undefined, -1, printValue},
     {0x1000, "MultiBurstMode", N_("Multi Burst Mode"), N_("Multi Burst Mode"), sony1Id, makerTags, undefined, -1,
      printMinoltaSonyBoolValue},
-    {0x1001, "MultiBurstImageWidth", N_("Multi Burst Image Width"), N_("Multi Burst Image Width"), sony1Id, makerTags, unsignedShort,
-     -1, printValue},
-    {0x1002, "MultiBurstImageHeight", N_("Multi Burst Image Height"), N_("Multi Burst Image Height"), sony1Id, makerTags,
+    {0x1001, "MultiBurstImageWidth", N_("Multi Burst Image Width"), N_("Multi Burst Image Width"), sony1Id, makerTags,
      unsignedShort, -1, printValue},
+    {0x1002, "MultiBurstImageHeight", N_("Multi Burst Image Height"), N_("Multi Burst Image Height"), sony1Id,
+     makerTags, unsignedShort, -1, printValue},
     // TODO : Implement Panorama tags decoding.
     {0x1003, "Panorama", N_("Panorama"), N_("Panorama"), sony1Id, makerTags, undefined, -1, printValue},
     {0x2000, "0x2000", "0x2000", N_("Unknown"), sony1Id, makerTags, undefined, -1, printValue},
-    {0x2001, "PreviewImage", N_("Preview Image"), N_("JPEG preview image"), sony1Id, makerTags, undefined, -1, printValue},
+    {0x2001, "PreviewImage", N_("Preview Image"), N_("JPEG preview image"), sony1Id, makerTags, undefined, -1,
+     printValue},
     {0x2002, "0x2002", "0x2002", N_("Unknown"), sony1Id, makerTags, unsignedLong, -1, printValue},
     {0x2003, "0x2003", "0x2003", N_("Unknown"), sony1Id, makerTags, asciiString, -1, printValue},
     {0x2004, "Contrast", "Contrast", N_("Contrast"), sony1Id, makerTags, signedLong, -1, printValue},
@@ -313,49 +321,60 @@ constexpr TagInfo SonyMakerNote::tagInfo_[] = {
     {0xB000, "FileFormat", N_("File Format"), N_("File Format"), sony1Id, makerTags, unsignedByte, -1, print0xb000},
     {0xB001, "SonyModelID", N_("Sony Model ID"), N_("Sony Model ID"), sony1Id, makerTags, unsignedShort, -1,
      EXV_PRINT_TAG(sonyModelId)},
-    {0xB020, "ColorReproduction", N_("Color Reproduction"), N_("Color Reproduction"), sony1Id, makerTags, asciiString, -1, printValue},
-    {0xb021, "ColorTemperature", N_("Color Temperature"), N_("Color Temperature"), sony1Id, makerTags, unsignedLong, -1, printValue},
+    {0xB020, "ColorReproduction", N_("Color Reproduction"), N_("Color Reproduction"), sony1Id, makerTags, asciiString,
+     -1, printValue},
+    {0xb021, "ColorTemperature", N_("Color Temperature"), N_("Color Temperature"), sony1Id, makerTags, unsignedLong, -1,
+     printValue},
     {0xB022, "ColorCompensationFilter", N_("Color Compensation Filter"),
-     N_("Color Compensation Filter: negative is green, positive is magenta"), sony1Id, makerTags, unsignedLong, -1, printValue},
-    {0xB023, "SceneMode", N_("Scene Mode"), N_("Scene Mode"), sony1Id, makerTags, unsignedLong, -1, printMinoltaSonySceneMode},
+     N_("Color Compensation Filter: negative is green, positive is magenta"), sony1Id, makerTags, unsignedLong, -1,
+     printValue},
+    {0xB023, "SceneMode", N_("Scene Mode"), N_("Scene Mode"), sony1Id, makerTags, unsignedLong, -1,
+     printMinoltaSonySceneMode},
     {0xB024, "ZoneMatching", N_("Zone Matching"), N_("Zone Matching"), sony1Id, makerTags, unsignedLong, -1,
      printMinoltaSonyZoneMatching},
-    {0xB025, "DynamicRangeOptimizer", N_("Dynamic Range Optimizer"), N_("Dynamic Range Optimizer"), sony1Id, makerTags, unsignedLong,
-     -1, EXV_PRINT_TAG(print0xb025)},
-    {0xB026, "ImageStabilization", N_("Image Stabilization"), N_("Image stabilization"), sony1Id, makerTags, unsignedLong, -1,
-     printMinoltaSonyBoolValue},
-    {0xB027, "LensID", N_("Lens ID"), N_("Lens identifier"), sony1Id, makerTags, unsignedLong, -1, printMinoltaSonyLensID},
-    {0xB028, "MinoltaMakerNote", N_("Minolta MakerNote"), N_("Minolta MakerNote"), sony1Id, makerTags, undefined, -1, printValue},
-    {0xB029, "ColorMode", N_("Color Mode"), N_("Color Mode"), sony1Id, makerTags, unsignedLong, -1, printMinoltaSonyColorMode},
-    {0xB02B, "FullImageSize", N_("Full Image Size"), N_("Full Image Size"), sony1Id, makerTags, unsignedLong, -1, printImageSize},
-    {0xB02C, "PreviewImageSize", N_("Preview Image Size"), N_("Preview image size"), sony1Id, makerTags, unsignedLong, -1,
+    {0xB025, "DynamicRangeOptimizer", N_("Dynamic Range Optimizer"), N_("Dynamic Range Optimizer"), sony1Id, makerTags,
+     unsignedLong, -1, EXV_PRINT_TAG(print0xb025)},
+    {0xB026, "ImageStabilization", N_("Image Stabilization"), N_("Image stabilization"), sony1Id, makerTags,
+     unsignedLong, -1, printMinoltaSonyBoolValue},
+    {0xB027, "LensID", N_("Lens ID"), N_("Lens identifier"), sony1Id, makerTags, unsignedLong, -1,
+     printMinoltaSonyLensID},
+    {0xB028, "MinoltaMakerNote", N_("Minolta MakerNote"), N_("Minolta MakerNote"), sony1Id, makerTags, undefined, -1,
+     printValue},
+    {0xB029, "ColorMode", N_("Color Mode"), N_("Color Mode"), sony1Id, makerTags, unsignedLong, -1,
+     printMinoltaSonyColorMode},
+    {0xB02B, "FullImageSize", N_("Full Image Size"), N_("Full Image Size"), sony1Id, makerTags, unsignedLong, -1,
      printImageSize},
+    {0xB02C, "PreviewImageSize", N_("Preview Image Size"), N_("Preview image size"), sony1Id, makerTags, unsignedLong,
+     -1, printImageSize},
     {0xB040, "Macro", N_("Macro"), N_("Macro"), sony1Id, makerTags, unsignedShort, -1, EXV_PRINT_TAG(sonyMacroMode)},
     {0xB041, "ExposureMode", N_("Exposure Mode"), N_("Exposure Mode"), sony1Id, makerTags, unsignedShort, -1,
      EXV_PRINT_TAG(sonyExposureMode)},
-    {0xB042, "FocusMode", N_("Focus Mode"), N_("Focus Mode"), sony1Id, makerTags, unsignedShort, -1, EXV_PRINT_TAG(sonyFocusMode)},
+    {0xB042, "FocusMode", N_("Focus Mode"), N_("Focus Mode"), sony1Id, makerTags, unsignedShort, -1,
+     EXV_PRINT_TAG(sonyFocusMode)},
     {0xB043, "AFMode", N_("AF Mode"), N_("AF Mode"), sony1Id, makerTags, unsignedShort, -1, EXV_PRINT_TAG(sonyAFMode)},
     {0xB044, "AFIlluminator", N_("AF Illuminator"), N_("AF Illuminator"), sony1Id, makerTags, unsignedShort, -1,
      EXV_PRINT_TAG(sonyAFIlluminator)},
     {0xB047, "JPEGQuality", N_("JPEG Quality"), N_("JPEG Quality"), sony1Id, makerTags, unsignedShort, -1,
      EXV_PRINT_TAG(sonyJPEGQuality)},
-    {0xB048, "FlashLevel", N_("Flash Level"), N_("Flash Level"), sony1Id, makerTags, signedShort, -1, EXV_PRINT_TAG(sonyFlashLevel)},
+    {0xB048, "FlashLevel", N_("Flash Level"), N_("Flash Level"), sony1Id, makerTags, signedShort, -1,
+     EXV_PRINT_TAG(sonyFlashLevel)},
     {0xB049, "ReleaseMode", N_("Release Mode"), N_("Release Mode"), sony1Id, makerTags, unsignedShort, -1,
      EXV_PRINT_TAG(sonyReleaseMode)},
-    {0xB04A, "SequenceNumber", N_("Sequence Number"), N_("Shot number in continuous burst mode"), sony1Id, makerTags, unsignedShort,
-     -1, EXV_PRINT_TAG(sonySequenceNumber)},
-    {0xB04B, "AntiBlur", N_("Anti-Blur"), N_("Anti-Blur"), sony1Id, makerTags, unsignedShort, -1, EXV_PRINT_TAG(sonyAntiBlur)},
-    {0xB04E, "LongExposureNoiseReduction", N_("Long Exposure Noise Reduction"), N_("Long Exposure Noise Reduction"), sony1Id,
-     makerTags, unsignedShort, -1, EXV_PRINT_TAG(sonyLongExposureNoiseReduction)},
-    {0xB04F, "DynamicRangeOptimizer", N_("Dynamic Range Optimizer"), N_("Dynamic Range Optimizer"), sony1Id, makerTags, unsignedShort,
-     -1, EXV_PRINT_TAG(print0xb04f)},
+    {0xB04A, "SequenceNumber", N_("Sequence Number"), N_("Shot number in continuous burst mode"), sony1Id, makerTags,
+     unsignedShort, -1, EXV_PRINT_TAG(sonySequenceNumber)},
+    {0xB04B, "AntiBlur", N_("Anti-Blur"), N_("Anti-Blur"), sony1Id, makerTags, unsignedShort, -1,
+     EXV_PRINT_TAG(sonyAntiBlur)},
+    {0xB04E, "LongExposureNoiseReduction", N_("Long Exposure Noise Reduction"), N_("Long Exposure Noise Reduction"),
+     sony1Id, makerTags, unsignedShort, -1, EXV_PRINT_TAG(sonyLongExposureNoiseReduction)},
+    {0xB04F, "DynamicRangeOptimizer", N_("Dynamic Range Optimizer"), N_("Dynamic Range Optimizer"), sony1Id, makerTags,
+     unsignedShort, -1, EXV_PRINT_TAG(print0xb04f)},
     {0xB052, "IntelligentAuto", N_("Intelligent Auto"), N_("Intelligent Auto"), sony1Id, makerTags, unsignedShort, -1,
      EXV_PRINT_TAG(sonyIntelligentAuto)},
     {0xB054, "WhiteBalance2", N_("White Balance 2"), N_("White balance 2"), sony1Id, makerTags, unsignedShort, -1,
      EXV_PRINT_TAG(sonyWhiteBalance)},
     // End of list marker
-    {0xffff, "(UnknownSony1MakerNoteTag)", "(UnknownSony1MakerNoteTag)", N_("Unknown Sony1MakerNote tag"), sony1Id, makerTags,
-     asciiString, -1, printValue},
+    {0xffff, "(UnknownSony1MakerNoteTag)", "(UnknownSony1MakerNoteTag)", N_("Unknown Sony1MakerNote tag"), sony1Id,
+     makerTags, asciiString, -1, printValue},
 };
 
 const TagInfo* SonyMakerNote::tagList() {
@@ -379,21 +398,23 @@ constexpr TagDetails sonyDriveModeStd[] = {
     {0x19, N_("D-Range Optimizer Bracketing Low")},
     {0x28, N_("White Balance Bracketing High")},
     {0x29, N_("D-Range Optimizer Bracketing High")},
-    {0x29, N_("D-Range Optimizer Bracketing High")} // To silence compiler warning
+    {0x29, N_("D-Range Optimizer Bracketing High")}  // To silence compiler warning
 };
 
 //! Lookup table to translate Sony camera settings focus mode values to readable labels
 constexpr TagDetails sonyCSFocusMode[] = {{0, N_("Manual")}, {1, "AF-S"}, {2, "AF-C"}, {3, "AF-A"}};
 
 //! Lookup table to translate Sony camera settings metering mode values to readable labels
-constexpr TagDetails sonyMeteringMode[] = {{1, N_("Multi-segment")}, {2, N_("Center weighted average")}, {4, N_("Spot")}};
+constexpr TagDetails sonyMeteringMode[] = {
+    {1, N_("Multi-segment")}, {2, N_("Center weighted average")}, {4, N_("Spot")}};
 
 //! Lookup table to translate Sony camera settings creative style values to readable labels
-constexpr TagDetails sonyCreativeStyle[] = {{1, N_("Standard")},      {2, N_("Vivid")},     {3, N_("Portrait")},
-                                            {4, N_("Landscape")},     {5, N_("Sunset")},    {6, N_("Night View/Portrait")},
-                                            {8, N_("Black & White")}, {9, N_("Adobe RGB")}, {11, N_("Neutral")},
-                                            {12, N_("Clear")},        {13, N_("Deep")},     {14, N_("Light")},
-                                            {15, N_("Autumn")},       {16, N_("Sepia")}};
+constexpr TagDetails sonyCreativeStyle[] = {
+    {1, N_("Standard")},      {2, N_("Vivid")},     {3, N_("Portrait")},
+    {4, N_("Landscape")},     {5, N_("Sunset")},    {6, N_("Night View/Portrait")},
+    {8, N_("Black & White")}, {9, N_("Adobe RGB")}, {11, N_("Neutral")},
+    {12, N_("Clear")},        {13, N_("Deep")},     {14, N_("Light")},
+    {15, N_("Autumn")},       {16, N_("Sepia")}};
 
 //! Lookup table to translate Sony camera settings flash mode values to readable labels
 constexpr TagDetails sonyFlashMode[] = {
@@ -444,33 +465,37 @@ constexpr TagDetails sonyExposureLevelIncrements[] = {{33, "1/3 EV"}, {50, "1/2 
 
 constexpr TagInfo SonyMakerNote::tagInfoCs_[] = {
     // NOTE: A700 only
-    {0x0004, "DriveMode", N_("Drive Mode"), N_("Drive Mode"), sony1CsId, makerTags, unsignedShort, 1, EXV_PRINT_TAG(sonyDriveModeStd)},
+    {0x0004, "DriveMode", N_("Drive Mode"), N_("Drive Mode"), sony1CsId, makerTags, unsignedShort, 1,
+     EXV_PRINT_TAG(sonyDriveModeStd)},
     // NOTE: A700 only
-    {0x0006, "WhiteBalanceFineTune", N_("White Balance Fine Tune"), N_("White Balance Fine Tune"), sony1CsId, makerTags, signedShort,
-     1, printValue},
-    {0x0010, "FocusMode", N_("Focus Mode"), N_("Focus Mode"), sony1CsId, makerTags, unsignedShort, 1, EXV_PRINT_TAG(sonyCSFocusMode)},
-    {0x0011, "AFAreaMode", N_("AF Area Mode"), N_("AF Area Mode"), sony1CsId, makerTags, unsignedShort, 1, printMinoltaSonyAFAreaMode},
-    {0x0012, "LocalAFAreaPoint", N_("Local AF Area Point"), N_("Local AF Area Point"), sony1CsId, makerTags, unsignedShort, 1,
-     printMinoltaSonyLocalAFAreaPoint},
+    {0x0006, "WhiteBalanceFineTune", N_("White Balance Fine Tune"), N_("White Balance Fine Tune"), sony1CsId, makerTags,
+     signedShort, 1, printValue},
+    {0x0010, "FocusMode", N_("Focus Mode"), N_("Focus Mode"), sony1CsId, makerTags, unsignedShort, 1,
+     EXV_PRINT_TAG(sonyCSFocusMode)},
+    {0x0011, "AFAreaMode", N_("AF Area Mode"), N_("AF Area Mode"), sony1CsId, makerTags, unsignedShort, 1,
+     printMinoltaSonyAFAreaMode},
+    {0x0012, "LocalAFAreaPoint", N_("Local AF Area Point"), N_("Local AF Area Point"), sony1CsId, makerTags,
+     unsignedShort, 1, printMinoltaSonyLocalAFAreaPoint},
     {0x0015, "MeteringMode", N_("Metering Mode"), N_("Metering Mode"), sony1CsId, makerTags, unsignedShort, 1,
      EXV_PRINT_TAG(sonyMeteringMode)},
     {0x0016, "ISOSetting", N_("ISO Setting"), N_("ISO Setting"), sony1CsId, makerTags, unsignedShort, 1, printValue},
-    {0x0018, "DynamicRangeOptimizerMode", N_("Dynamic Range Optimizer Mode"), N_("Dynamic Range Optimizer Mode"), sony1CsId, makerTags,
-     unsignedShort, 1, printMinoltaSonyDynamicRangeOptimizerMode},
-    {0x0019, "DynamicRangeOptimizerLevel", N_("Dynamic Range Optimizer Level"), N_("Dynamic Range Optimizer Level"), sony1CsId,
-     makerTags, unsignedShort, 1, printValue},
+    {0x0018, "DynamicRangeOptimizerMode", N_("Dynamic Range Optimizer Mode"), N_("Dynamic Range Optimizer Mode"),
+     sony1CsId, makerTags, unsignedShort, 1, printMinoltaSonyDynamicRangeOptimizerMode},
+    {0x0019, "DynamicRangeOptimizerLevel", N_("Dynamic Range Optimizer Level"), N_("Dynamic Range Optimizer Level"),
+     sony1CsId, makerTags, unsignedShort, 1, printValue},
     {0x001A, "CreativeStyle", N_("Creative Style"), N_("Creative Style"), sony1CsId, makerTags, unsignedShort, 1,
      EXV_PRINT_TAG(sonyCreativeStyle)},
     {0x001C, "Sharpness", N_("Sharpness"), N_("Sharpness"), sony1CsId, makerTags, unsignedShort, 1, printValue},
     {0x001D, "Contrast", N_("Contrast"), N_("Contrast"), sony1CsId, makerTags, unsignedShort, 1, printValue},
     {0x001E, "Saturation", N_("Saturation"), N_("Saturation"), sony1CsId, makerTags, unsignedShort, 1, printValue},
-    {0x001F, "ZoneMatchingValue", N_("Zone Matching Value"), N_("Zone Matching Value"), sony1CsId, makerTags, unsignedShort, 1,
-     printValue},
+    {0x001F, "ZoneMatchingValue", N_("Zone Matching Value"), N_("Zone Matching Value"), sony1CsId, makerTags,
+     unsignedShort, 1, printValue},
     {0x0022, "Brightness", N_("Brightness"), N_("Brightness"), sony1CsId, makerTags, unsignedShort, 1, printValue},
-    {0x0023, "FlashMode", N_("FlashMode"), N_("FlashMode"), sony1CsId, makerTags, unsignedShort, 1, EXV_PRINT_TAG(sonyFlashMode)},
+    {0x0023, "FlashMode", N_("FlashMode"), N_("FlashMode"), sony1CsId, makerTags, unsignedShort, 1,
+     EXV_PRINT_TAG(sonyFlashMode)},
     // NOTE: A700 only
-    {0x0028, "PrioritySetupShutterRelease", N_("Priority Setup Shutter Release"), N_("Priority Setup Shutter Release"), sony1CsId,
-     makerTags, unsignedShort, 1, printMinoltaSonyPrioritySetupShutterRelease},
+    {0x0028, "PrioritySetupShutterRelease", N_("Priority Setup Shutter Release"), N_("Priority Setup Shutter Release"),
+     sony1CsId, makerTags, unsignedShort, 1, printMinoltaSonyPrioritySetupShutterRelease},
     // NOTE: A700 only
     {0x0029, "AFIlluminator", N_("AF Illuminator"), N_("AF Illuminator"), sony1CsId, makerTags, unsignedShort, 1,
      EXV_PRINT_TAG(sonyAFIlluminatorCS)},
@@ -478,29 +503,31 @@ constexpr TagInfo SonyMakerNote::tagInfoCs_[] = {
     {0x002A, "AFWithShutter", N_("AF With Shutter"), N_("AF With Shutter"), sony1CsId, makerTags, unsignedShort, 1,
      printMinoltaSonyBoolInverseValue},
     // NOTE: A700 only
-    {0x002B, "LongExposureNoiseReduction", N_("Long Exposure Noise Reduction"), N_("Long Exposure Noise Reduction"), sony1CsId,
-     makerTags, unsignedShort, 1, printMinoltaSonyBoolValue},
+    {0x002B, "LongExposureNoiseReduction", N_("Long Exposure Noise Reduction"), N_("Long Exposure Noise Reduction"),
+     sony1CsId, makerTags, unsignedShort, 1, printMinoltaSonyBoolValue},
     // NOTE: A700 only
-    {0x002C, "HighISONoiseReduction", N_("High ISO NoiseReduction"), N_("High ISO NoiseReduction"), sony1CsId, makerTags,
-     unsignedShort, 1, printValue},
+    {0x002C, "HighISONoiseReduction", N_("High ISO NoiseReduction"), N_("High ISO NoiseReduction"), sony1CsId,
+     makerTags, unsignedShort, 1, printValue},
     // NOTE: A700 only
     {0x002D, "ImageStyle", N_("Image Style"), N_("Image Style"), sony1CsId, makerTags, unsignedShort, 1,
      EXV_PRINT_TAG(sonyImageStyle)},
     {0x003C, "ExposureProgram", N_("Exposure Program"), N_("Exposure Program"), sony1CsId, makerTags, unsignedShort, 1,
      EXV_PRINT_TAG(sonyExposureProgram)},
-    {0x003D, "ImageStabilization", N_("Image Stabilization"), N_("Image Stabilization"), sony1CsId, makerTags, unsignedShort, 1,
-     printMinoltaSonyBoolValue},
-    {0x003F, "Rotation", N_("Rotation"), N_("Rotation"), sony1CsId, makerTags, unsignedShort, 1, printMinoltaSonyRotation},
+    {0x003D, "ImageStabilization", N_("Image Stabilization"), N_("Image Stabilization"), sony1CsId, makerTags,
+     unsignedShort, 1, printMinoltaSonyBoolValue},
+    {0x003F, "Rotation", N_("Rotation"), N_("Rotation"), sony1CsId, makerTags, unsignedShort, 1,
+     printMinoltaSonyRotation},
     {0x0054, "SonyImageSize", N_("Sony Image Size"), N_("Sony Image Size"), sony1CsId, makerTags, unsignedShort, 1,
      EXV_PRINT_TAG(sonyImageSize)},
     {0x0055, "AspectRatio", N_("Aspect Ratio"), N_("Aspect Ratio"), sony1CsId, makerTags, unsignedShort, 1,
      EXV_PRINT_TAG(sonyAspectRatio)},
-    {0x0056, "Quality", N_("Quality"), N_("Quality"), sony1CsId, makerTags, unsignedShort, 1, printMinoltaSonyQualityCs},
-    {0x0058, "ExposureLevelIncrements", N_("Exposure Level Increments"), N_("Exposure Level Increments"), sony1CsId, makerTags,
-     unsignedShort, 1, EXV_PRINT_TAG(sonyExposureLevelIncrements)},
+    {0x0056, "Quality", N_("Quality"), N_("Quality"), sony1CsId, makerTags, unsignedShort, 1,
+     printMinoltaSonyQualityCs},
+    {0x0058, "ExposureLevelIncrements", N_("Exposure Level Increments"), N_("Exposure Level Increments"), sony1CsId,
+     makerTags, unsignedShort, 1, EXV_PRINT_TAG(sonyExposureLevelIncrements)},
     // End of list marker
-    {0xffff, "(UnknownSony1CsTag)", "(UnknownSony1CsTag)", N_("Unknown Sony1 Camera Settings tag"), sony1CsId, makerTags,
-     unsignedShort, 1, printValue},
+    {0xffff, "(UnknownSony1CsTag)", "(UnknownSony1CsTag)", N_("Unknown Sony1 Camera Settings tag"), sony1CsId,
+     makerTags, unsignedShort, 1, printValue},
 };
 
 const TagInfo* SonyMakerNote::tagListCs() {
@@ -515,32 +542,35 @@ const TagInfo* SonyMakerNote::tagListCs() {
 // Warnings: Exiftool database give a list of tags shorted in decimal mode, not hexadecimal.
 
 constexpr TagInfo SonyMakerNote::tagInfoCs2_[] = {
-    {0x0010, "FocusMode", N_("Focus Mode"), N_("Focus Mode"), sony1Cs2Id, makerTags, unsignedShort, 1, EXV_PRINT_TAG(sonyCSFocusMode)},
+    {0x0010, "FocusMode", N_("Focus Mode"), N_("Focus Mode"), sony1Cs2Id, makerTags, unsignedShort, 1,
+     EXV_PRINT_TAG(sonyCSFocusMode)},
     {0x0011, "AFAreaMode", N_("AF Area Mode"), N_("AF Area Mode"), sony1Cs2Id, makerTags, unsignedShort, 1,
      printMinoltaSonyAFAreaMode},
-    {0x0012, "LocalAFAreaPoint", N_("Local AF Area Point"), N_("Local AF Area Point"), sony1Cs2Id, makerTags, unsignedShort, 1,
-     printMinoltaSonyLocalAFAreaPoint},
+    {0x0012, "LocalAFAreaPoint", N_("Local AF Area Point"), N_("Local AF Area Point"), sony1Cs2Id, makerTags,
+     unsignedShort, 1, printMinoltaSonyLocalAFAreaPoint},
     {0x0013, "MeteringMode", N_("Metering Mode"), N_("Metering Mode"), sony1Cs2Id, makerTags, unsignedShort, 1,
      EXV_PRINT_TAG(sonyMeteringMode)},
     {0x0014, "ISOSetting", N_("ISO Setting"), N_("ISO Setting"), sony1Cs2Id, makerTags, unsignedShort, 1, printValue},
-    {0x0016, "DynamicRangeOptimizerMode", N_("Dynamic Range Optimizer Mode"), N_("Dynamic Range Optimizer Mode"), sony1Cs2Id,
-     makerTags, unsignedShort, 1, printMinoltaSonyDynamicRangeOptimizerMode},
-    {0x0017, "DynamicRangeOptimizerLevel", N_("Dynamic Range Optimizer Level"), N_("Dynamic Range Optimizer Level"), sony1Cs2Id,
-     makerTags, unsignedShort, 1, printValue},
+    {0x0016, "DynamicRangeOptimizerMode", N_("Dynamic Range Optimizer Mode"), N_("Dynamic Range Optimizer Mode"),
+     sony1Cs2Id, makerTags, unsignedShort, 1, printMinoltaSonyDynamicRangeOptimizerMode},
+    {0x0017, "DynamicRangeOptimizerLevel", N_("Dynamic Range Optimizer Level"), N_("Dynamic Range Optimizer Level"),
+     sony1Cs2Id, makerTags, unsignedShort, 1, printValue},
     {0x0018, "CreativeStyle", N_("Creative Style"), N_("Creative Style"), sony1Cs2Id, makerTags, unsignedShort, 1,
      EXV_PRINT_TAG(sonyCreativeStyle)},
     {0x0019, "Sharpness", N_("Sharpness"), N_("Sharpness"), sony1Cs2Id, makerTags, unsignedShort, 1, printValue},
     {0x001A, "Contrast", N_("Contrast"), N_("Contrast"), sony1Cs2Id, makerTags, unsignedShort, 1, printValue},
     {0x001B, "Saturation", N_("Saturation"), N_("Saturation"), sony1Cs2Id, makerTags, unsignedShort, 1, printValue},
-    {0x0023, "FlashMode", N_("FlashMode"), N_("FlashMode"), sony1Cs2Id, makerTags, unsignedShort, 1, EXV_PRINT_TAG(sonyFlashMode)},
+    {0x0023, "FlashMode", N_("FlashMode"), N_("FlashMode"), sony1Cs2Id, makerTags, unsignedShort, 1,
+     EXV_PRINT_TAG(sonyFlashMode)},
     {0x003C, "ExposureProgram", N_("Exposure Program"), N_("Exposure Program"), sony1Cs2Id, makerTags, unsignedShort, 1,
      EXV_PRINT_TAG(sonyExposureProgram)},
-    {0x003F, "Rotation", N_("Rotation"), N_("Rotation"), sony1Cs2Id, makerTags, unsignedShort, 1, printMinoltaSonyRotation},
+    {0x003F, "Rotation", N_("Rotation"), N_("Rotation"), sony1Cs2Id, makerTags, unsignedShort, 1,
+     printMinoltaSonyRotation},
     {0x0054, "SonyImageSize", N_("Sony Image Size"), N_("Sony Image Size"), sony1Cs2Id, makerTags, unsignedShort, 1,
      EXV_PRINT_TAG(sonyImageSize)},
     // End of list marker
-    {0xffff, "(UnknownSony1Cs2Tag)", "(UnknownSony1Cs2Tag)", N_("Unknown Sony1 Camera Settings 2 tag"), sony1Cs2Id, makerTags,
-     unsignedShort, 1, printValue},
+    {0xffff, "(UnknownSony1Cs2Tag)", "(UnknownSony1Cs2Tag)", N_("Unknown Sony1 Camera Settings 2 tag"), sony1Cs2Id,
+     makerTags, unsignedShort, 1, printValue},
 };
 
 const TagInfo* SonyMakerNote::tagListCs2() {
@@ -562,16 +592,17 @@ constexpr TagDetails sony2FpAFAreaMode[] = {{0, N_("Multi")},
 
 //! Sony Tag 9402 Sony2Fp (FocusPosition)
 constexpr TagInfo SonyMakerNote::tagInfoFp_[] = {
-    {0x04, "AmbientTemperature", N_("Ambient temperature"), N_("Temperature of the surroundings (in degrees Celsius)"), sony2FpId,
-     makerTags, signedByte, 1, printTemperatureInDegC},
-    {0x16, "FocusMode", N_("Focus mode"), N_("Focus mode"), sony2FpId, makerTags, unsignedByte, 1, printSony2FpFocusMode},
+    {0x04, "AmbientTemperature", N_("Ambient temperature"), N_("Temperature of the surroundings (in degrees Celsius)"),
+     sony2FpId, makerTags, signedByte, 1, printTemperatureInDegC},
+    {0x16, "FocusMode", N_("Focus mode"), N_("Focus mode"), sony2FpId, makerTags, unsignedByte, 1,
+     printSony2FpFocusMode},
     {0x17, "AFAreaMode", N_("AF area mode"), N_("Auto focus area mode"), sony2FpId, makerTags, unsignedByte, 1,
      EXV_PRINT_TAG(sony2FpAFAreaMode)},
     {0x2d, "FocusPosition2", N_("Focus position 2"), N_("Focus position 2"), sony2FpId, makerTags, unsignedByte, 1,
      printSony2FpFocusPosition2},
     // End of list marker
-    {0xffff, "(UnknownSony2FpTag)", "(Unknown Sony2Fp tag)", "(Unknown Sony2Fp tag)", sony2FpId, makerTags, unsignedByte, 1,
-     printValue},
+    {0xffff, "(UnknownSony2FpTag)", "(Unknown Sony2Fp tag)", "(Unknown Sony2Fp tag)", sony2FpId, makerTags,
+     unsignedByte, 1, printValue},
 };
 
 const TagInfo* SonyMakerNote::tagListFp() {
@@ -607,7 +638,8 @@ std::ostream& SonyMakerNote::printSony2FpFocusMode(std::ostream& os, const Value
   return os;
 }
 
-std::ostream& SonyMakerNote::printSony2FpFocusPosition2(std::ostream& os, const Value& value, const ExifData* metadata) {
+std::ostream& SonyMakerNote::printSony2FpFocusPosition2(std::ostream& os, const Value& value,
+                                                        const ExifData* metadata) {
   if (value.count() != 1)
     os << "(" << value << ")";
   else {
@@ -637,11 +669,11 @@ std::ostream& SonyMakerNote::printSony2FpFocusPosition2(std::ostream& os, const 
 
 //! Sony Tag 9403 SonyMisc1
 constexpr TagInfo SonyMakerNote::tagInfoSonyMisc1_[] = {
-    {0x05, "CameraTemperature", N_("Camera temperature"), N_("Internal camera temperature (in degrees Celsius)"), sonyMisc1Id,
-     makerTags, signedByte, -1, printTemperatureInDegC},
+    {0x05, "CameraTemperature", N_("Camera temperature"), N_("Internal camera temperature (in degrees Celsius)"),
+     sonyMisc1Id, makerTags, signedByte, -1, printTemperatureInDegC},
     // End of list marker
-    {0xffff, "(UnknownSonyMisc1Tag)", "(UnknownSonyMisc1Tag)", "(UnknownSonyMisc1Tag)", sonyMisc1Id, makerTags, unsignedByte, -1,
-     printValue}};
+    {0xffff, "(UnknownSonyMisc1Tag)", "(UnknownSonyMisc1Tag)", "(UnknownSonyMisc1Tag)", sonyMisc1Id, makerTags,
+     unsignedByte, -1, printValue}};
 
 const TagInfo* SonyMakerNote::tagListSonyMisc1() {
   return tagInfoSonyMisc1_;
@@ -695,21 +727,22 @@ constexpr TagDetails sonyExposureProgram3[] = {{0, N_("Program AE")},
 constexpr TagInfo SonyMakerNote::tagInfoSonyMisc2b_[] = {
     {12, "ExposureProgram", N_("Exposure program"), N_("Exposure program"), sonyMisc2bId, makerTags, unsignedByte, -1,
      EXV_PRINT_TAG(sonyExposureProgram3)},
-    {14, "IntelligentAuto", N_("Intelligent auto"), N_("Whether intelligent auto was used"), sonyMisc2bId, makerTags, unsignedByte, -1,
-     printMinoltaSonyBoolValue},
-    {30, "LensZoomPosition", N_("Lens zoom position"), N_("Lens zoom position (in %)"), sonyMisc2bId, makerTags, unsignedShort, -1,
-     printSonyMisc2bLensZoomPosition},
+    {14, "IntelligentAuto", N_("Intelligent auto"), N_("Whether intelligent auto was used"), sonyMisc2bId, makerTags,
+     unsignedByte, -1, printMinoltaSonyBoolValue},
+    {30, "LensZoomPosition", N_("Lens zoom position"), N_("Lens zoom position (in %)"), sonyMisc2bId, makerTags,
+     unsignedShort, -1, printSonyMisc2bLensZoomPosition},
     {32, "FocusPosition2", N_("Focus position 2"), N_("Focus position 2"), sonyMisc2bId, makerTags, unsignedByte, -1,
      printSonyMisc2bFocusPosition2},
     // End of list marker
-    {0xffff, "(UnknownSonyMisc2bTag)", "(Unknown SonyMisc2b tag)", "(Unknown SonyMisc2b tag)", sonyMisc2bId, makerTags, unsignedByte,
-     -1, printValue}};
+    {0xffff, "(UnknownSonyMisc2bTag)", "(Unknown SonyMisc2b tag)", "(Unknown SonyMisc2b tag)", sonyMisc2bId, makerTags,
+     unsignedByte, -1, printValue}};
 
 const TagInfo* SonyMakerNote::tagListSonyMisc2b() {
   return tagInfoSonyMisc2b_;
 }
 
-std::ostream& SonyMakerNote::printSonyMisc2bLensZoomPosition(std::ostream& os, const Value& value, const ExifData* metadata) {
+std::ostream& SonyMakerNote::printSonyMisc2bLensZoomPosition(std::ostream& os, const Value& value,
+                                                             const ExifData* metadata) {
   if (value.count() != 1)
     return os << "(" << value << ")";
 
@@ -729,7 +762,8 @@ std::ostream& SonyMakerNote::printSonyMisc2bLensZoomPosition(std::ostream& os, c
   return os;
 }
 
-std::ostream& SonyMakerNote::printSonyMisc2bFocusPosition2(std::ostream& os, const Value& value, const ExifData* metadata) {
+std::ostream& SonyMakerNote::printSonyMisc2bFocusPosition2(std::ostream& os, const Value& value,
+                                                           const ExifData* metadata) {
   if (value.count() != 1)
     return os << "(" << value << ")";
 
@@ -776,35 +810,38 @@ constexpr TagDetails sonyMisc3cCameraOrientation[] = {
 constexpr TagInfo SonyMakerNote::tagInfoSonyMisc3c_[] = {
     {9, "ReleaseMode2", N_("Release mode 2"), N_("Release mode 2"), sonyMisc3cId, makerTags, unsignedByte, -1,
      EXV_PRINT_TAG(sonyReleaseMode2)},
-    {10, "ShotNumberSincePowerUp", N_("Shot number since power up"), N_("Number of photos taken since the camera was powered up"),
-     sonyMisc3cId, makerTags, unsignedLong, -1, printSonyMisc3cShotNumberSincePowerUp},
-    {18, "SequenceImageNumber", N_("Sequence image number"), N_("Number of images captured in burst sequence"), sonyMisc3cId,
-     makerTags, unsignedLong, -1, printSonyMisc3cSequenceNumber},
+    {10, "ShotNumberSincePowerUp", N_("Shot number since power up"),
+     N_("Number of photos taken since the camera was powered up"), sonyMisc3cId, makerTags, unsignedLong, -1,
+     printSonyMisc3cShotNumberSincePowerUp},
+    {18, "SequenceImageNumber", N_("Sequence image number"), N_("Number of images captured in burst sequence"),
+     sonyMisc3cId, makerTags, unsignedLong, -1, printSonyMisc3cSequenceNumber},
     // In Exiftool, "SequenceLength1" is called "SequenceLength. Renamed due to clash of names."
-    {22, "SequenceLength1", N_("Sequence length 1"), N_("Length of the sequence of photos taken"), sonyMisc3cId, makerTags,
-     unsignedByte, -1, EXV_PRINT_TAG(sonyMisc3cSequenceLength1)},
-    {26, "SequenceFileNumber", N_("Sequence file number"), N_("File number in burst sequence"), sonyMisc3cId, makerTags, unsignedLong,
-     -1, printSonyMisc3cSequenceNumber},
+    {22, "SequenceLength1", N_("Sequence length 1"), N_("Length of the sequence of photos taken"), sonyMisc3cId,
+     makerTags, unsignedByte, -1, EXV_PRINT_TAG(sonyMisc3cSequenceLength1)},
+    {26, "SequenceFileNumber", N_("Sequence file number"), N_("File number in burst sequence"), sonyMisc3cId, makerTags,
+     unsignedLong, -1, printSonyMisc3cSequenceNumber},
     // In Exiftool, "SequenceLength2" is called "SequenceLength". Renamed due to clash of names."
-    {30, "SequenceLength2", N_("Sequence length 2"), N_("Length of the sequence of photos taken"), sonyMisc3cId, makerTags,
-     unsignedByte, -1, EXV_PRINT_TAG(sonyMisc3cSequenceLength2)},
-    {41, "CameraOrientation", N_("Camera orientation"), N_("Orientation of the camera when the photo was taken"), sonyMisc3cId,
-     makerTags, unsignedByte, -1, EXV_PRINT_TAG(sonyMisc3cCameraOrientation)},
-    {42, "Quality2", N_("Quality 2"), N_("Quality 2"), sonyMisc3cId, makerTags, unsignedByte, -1, printSonyMisc3cQuality2},
-    {71, "SonyImageHeight", N_("Sony image height"), N_("Height of the image"), sonyMisc3cId, makerTags, unsignedShort, -1,
-     printSonyMisc3cSonyImageHeight},
-    {83, "ModelReleaseYear", N_("Model release year"), N_("Year that the model of camera was released"), sonyMisc3cId, makerTags,
-     unsignedByte, -1, printSonyMisc3cModelReleaseYear},
+    {30, "SequenceLength2", N_("Sequence length 2"), N_("Length of the sequence of photos taken"), sonyMisc3cId,
+     makerTags, unsignedByte, -1, EXV_PRINT_TAG(sonyMisc3cSequenceLength2)},
+    {41, "CameraOrientation", N_("Camera orientation"), N_("Orientation of the camera when the photo was taken"),
+     sonyMisc3cId, makerTags, unsignedByte, -1, EXV_PRINT_TAG(sonyMisc3cCameraOrientation)},
+    {42, "Quality2", N_("Quality 2"), N_("Quality 2"), sonyMisc3cId, makerTags, unsignedByte, -1,
+     printSonyMisc3cQuality2},
+    {71, "SonyImageHeight", N_("Sony image height"), N_("Height of the image"), sonyMisc3cId, makerTags, unsignedShort,
+     -1, printSonyMisc3cSonyImageHeight},
+    {83, "ModelReleaseYear", N_("Model release year"), N_("Year that the model of camera was released"), sonyMisc3cId,
+     makerTags, unsignedByte, -1, printSonyMisc3cModelReleaseYear},
     // End of list marker
-    {0xffff, "(UnknownSonyMisc3c)", "(Unknown SonyMisc3c Tag)", N_("Unknown SonyMisc23 tag"), sonyMisc3cId, makerTags, asciiString, -1,
-     printValue},
+    {0xffff, "(UnknownSonyMisc3c)", "(Unknown SonyMisc3c Tag)", N_("Unknown SonyMisc23 tag"), sonyMisc3cId, makerTags,
+     asciiString, -1, printValue},
 };
 
 const TagInfo* SonyMakerNote::tagListSonyMisc3c() {
   return tagInfoSonyMisc3c_;
 }
 
-std::ostream& SonyMakerNote::printSonyMisc3cShotNumberSincePowerUp(std::ostream& os, const Value& value, const ExifData* metadata) {
+std::ostream& SonyMakerNote::printSonyMisc3cShotNumberSincePowerUp(std::ostream& os, const Value& value,
+                                                                   const ExifData* metadata) {
   if (value.count() != 1)
     return os << "(" << value << ")";
 
@@ -814,10 +851,11 @@ std::ostream& SonyMakerNote::printSonyMisc3cShotNumberSincePowerUp(std::ostream&
 
   // Models that support this tag
   static constexpr const char* models[] = {
-      "ILCA-68",     "ILCA-77M2",   "ILCA-99M2",   "ILCE-5000", "ILCE-5100", "ILCE-6000",  "ILCE-6300", "ILCE-6500",  "ILCE-7",
-      "ILCE-7M2",    "ILCE-7R",     "ILCE-7RM2",   "ILCE-7S",   "ILCE-7SM2", "ILCE-QX1",   "DSC-HX350", "DSC-HX400V", "DSC-HX60V",
-      "DSC-HX80",    "DSC-HX90",    "DSC-HX90V",   "DSC-QX30",  "DSC-RX0",   "DSC-RX1RM2", "DSC-RX10",  "DSC-RX10M2", "DSC-RX10M3",
-      "DSC-RX100M3", "DSC-RX100M4", "DSC-RX100M5", "DSC-WX220", "DSC-WX350", "DSC-WX500"};
+      "ILCA-68",     "ILCA-77M2",   "ILCA-99M2",  "ILCE-5000", "ILCE-5100",  "ILCE-6000",  "ILCE-6300",
+      "ILCE-6500",   "ILCE-7",      "ILCE-7M2",   "ILCE-7R",   "ILCE-7RM2",  "ILCE-7S",    "ILCE-7SM2",
+      "ILCE-QX1",    "DSC-HX350",   "DSC-HX400V", "DSC-HX60V", "DSC-HX80",   "DSC-HX90",   "DSC-HX90V",
+      "DSC-QX30",    "DSC-RX0",     "DSC-RX1RM2", "DSC-RX10",  "DSC-RX10M2", "DSC-RX10M3", "DSC-RX100M3",
+      "DSC-RX100M4", "DSC-RX100M5", "DSC-WX220",  "DSC-WX350", "DSC-WX500"};
 
   std::string model = pos->toString();
   for (auto& m : models) {
@@ -878,7 +916,8 @@ std::ostream& SonyMakerNote::printSonyMisc3cQuality2(std::ostream& os, const Val
   return os;
 }
 
-std::ostream& SonyMakerNote::printSonyMisc3cSonyImageHeight(std::ostream& os, const Value& value, const ExifData* metadata) {
+std::ostream& SonyMakerNote::printSonyMisc3cSonyImageHeight(std::ostream& os, const Value& value,
+                                                            const ExifData* metadata) {
   if (value.count() != 1)
     return os << "(" << value << ")";
 
@@ -898,7 +937,8 @@ std::ostream& SonyMakerNote::printSonyMisc3cSonyImageHeight(std::ostream& os, co
   return val > 0 ? os << (8 * val) : os << N_("n/a");
 }
 
-std::ostream& SonyMakerNote::printSonyMisc3cModelReleaseYear(std::ostream& os, const Value& value, const ExifData* metadata) {
+std::ostream& SonyMakerNote::printSonyMisc3cModelReleaseYear(std::ostream& os, const Value& value,
+                                                             const ExifData* metadata) {
   if (value.count() != 1)
     return os << "(" << value << ")";
 
@@ -930,18 +970,20 @@ constexpr TagInfo SonyMakerNote::tagInfoSonySInfo1_[] = {
     //       "FaceInfoOffset" (2) and "FaceInfoLength" (50) does not make sense.
     //       The values are all connected and changing one without the rest will
     //       corrupt the data.
-    {6, "SonyDateTime", N_("Sony date/time"), N_("Date and time when the photo was captured"), sonySInfo1Id, makerTags, asciiString,
+    {6, "SonyDateTime", N_("Sony date/time"), N_("Date and time when the photo was captured"), sonySInfo1Id, makerTags,
+     asciiString, -1, printValue},
+    {26, "SonyImageHeight", N_("Sony image height"), N_("Height of the image"), sonySInfo1Id, makerTags, unsignedShort,
      -1, printValue},
-    {26, "SonyImageHeight", N_("Sony image height"), N_("Height of the image"), sonySInfo1Id, makerTags, unsignedShort, -1,
+    {28, "SonyImageWidth", N_("Sony image width"), N_("Width of the image"), sonySInfo1Id, makerTags, unsignedShort, -1,
      printValue},
-    {28, "SonyImageWidth", N_("Sony image width"), N_("Width of the image"), sonySInfo1Id, makerTags, unsignedShort, -1, printValue},
-    {48, "FacesDetected", N_("Faces detected"), N_("Number of faces detected in the image"), sonySInfo1Id, makerTags, unsignedShort,
-     -1, printValue},
-    {52, "MetaVersion", N_("Meta version"), N_("Sony meta version"), sonySInfo1Id, makerTags, asciiString, -1, printValue},
+    {48, "FacesDetected", N_("Faces detected"), N_("Number of faces detected in the image"), sonySInfo1Id, makerTags,
+     unsignedShort, -1, printValue},
+    {52, "MetaVersion", N_("Meta version"), N_("Sony meta version"), sonySInfo1Id, makerTags, asciiString, -1,
+     printValue},
     // TODO: Add FaceInfo1 (72) and FaceInfo2 (94) which are sub-groups of tags.
     // End of list marker
-    {0xffff, "(UnknownsonySInfo1Tag)", "(Unknown SonySInfo1 Tag)", "(Unknown SonySInfo1 Tag)", sonySInfo1Id, makerTags, unsignedByte,
-     -1, printValue}};
+    {0xffff, "(UnknownsonySInfo1Tag)", "(Unknown SonySInfo1 Tag)", "(Unknown SonySInfo1 Tag)", sonySInfo1Id, makerTags,
+     unsignedByte, -1, printValue}};
 
 const TagInfo* SonyMakerNote::tagListSonySInfo1() {
   return tagInfoSonySInfo1_;
@@ -949,53 +991,63 @@ const TagInfo* SonyMakerNote::tagListSonySInfo1() {
 
 //! Sony Tag 2010 Sony2010 (Miscellaneous)
 constexpr TagInfo SonyMakerNote::tagInfo2010e_[] = {
-    {0, "SequenceImageNumber", N_("Sequence Image Number"), N_("Sequence Image Number"), sony2010eId, makerTags, unsignedLong, 1,
-     printValue},
-    {4, "SequenceFileNumber", N_("SequenceFileNumber"), N_("SequenceFileNumber"), sony2010eId, makerTags, unsignedLong, 1, printValue},
+    {0, "SequenceImageNumber", N_("Sequence Image Number"), N_("Sequence Image Number"), sony2010eId, makerTags,
+     unsignedLong, 1, printValue},
+    {4, "SequenceFileNumber", N_("SequenceFileNumber"), N_("SequenceFileNumber"), sony2010eId, makerTags, unsignedLong,
+     1, printValue},
     {8, "ReleaseMode2", N_("ReleaseMode2"), N_("ReleaseMode2"), sony2010eId, makerTags, unsignedLong, 1, printValue},
-    {540, "DigitalZoomRatio", N_("DigitalZoomRatio"), N_("DigitalZoomRatio"), sony2010eId, makerTags, unsignedByte, 1, printValue},
-    {556, "SonyDateTime", N_("SonyDateTime"), N_("SonyDateTime"), sony2010eId, makerTags, undefined, 1, printValue},
-    {808, "DynamicRangeOptimizer", N_("DynamicRangeOptimizer"), N_("DynamicRangeOptimizer"), sony2010eId, makerTags, unsignedByte, 1,
+    {540, "DigitalZoomRatio", N_("DigitalZoomRatio"), N_("DigitalZoomRatio"), sony2010eId, makerTags, unsignedByte, 1,
      printValue},
+    {556, "SonyDateTime", N_("SonyDateTime"), N_("SonyDateTime"), sony2010eId, makerTags, undefined, 1, printValue},
+    {808, "DynamicRangeOptimizer", N_("DynamicRangeOptimizer"), N_("DynamicRangeOptimizer"), sony2010eId, makerTags,
+     unsignedByte, 1, printValue},
     {1208, "MeterInfo", N_("MeterInfo"), N_("MeterInfo"), sony2010eId, makerTags, undefined, 1, printValue},
     {4444, "ReleaseMode3", N_("ReleaseMode3"), N_("ReleaseMode3"), sony2010eId, makerTags, unsignedByte, 1, printValue},
     {4448, "ReleaseMode2", N_("ReleaseMode2"), N_("ReleaseMode2"), sony2010eId, makerTags, unsignedByte, 1, printValue},
     {4456, "SelfTimer", N_("SelfTimer"), N_("SelfTimer"), sony2010eId, makerTags, unsignedByte, 1, printValue},
     {4460, "FlashMode", N_("FlashMode"), N_("FlashMode"), sony2010eId, makerTags, unsignedByte, 1, printValue},
-    {4466, "StopsAboveBaseISO", N_("StopsAboveBaseISO"), N_("StopsAboveBaseISO"), sony2010eId, makerTags, unsignedShort, 1,
+    {4466, "StopsAboveBaseISO", N_("StopsAboveBaseISO"), N_("StopsAboveBaseISO"), sony2010eId, makerTags, unsignedShort,
+     1, printValue},
+    {4468, "BrightnessValue", N_("BrightnessValue"), N_("BrightnessValue"), sony2010eId, makerTags, unsignedShort, 1,
      printValue},
-    {4468, "BrightnessValue", N_("BrightnessValue"), N_("BrightnessValue"), sony2010eId, makerTags, unsignedShort, 1, printValue},
-    {4472, "DynamicRangeOptimizer", N_("DynamicRangeOptimizer"), N_("DynamicRangeOptimizer"), sony2010eId, makerTags, unsignedByte, 1,
-     printValue},
+    {4472, "DynamicRangeOptimizer", N_("DynamicRangeOptimizer"), N_("DynamicRangeOptimizer"), sony2010eId, makerTags,
+     unsignedByte, 1, printValue},
     {4476, "HDRSetting", N_("HDRSetting"), N_("HDRSetting"), sony2010eId, makerTags, unsignedByte, 1, printValue},
-    {4480, "ExposureCompensation", N_("ExposureCompensation"), N_("ExposureCompensation"), sony2010eId, makerTags, signedShort, 1,
+    {4480, "ExposureCompensation", N_("ExposureCompensation"), N_("ExposureCompensation"), sony2010eId, makerTags,
+     signedShort, 1, printValue},
+    {4502, "PictureProfile", N_("PictureProfile"), N_("PictureProfile"), sony2010eId, makerTags, unsignedByte, 1,
      printValue},
-    {4502, "PictureProfile", N_("PictureProfile"), N_("PictureProfile"), sony2010eId, makerTags, unsignedByte, 1, printValue},
-    {4503, "PictureProfile2", N_("PictureProfile2"), N_("PictureProfile2"), sony2010eId, makerTags, unsignedByte, 1, printValue},
-    {4507, "PictureEffect2", N_("PictureEffect2"), N_("PictureEffect2"), sony2010eId, makerTags, unsignedByte, 1, printValue},
+    {4503, "PictureProfile2", N_("PictureProfile2"), N_("PictureProfile2"), sony2010eId, makerTags, unsignedByte, 1,
+     printValue},
+    {4507, "PictureEffect2", N_("PictureEffect2"), N_("PictureEffect2"), sony2010eId, makerTags, unsignedByte, 1,
+     printValue},
     {4520, "Quality2", N_("Quality2"), N_("Quality2"), sony2010eId, makerTags, unsignedByte, 1, printValue},
     {4524, "MeteringMode", N_("MeteringMode"), N_("MeteringMode"), sony2010eId, makerTags, unsignedByte, 1, printValue},
-    {4525, "ExposureProgram", N_("ExposureProgram"), N_("ExposureProgram"), sony2010eId, makerTags, unsignedByte, 1, printValue},
-    {4532, "WB_RGBLevels", N_("WB_RGBLevels"), N_("WB_RGBLevels"), sony2010eId, makerTags, unsignedShort, 3, printValue},
+    {4525, "ExposureProgram", N_("ExposureProgram"), N_("ExposureProgram"), sony2010eId, makerTags, unsignedByte, 1,
+     printValue},
+    {4532, "WB_RGBLevels", N_("WB_RGBLevels"), N_("WB_RGBLevels"), sony2010eId, makerTags, unsignedShort, 3,
+     printValue},
     {4692, "SonyISO", N_("SonyISO"), N_("SonyISO"), sony2010eId, makerTags, unsignedShort, 1, printValue},
     {4696, "SonyISO2", N_("SonyISO2"), N_("SonyISO2"), sony2010eId, makerTags, unsignedShort, 1, printValue},
     {4728, "FocalLength", N_("FocalLength"), N_("FocalLength"), sony2010eId, makerTags, unsignedShort, 1, printValue},
-    {4730, "MinFocalLength", N_("MinFocalLength"), N_("MinFocalLength"), sony2010eId, makerTags, unsignedShort, 1, printValue},
-    {4732, "MaxFocalLength", N_("MaxFocalLength"), N_("MaxFocalLength"), sony2010eId, makerTags, unsignedShort, 1, printValue},
-    {4736, "SonyISO3", N_("SonyISO3"), N_("SonyISO3"), sony2010eId, makerTags, unsignedShort, 1, printValue},
-    {6256, "DistortionCorrParams", N_("DistortionCorrParams"), N_("DistortionCorrParams"), sony2010eId, makerTags, signedShort, 16,
+    {4730, "MinFocalLength", N_("MinFocalLength"), N_("MinFocalLength"), sony2010eId, makerTags, unsignedShort, 1,
      printValue},
+    {4732, "MaxFocalLength", N_("MaxFocalLength"), N_("MaxFocalLength"), sony2010eId, makerTags, unsignedShort, 1,
+     printValue},
+    {4736, "SonyISO3", N_("SonyISO3"), N_("SonyISO3"), sony2010eId, makerTags, unsignedShort, 1, printValue},
+    {6256, "DistortionCorrParams", N_("DistortionCorrParams"), N_("DistortionCorrParams"), sony2010eId, makerTags,
+     signedShort, 16, printValue},
     {6289, "LensFormat", N_("LensFormat"), N_("LensFormat"), sony2010eId, makerTags, unsignedByte, 1, printValue},
     {6290, "LensMount", N_("LensMount"), N_("LensMount"), sony2010eId, makerTags, unsignedByte, 1, printValue},
     {6291, "LensType2", N_("LensType2"), N_("LensType2"), sony2010eId, makerTags, unsignedShort, 1, printValue},
     {6294, "LensType", N_("LensType"), N_("LensType"), sony2010eId, makerTags, unsignedShort, 1, printValue},
-    {6296, "DistortionCorrParamsPresent", N_("DistortionCorrParamsPresent"), N_("DistortionCorrParamsPresent"), sony2010eId, makerTags,
-     unsignedByte, 1, printValue},
-    {6297, "DistortionCorrParamsNumber", N_("DistortionCorrParamsNumber"), N_("DistortionCorrParamsNumber"), sony2010eId, makerTags,
-     unsignedByte, 1, printValue},
+    {6296, "DistortionCorrParamsPresent", N_("DistortionCorrParamsPresent"), N_("DistortionCorrParamsPresent"),
+     sony2010eId, makerTags, unsignedByte, 1, printValue},
+    {6297, "DistortionCorrParamsNumber", N_("DistortionCorrParamsNumber"), N_("DistortionCorrParamsNumber"),
+     sony2010eId, makerTags, unsignedByte, 1, printValue},
     // End of list marker
-    {0xffff, "(UnknownSony2010eTag)", "(UnknownSony2010eTag)", "(UnknownSony2010eTag)", sony2010eId, makerTags, unsignedByte, 1,
-     printValue},
+    {0xffff, "(UnknownSony2010eTag)", "(UnknownSony2010eTag)", "(UnknownSony2010eTag)", sony2010eId, makerTags,
+     unsignedByte, 1, printValue},
 };
 
 const TagInfo* SonyMakerNote::tagList2010e() {
@@ -1003,8 +1055,9 @@ const TagInfo* SonyMakerNote::tagList2010e() {
 }
 
 // https://github.com/Exiv2/exiv2/pull/906#issuecomment-504338797
-static DataBuf sonyTagCipher(uint16_t /* tag */, const byte* bytes, uint32_t size, TiffComponent* const /*object*/, bool bDecipher) {
-  DataBuf b(bytes, size); // copy the data
+static DataBuf sonyTagCipher(uint16_t /* tag */, const byte* bytes, uint32_t size, TiffComponent* const /*object*/,
+                             bool bDecipher) {
+  DataBuf b(bytes, size);  // copy the data
 
   // initialize the code table
   byte code[256];
@@ -1034,5 +1087,5 @@ DataBuf sonyTagEncipher(uint16_t tag, const byte* bytes, uint32_t size, TiffComp
   return sonyTagCipher(tag, bytes, size, object, false);
 }
 
-} // namespace Internal
-} // namespace Exiv2
+}  // namespace Internal
+}  // namespace Exiv2

@@ -74,7 +74,7 @@ void TgaImage::readMetadata() {
     pixelWidth_ = getShort(buf + 12, littleEndian);
     pixelHeight_ = getShort(buf + 14, littleEndian);
   }
-} // TgaImage::readMetadata
+}  // TgaImage::readMetadata
 
 Image::UniquePtr newTgaInstance(BasicIo::UniquePtr io, bool /*create*/) {
   Image::UniquePtr image(new TgaImage(std::move(io)));
@@ -85,7 +85,6 @@ Image::UniquePtr newTgaInstance(BasicIo::UniquePtr io, bool /*create*/) {
 }
 
 bool isTgaType(BasicIo& iIo, bool /*advance*/) {
-
   std::string path = iIo.path();
   if (path.rfind(".tga") != std::string::npos || path.rfind(".TGA") != std::string::npos) {
     return true;
@@ -107,6 +106,6 @@ bool isTgaType(BasicIo& iIo, bool /*advance*/) {
   bool matched = (memcmp(buf + 8, "TRUEVISION-XFILE", 16) == 0);
   iIo.seek(curPos, BasicIo::beg);
   return matched;
-} // Exiv2::isTgaType
+}  // Exiv2::isTgaType
 
-} // namespace Exiv2
+}  // namespace Exiv2

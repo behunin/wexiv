@@ -24,7 +24,7 @@ namespace Internal {
 std::string stringFormat(const char* format, ...) {
   std::string result;
   std::vector<char> buffer;
-  size_t need = std::strlen(format) * 8; // initial guess
+  size_t need = std::strlen(format) * 8;  // initial guess
   int rc = -1;
 
   // vsnprintf writes at most size (2nd parameter) bytes (including \0)
@@ -34,11 +34,11 @@ std::string stringFormat(const char* format, ...) {
   // or two iterations (after the first call to vsnprintf we know the required length)
   do {
     buffer.resize(need + 1);
-    va_list args; // variable arg list
-    va_start(args, format); // args start after format
+    va_list args;            // variable arg list
+    va_start(args, format);  // args start after format
     rc = vsnprintf(&buffer[0], buffer.size(), format, args);
-    va_end(args); // free the args
-    assert(rc >= 0); // rc < 0 => we have made an error in the format string
+    va_end(args);     // free the args
+    assert(rc >= 0);  // rc < 0 => we have made an error in the format string
     if (rc > 0)
       need = static_cast<size_t>(rc);
   } while (buffer.size() <= need);
@@ -101,6 +101,6 @@ std::string indent(int32_t d) {
   return result;
 }
 
-} // namespace Internal
+}  // namespace Internal
 
-} // namespace Exiv2
+}  // namespace Exiv2

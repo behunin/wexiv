@@ -46,8 +46,8 @@
 #define TAG_heis 0x68656973 /**< "heis" HEIC */
 #define TAG_heix 0x68656978 /**< "heix" HEIC */
 #define TAG_mif1 0x6d696631 /**< "mif1" HEIF */
-#define TAG_crx 0x63727820 /**< "crx " Canon CR3 */
-#define TAG_jxl 0x6a786c20 /**< "JXL " JPEG XL   */
+#define TAG_crx 0x63727820  /**< "crx " Canon CR3 */
+#define TAG_jxl 0x6a786c20  /**< "JXL " JPEG XL   */
 #define TAG_moov 0x6d6f6f76 /**< "moov" Movie */
 #define TAG_meta 0x6d657461 /**< "meta" Metadata */
 #define TAG_mdat 0x6d646174 /**< "mdat" Media data */
@@ -66,7 +66,7 @@
 #define TAG_cmt4 0x434D5434 /**< "CMT4" gpsID */
 #define TAG_colr 0x636f6c72 /**< "colr" */
 #define TAG_exif 0x45786966 /**< "Exif" Used by JXL*/
-#define TAG_xml 0x786d6c20 /**< "xml"  Used by JXL*/
+#define TAG_xml 0x786d6c20  /**< "xml"  Used by JXL*/
 
 // *****************************************************************************
 // class member definitions
@@ -75,24 +75,25 @@ std::string Iloc::toString() const {
   return Internal::stringFormat("ID = %u from,length = %u,%u", ID_, start_, length_);
 }
 
-BmffImage::BmffImage(BasicIo::UniquePtr io, bool /* create */) : Image(ImageType::bmff, mdExif | mdIptc | mdXmp, std::move(io)) {
-} // BmffImage::BmffImage
+BmffImage::BmffImage(BasicIo::UniquePtr io, bool /* create */) :
+    Image(ImageType::bmff, mdExif | mdIptc | mdXmp, std::move(io)) {
+}  // BmffImage::BmffImage
 
 std::string BmffImage::toAscii(long n) {
   const auto p = reinterpret_cast<const char*>(&n);
   std::string result;
   for (int i = 0; i < 4; i++) {
     char c = p[isBigEndianPlatform() ? i : (3 - i)];
-    result += (32 <= c && c < 127) ? c // only allow 7-bit printable ascii
-              : c == 0             ? '_' // show 0 as _
-                                   : '.'; // others .
+    result += (32 <= c && c < 127) ? c    // only allow 7-bit printable ascii
+              : c == 0             ? '_'  // show 0 as _
+                                   : '.';             // others .
   }
   return result;
 }
 
 bool BmffImage::superBox(uint32_t box) {
-  return box == TAG_moov || box == TAG_dinf || box == TAG_iprp || box == TAG_ipco || box == TAG_meta || box == TAG_iinf ||
-         box == TAG_iloc;
+  return box == TAG_moov || box == TAG_dinf || box == TAG_iprp || box == TAG_ipco || box == TAG_meta ||
+         box == TAG_iinf || box == TAG_iloc;
 }
 
 bool BmffImage::fullBox(uint32_t box) {
@@ -116,7 +117,7 @@ std::string BmffImage::mimeType() const {
     case TAG_crx:
       return "image/x-canon-cr3";
     case TAG_jxl:
-      return "image/jxl"; // https://github.com/novomesk/qt-jpegxl-image-plugin/issues/1
+      return "image/jxl";  // https://github.com/novomesk/qt-jpegxl-image-plugin/issues/1
     default:
       return "image/generic";
   }
@@ -147,9 +148,7 @@ std::string BmffImage::uuidName(Exiv2::DataBuf& uuid) {
   return result;
 }
 
-long BmffImage::boxHandler(Exiv2::PrintStructureOption option /* = kpsNone */,
-                           const long pbox_end,
-                           int depth) {
+long BmffImage::boxHandler(Exiv2::PrintStructureOption option /* = kpsNone */, const long pbox_end, int depth) {
   long address = io_->tell();
   // never visit a box twice!
   if (depth == 0)
@@ -171,7 +170,7 @@ long BmffImage::boxHandler(Exiv2::PrintStructureOption option /* = kpsNone */,
   // that it's a uint64_t.
   uint64_t box_length = getLong(reinterpret_cast<byte*>(&hdrbuf[0]), endian_);
   uint32_t box_type = getLong(reinterpret_cast<byte*>(&hdrbuf[sizeof(uint32_t)]), endian_);
-  
+
   if (box_length == 1) {
     // The box size is encoded as a uint64_t, so we need to read another 8 bytes.
     hdrsize += 8;
@@ -190,13 +189,13 @@ long BmffImage::boxHandler(Exiv2::PrintStructureOption option /* = kpsNone */,
   io_->read(data.pData_, data.size_);
   io_->seek(restore, BasicIo::beg);
 
-  long skip = 0; // read position in data.pData_
+  long skip = 0;  // read position in data.pData_
   uint8_t version = 0;
   uint32_t flags = 0;
 
   if (fullBox(box_type)) {
     enforce(data.size_ - skip >= 4, Exiv2::kerCorruptedMetadata);
-    flags = getLong(data.pData_ + skip, endian_); // version/flags
+    flags = getLong(data.pData_ + skip, endian_);  // version/flags
     version = static_cast<uint8_t>(flags >> 24);
     version &= 0x00ffffff;
     skip += 4;
@@ -210,7 +209,6 @@ long BmffImage::boxHandler(Exiv2::PrintStructureOption option /* = kpsNone */,
 
     // 8.11.6.1
     case TAG_iinf: {
-
       enforce(data.size_ - skip >= 2, Exiv2::kerCorruptedMetadata);
       uint16_t n = getShort(data.pData_ + skip, endian_);
       skip += 2;
@@ -222,22 +220,23 @@ long BmffImage::boxHandler(Exiv2::PrintStructureOption option /* = kpsNone */,
     } break;
 
     // 8.11.6.2
-    case TAG_infe: { // .__._.__hvc1_ 2 0 0 1 0 1 0 0 104 118 99 49 0
+    case TAG_infe: {  // .__._.__hvc1_ 2 0 0 1 0 1 0 0 104 118 99 49 0
       enforce(data.size_ - skip >= 8, Exiv2::kerCorruptedMetadata);
       /* getLong (data.pData_+skip,endian_) ; */ skip += 4;
       uint16_t ID = getShort(data.pData_ + skip, endian_);
       skip += 2;
-      /* getShort(data.pData_+skip,endian_) ; */ skip += 2; // protection
+      /* getShort(data.pData_+skip,endian_) ; */ skip += 2;  // protection
       std::string id;
       // Check that the string has a '\0' terminator.
       const char* str = reinterpret_cast<const char*>(data.pData_) + skip;
       const auto maxlen = static_cast<size_t>(data.size_ - skip);
       enforce(strnlen(str, maxlen) < maxlen, Exiv2::kerCorruptedMetadata);
       std::string name(str);
-      if (name.find("Exif") != std::string::npos) { // "Exif" or "ExifExif"
+      if (name.find("Exif") != std::string::npos) {  // "Exif" or "ExifExif"
         exifID_ = ID;
         id = " *** Exif ***";
-      } else if (name.find("mime\0xmp") != std::string::npos || name.find("mime\0application/rdf+xml") != std::string::npos) {
+      } else if (name.find("mime\0xmp") != std::string::npos ||
+                 name.find("mime\0application/rdf+xml") != std::string::npos) {
         xmpID_ = ID;
         id = " *** XMP ***";
       }
@@ -283,11 +282,12 @@ long BmffImage::boxHandler(Exiv2::PrintStructureOption option /* = kpsNone */,
       enforce(data.size_ - skip >= (version < 2 ? 2 : 4), Exiv2::kerCorruptedMetadata);
       uint32_t itemCount = version < 2 ? getShort(data.pData_ + skip, endian_) : getLong(data.pData_ + skip, endian_);
       skip += version < 2 ? 2 : 4;
-      if (itemCount && itemCount < box_length / 14 && offsetSize == 4 && lengthSize == 4 && ((box_length - 16) % itemCount) == 0) {
-        long step = static_cast<long>((box_length - 16) / itemCount); // length of data per item.
+      if (itemCount && itemCount < box_length / 14 && offsetSize == 4 && lengthSize == 4 &&
+          ((box_length - 16) % itemCount) == 0) {
+        long step = static_cast<long>((box_length - 16) / itemCount);  // length of data per item.
         long base = skip;
         for (uint32_t i = 0; i < itemCount; i++) {
-          skip = base + i * step; // move in 14, 16 or 18 byte steps
+          skip = base + i * step;  // move in 14, 16 or 18 byte steps
           enforce(data.size_ - skip >= (version > 2 ? 4 : 2), Exiv2::kerCorruptedMetadata);
           enforce(data.size_ - skip >= step, Exiv2::kerCorruptedMetadata);
           uint32_t ID = version > 2 ? getLong(data.pData_ + skip, endian_) : getShort(data.pData_ + skip, endian_);
@@ -321,7 +321,8 @@ long BmffImage::boxHandler(Exiv2::PrintStructureOption option /* = kpsNone */,
 
     // 12.1.5.2
     case TAG_colr: {
-      if (data.size_ >= static_cast<long>(skip + 4 + 8)) { // .____.HLino..__mntrR 2 0 0 0 0 12 72 76 105 110 111 2 16 ...
+      if (data.size_ >=
+          static_cast<long>(skip + 4 + 8)) {  // .____.HLino..__mntrR 2 0 0 0 0 12 72 76 105 110 111 2 16 ...
         // https://www.ics.uci.edu/~dan/class/267/papers/jpeg2000.pdf
         uint8_t meth = data.pData_[skip + 0];
         uint8_t prec = data.pData_[skip + 1];
@@ -391,7 +392,7 @@ void BmffImage::parseTiff(uint32_t root_tag, uint64_t length, uint64_t start) {
   io_->seek(static_cast<long>(start), BasicIo::beg);
   if (exif.size_ > 8 && io_->read(exif.pData_, exif.size_) == exif.size_) {
     // hunt for "II" or "MM"
-    long eof = 0xffffffff; // impossible value for punt
+    long eof = 0xffffffff;  // impossible value for punt
     long punt = eof;
     for (long i = 0; i < exif.size_ - 8 && punt == eof; i += 2) {
       if (exif.pData_[i] == exif.pData_[i + 1])
@@ -399,8 +400,8 @@ void BmffImage::parseTiff(uint32_t root_tag, uint64_t length, uint64_t start) {
           punt = i;
     }
     if (punt != eof) {
-      Internal::TiffParserWorker::decode(exifData(), iptcData(), xmpData(), exif.pData_ + punt, exif.size_ - punt, root_tag,
-                                         Internal::TiffMapping::findDecoder);
+      Internal::TiffParserWorker::decode(exifData(), iptcData(), xmpData(), exif.pData_ + punt, exif.size_ - punt,
+                                         root_tag, Internal::TiffMapping::findDecoder);
     }
   }
   io_->seek(restore, BasicIo::beg);
@@ -434,7 +435,7 @@ void BmffImage::parseXmp(uint64_t length, uint64_t start) {
 
     enforce(length < static_cast<unsigned long>(std::numeric_limits<long>::max()), kerCorruptedMetadata);
     DataBuf xmp(static_cast<long>(length + 1));
-    xmp.pData_[length] = 0; // ensure xmp is null terminated!
+    xmp.pData_[length] = 0;  // ensure xmp is null terminated!
     if (io_->read(xmp.pData_, static_cast<long>(length)) != static_cast<long>(length))
       throw Error(kerInputDataReadFailed);
     if (io_->error())
@@ -459,7 +460,7 @@ void BmffImage::openOrThrow() {
       throw Error(kerFailedToReadImageData);
     throw Error(kerNotAnImage, "BMFF");
   }
-} // Bmff::openOrThrow();
+}  // Bmff::openOrThrow();
 
 void BmffImage::readMetadata() {
   openOrThrow();
@@ -478,7 +479,7 @@ void BmffImage::readMetadata() {
     address = boxHandler(kpsNone, file_end, 0);
   }
   bReadMetadata_ = true;
-} // BmffImage::readMetadata
+}  // BmffImage::readMetadata
 
 Image::UniquePtr newBmffInstance(BasicIo::UniquePtr io, bool create) {
   Image::UniquePtr image(new BmffImage(std::move(io), create));
@@ -511,4 +512,4 @@ bool isBmffType(BasicIo& iIo, bool advance) {
   }
   return matched;
 }
-} // namespace Exiv2
+}  // namespace Exiv2

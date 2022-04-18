@@ -44,22 +44,25 @@ int readData(emscripten::val& iptcData, uint16_t dataSet, uint16_t record, const
 
 //! Unary predicate that matches an Iptcdatum with given record and dataset
 class FindIptcdatum {
-public:
+ public:
   //! Constructor, initializes the object with the record and dataset id
-  FindIptcdatum(uint16_t dataset, uint16_t record) : dataset_(dataset), record_(record) {}
+  FindIptcdatum(uint16_t dataset, uint16_t record) : dataset_(dataset), record_(record) {
+  }
   /*!
     @brief Returns true if the record and dataset id of the argument
           Iptcdatum is equal to that of the object.
   */
-  bool operator()(const Exiv2::Iptcdatum& iptcdatum) const { return dataset_ == iptcdatum.tag() && record_ == iptcdatum.record(); }
+  bool operator()(const Exiv2::Iptcdatum& iptcdatum) const {
+    return dataset_ == iptcdatum.tag() && record_ == iptcdatum.record();
+  }
 
-private:
+ private:
   // DATA
   uint16_t dataset_;
   uint16_t record_;
 
-}; // class FindIptcdatum
-} // namespace
+};  // class FindIptcdatum
+}  // namespace
 
 // *****************************************************************************
 namespace Exiv2 {
@@ -71,9 +74,9 @@ Iptcdatum::Iptcdatum(const IptcKey& key, const Value* pValue) : key_(key.clone()
 
 Iptcdatum::Iptcdatum(const Iptcdatum& rhs) : Metadatum(rhs) {
   if (rhs.key_.get() != nullptr)
-    key_ = rhs.key_->clone(); // deep copy
+    key_ = rhs.key_->clone();  // deep copy
   if (rhs.value_.get() != nullptr)
-    value_ = rhs.value_->clone(); // deep copy
+    value_ = rhs.value_->clone();  // deep copy
 }
 
 long Iptcdatum::copy(byte* buf, ByteOrder byteOrder) const {
@@ -173,14 +176,14 @@ Iptcdatum& Iptcdatum::operator=(const Iptcdatum& rhs) {
 
   key_.reset();
   if (rhs.key_.get() != nullptr)
-    key_ = rhs.key_->clone(); // deep copy
+    key_ = rhs.key_->clone();  // deep copy
 
   value_.reset();
   if (rhs.value_.get() != nullptr)
-    value_ = rhs.value_->clone(); // deep copy
+    value_ = rhs.value_->clone();  // deep copy
 
   return *this;
-} // Iptcdatum::operator=
+}  // Iptcdatum::operator=
 
 Iptcdatum& Iptcdatum::operator=(const uint16_t& value) {
   UShortValue::UniquePtr v(new UShortValue);
@@ -236,14 +239,15 @@ long IptcData::size() const {
     }
   }
   return newSize;
-} // IptcData::size
+}  // IptcData::size
 
 int IptcData::add(const IptcKey& key, Value* value) {
   return add(Iptcdatum(key, value));
 }
 
 int IptcData::add(const Iptcdatum& iptcDatum) {
-  if (!IptcDataSets::dataSetRepeatable(iptcDatum.tag(), iptcDatum.record()) && findId(iptcDatum.tag(), iptcDatum.record()) != end()) {
+  if (!IptcDataSets::dataSetRepeatable(iptcDatum.tag(), iptcDatum.record()) &&
+      findId(iptcDatum.tag(), iptcDatum.record()) != end()) {
     return 6;
   }
   // allow duplicates
@@ -308,7 +312,7 @@ const char* IptcData::detectCharset() const {
           if (c & 0x80)
             ascii = false;
           else
-            continue; // ascii character
+            continue;  // ascii character
 
           if ((c & 0xe0) == 0xc0)
             seqCount = 1;
@@ -327,7 +331,7 @@ const char* IptcData::detectCharset() const {
         }
       }
       if (seqCount)
-        utf8 = false; // unterminated seq
+        utf8 = false;  // unterminated seq
       if (!utf8)
         break;
     }
@@ -340,7 +344,7 @@ const char* IptcData::detectCharset() const {
   return nullptr;
 }
 
-const byte IptcParser::marker_ = 0x1C; // Dataset marker
+const byte IptcParser::marker_ = 0x1C;  // Dataset marker
 
 int IptcParser::decode(emscripten::val& iptcData, const byte* pData, uint32_t size) {
 #ifdef EXIV2_DEBUG_MESSAGES
@@ -398,7 +402,7 @@ int IptcParser::decode(emscripten::val& iptcData, const byte* pData, uint32_t si
   }
 
   return 0;
-} // IptcParser::decode
+}  // IptcParser::decode
 
 /*!
   @brief Compare two iptc items by record. Return true if the record of
@@ -410,7 +414,7 @@ bool cmpIptcdataByRecord(const Iptcdatum& lhs, const Iptcdatum& rhs) {
   return lhs.record() < rhs.record();
 }
 
-} // namespace Exiv2
+}  // namespace Exiv2
 
 // *****************************************************************************
 namespace {
@@ -435,4 +439,4 @@ int readData(emscripten::val& iptcData, uint16_t dataSet, uint16_t record, const
   return rc;
 }
 
-} // namespace
+}  // namespace

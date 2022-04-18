@@ -30,21 +30,21 @@ namespace Internal {
 
 //! MakerNote for Samsung cameras
 class Samsung2MakerNote {
-public:
+ public:
   //! Return read-only list of built-in Samsung tags
   static const TagInfo* tagList();
   //! Return read-only list of built-in PictureWizard tags
   static const TagInfo* tagListPw();
 
-private:
+ private:
   //! Tag information
   static const TagInfo tagInfo_[];
   //! PictureWizard tag information
   static const TagInfo tagInfoPw_[];
 
-}; // class Samsung2MakerNote
+};  // class Samsung2MakerNote
 
-} // namespace Internal
-} // namespace Exiv2
+}  // namespace Internal
+}  // namespace Exiv2
 
-#endif // #ifndef SAMSUNGMN_INT_HPP_
+#endif  // #ifndef SAMSUNGMN_INT_HPP_

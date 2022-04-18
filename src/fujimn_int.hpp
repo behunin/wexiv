@@ -29,16 +29,16 @@ namespace Internal {
 
 //! MakerNote for Fujifilm cameras
 class FujiMakerNote {
-public:
+ public:
   //! Return read-only list of built-in Fujifilm tags
   static const TagInfo* tagList();
 
-private:
+ private:
   //! Tag information
   static const TagInfo tagInfo_[];
 
-}; // class FujiMakerNote
-} // namespace Internal
-} // namespace Exiv2
+};  // class FujiMakerNote
+}  // namespace Internal
+}  // namespace Exiv2
 
-#endif // #ifndef FUJIMN_INT_HPP_
+#endif  // #ifndef FUJIMN_INT_HPP_

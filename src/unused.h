@@ -22,4 +22,4 @@
 
 #define UNUSED(x) (void)(x)
 
-#endif // UNUSED_H
+#endif  // UNUSED_H

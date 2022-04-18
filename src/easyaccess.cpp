@@ -44,18 +44,19 @@ ExifData::const_iterator findMetadatum(const ExifData& ed, const char* keys[], i
       return pos;
   }
   return ed.end();
-} // findMetadatum
+}  // findMetadatum
 
-} // anonymous namespace
+}  // anonymous namespace
 
 // *****************************************************************************
 namespace Exiv2 {
 
 ExifData::const_iterator orientation(const ExifData& ed) {
-  static const char* keys[] = {"Exif.Image.Orientation",     "Exif.Panasonic.Rotation",     "Exif.MinoltaCs5D.Rotation",
-                               "Exif.MinoltaCs5D.Rotation2", "Exif.MinoltaCs7D.Rotation",   "Exif.Sony1MltCsA100.Rotation",
-                               "Exif.Sony1Cs.Rotation",      "Exif.Sony2Cs.Rotation",       "Exif.Sony1Cs2.Rotation",
-                               "Exif.Sony2Cs2.Rotation",     "Exif.Sony1MltCsA100.Rotation"};
+  static const char* keys[] = {
+      "Exif.Image.Orientation",     "Exif.Panasonic.Rotation",     "Exif.MinoltaCs5D.Rotation",
+      "Exif.MinoltaCs5D.Rotation2", "Exif.MinoltaCs7D.Rotation",   "Exif.Sony1MltCsA100.Rotation",
+      "Exif.Sony1Cs.Rotation",      "Exif.Sony2Cs.Rotation",       "Exif.Sony1Cs2.Rotation",
+      "Exif.Sony2Cs2.Rotation",     "Exif.Sony1MltCsA100.Rotation"};
   return findMetadatum(ed, keys, EXV_COUNTOF(keys));
 }
 
@@ -181,10 +182,11 @@ ExifData::const_iterator flashBias(const ExifData& ed) {
 }
 
 ExifData::const_iterator exposureMode(const ExifData& ed) {
-  static const char* keys[] = {"Exif.Photo.ExposureProgram",     "Exif.Image.ExposureProgram",       "Exif.CanonCs.ExposureProgram",
-                               "Exif.MinoltaCs7D.ExposureMode",  "Exif.MinoltaCs5D.ExposureMode",    "Exif.MinoltaCsNew.ExposureMode",
-                               "Exif.MinoltaCsOld.ExposureMode", "Exif.Sony1MltCsA100.ExposureMode", "Exif.Sony1Cs.ExposureProgram",
-                               "Exif.Sony2Cs.ExposureProgram",   "Exif.Sigma.ExposureMode"};
+  static const char* keys[] = {
+      "Exif.Photo.ExposureProgram",     "Exif.Image.ExposureProgram",       "Exif.CanonCs.ExposureProgram",
+      "Exif.MinoltaCs7D.ExposureMode",  "Exif.MinoltaCs5D.ExposureMode",    "Exif.MinoltaCsNew.ExposureMode",
+      "Exif.MinoltaCsOld.ExposureMode", "Exif.Sony1MltCsA100.ExposureMode", "Exif.Sony1Cs.ExposureProgram",
+      "Exif.Sony2Cs.ExposureProgram",   "Exif.Sigma.ExposureMode"};
   return findMetadatum(ed, keys, EXV_COUNTOF(keys));
 }
 
@@ -214,25 +216,27 @@ ExifData::const_iterator macroMode(const ExifData& ed) {
 }
 
 ExifData::const_iterator imageQuality(const ExifData& ed) {
-  static const char* keys[] = {
-      "Exif.CanonCs.Quality",     "Exif.Fujifilm.Quality",    "Exif.Sigma.Quality",          "Exif.Nikon1.Quality",
-      "Exif.Nikon2.Quality",      "Exif.Nikon3.Quality",      "Exif.Olympus.Quality",        "Exif.OlympusCs.Quality",
-      "Exif.Panasonic.Quality",   "Exif.Minolta.Quality",     "Exif.MinoltaCsNew.Quality",   "Exif.MinoltaCsOld.Quality",
-      "Exif.MinoltaCs5D.Quality", "Exif.MinoltaCs7D.Quality", "Exif.Sony1MltCsA100.Quality", "Exif.Sony1.JPEGQuality",
-      "Exif.Sony1.Quality",       "Exif.Sony1Cs.Quality",     "Exif.Sony2.JPEGQuality",      "Exif.Sony2.Quality",
-      "Exif.Sony2Cs.Quality",     "Exif.Casio.Quality",       "Exif.Casio2.QualityMode",     "Exif.Casio2.Quality"};
+  static const char* keys[] = {"Exif.CanonCs.Quality",     "Exif.Fujifilm.Quality",     "Exif.Sigma.Quality",
+                               "Exif.Nikon1.Quality",      "Exif.Nikon2.Quality",       "Exif.Nikon3.Quality",
+                               "Exif.Olympus.Quality",     "Exif.OlympusCs.Quality",    "Exif.Panasonic.Quality",
+                               "Exif.Minolta.Quality",     "Exif.MinoltaCsNew.Quality", "Exif.MinoltaCsOld.Quality",
+                               "Exif.MinoltaCs5D.Quality", "Exif.MinoltaCs7D.Quality",  "Exif.Sony1MltCsA100.Quality",
+                               "Exif.Sony1.JPEGQuality",   "Exif.Sony1.Quality",        "Exif.Sony1Cs.Quality",
+                               "Exif.Sony2.JPEGQuality",   "Exif.Sony2.Quality",        "Exif.Sony2Cs.Quality",
+                               "Exif.Casio.Quality",       "Exif.Casio2.QualityMode",   "Exif.Casio2.Quality"};
   return findMetadatum(ed, keys, EXV_COUNTOF(keys));
 }
 
 ExifData::const_iterator whiteBalance(const ExifData& ed) {
-  static const char* keys[] = {"Exif.CanonSi.WhiteBalance",      "Exif.Fujifilm.WhiteBalance",    "Exif.Sigma.WhiteBalance",
-                               "Exif.Nikon1.WhiteBalance",       "Exif.Nikon2.WhiteBalance",      "Exif.Nikon3.WhiteBalance",
-                               "Exif.Olympus.WhiteBalance",      "Exif.OlympusCs.WhiteBalance",   "Exif.Panasonic.WhiteBalance",
-                               "Exif.MinoltaCs5D.WhiteBalance",  "Exif.MinoltaCs7D.WhiteBalance", "Exif.MinoltaCsNew.WhiteBalance",
-                               "Exif.MinoltaCsOld.WhiteBalance", "Exif.Minolta.WhiteBalance",     "Exif.Sony1MltCsA100.WhiteBalance",
-                               "Exif.SonyMinolta.WhiteBalance",  "Exif.Sony1.WhiteBalance",       "Exif.Sony2.WhiteBalance",
-                               "Exif.Sony1.WhiteBalance2",       "Exif.Sony2.WhiteBalance2",      "Exif.Casio.WhiteBalance",
-                               "Exif.Casio2.WhiteBalance",       "Exif.Casio2.WhiteBalance2",     "Exif.Photo.WhiteBalance"};
+  static const char* keys[] = {
+      "Exif.CanonSi.WhiteBalance",      "Exif.Fujifilm.WhiteBalance",    "Exif.Sigma.WhiteBalance",
+      "Exif.Nikon1.WhiteBalance",       "Exif.Nikon2.WhiteBalance",      "Exif.Nikon3.WhiteBalance",
+      "Exif.Olympus.WhiteBalance",      "Exif.OlympusCs.WhiteBalance",   "Exif.Panasonic.WhiteBalance",
+      "Exif.MinoltaCs5D.WhiteBalance",  "Exif.MinoltaCs7D.WhiteBalance", "Exif.MinoltaCsNew.WhiteBalance",
+      "Exif.MinoltaCsOld.WhiteBalance", "Exif.Minolta.WhiteBalance",     "Exif.Sony1MltCsA100.WhiteBalance",
+      "Exif.SonyMinolta.WhiteBalance",  "Exif.Sony1.WhiteBalance",       "Exif.Sony2.WhiteBalance",
+      "Exif.Sony1.WhiteBalance2",       "Exif.Sony2.WhiteBalance2",      "Exif.Casio.WhiteBalance",
+      "Exif.Casio2.WhiteBalance",       "Exif.Casio2.WhiteBalance2",     "Exif.Photo.WhiteBalance"};
   return findMetadatum(ed, keys, EXV_COUNTOF(keys));
 }
 
@@ -248,29 +252,34 @@ ExifData::const_iterator lensName(const ExifData& ed) {
 }
 
 ExifData::const_iterator saturation(const ExifData& ed) {
-  static const char* keys[] = {"Exif.Photo.Saturation",        "Exif.CanonCs.Saturation",     "Exif.MinoltaCsNew.Saturation",
-                               "Exif.MinoltaCsOld.Saturation", "Exif.MinoltaCs7D.Saturation", "Exif.MinoltaCs5D.Saturation",
-                               "Exif.Fujifilm.Color",          "Exif.Nikon3.Saturation",      "Exif.Panasonic.Saturation",
-                               "Exif.Pentax.Saturation",       "Exif.PentaxDng.Saturation",   "Exif.Sigma.Saturation",
-                               "Exif.Casio.Saturation",        "Exif.Casio2.Saturation",      "Exif.Casio2.Saturation2"};
+  static const char* keys[] = {
+      "Exif.Photo.Saturation",        "Exif.CanonCs.Saturation",     "Exif.MinoltaCsNew.Saturation",
+      "Exif.MinoltaCsOld.Saturation", "Exif.MinoltaCs7D.Saturation", "Exif.MinoltaCs5D.Saturation",
+      "Exif.Fujifilm.Color",          "Exif.Nikon3.Saturation",      "Exif.Panasonic.Saturation",
+      "Exif.Pentax.Saturation",       "Exif.PentaxDng.Saturation",   "Exif.Sigma.Saturation",
+      "Exif.Casio.Saturation",        "Exif.Casio2.Saturation",      "Exif.Casio2.Saturation2"};
   return findMetadatum(ed, keys, EXV_COUNTOF(keys));
 }
 
 ExifData::const_iterator sharpness(const ExifData& ed) {
-  static const char* keys[] = {"Exif.Photo.Sharpness",        "Exif.CanonCs.Sharpness",       "Exif.Fujifilm.Sharpness",
-                               "Exif.MinoltaCsNew.Sharpness", "Exif.MinoltaCsOld.Sharpness",  "Exif.MinoltaCs7D.Sharpness",
-                               "Exif.MinoltaCs5D.Sharpness",  "Exif.Olympus.SharpnessFactor", "Exif.Panasonic.Sharpness",
-                               "Exif.Pentax.Sharpness",       "Exif.PentaxDng.Sharpness",     "Exif.Sigma.Sharpness",
-                               "Exif.Casio.Sharpness",        "Exif.Casio2.Sharpness",        "Exif.Casio2.Sharpness2"};
+  static const char* keys[] = {
+      "Exif.Photo.Sharpness",        "Exif.CanonCs.Sharpness",       "Exif.Fujifilm.Sharpness",
+      "Exif.MinoltaCsNew.Sharpness", "Exif.MinoltaCsOld.Sharpness",  "Exif.MinoltaCs7D.Sharpness",
+      "Exif.MinoltaCs5D.Sharpness",  "Exif.Olympus.SharpnessFactor", "Exif.Panasonic.Sharpness",
+      "Exif.Pentax.Sharpness",       "Exif.PentaxDng.Sharpness",     "Exif.Sigma.Sharpness",
+      "Exif.Casio.Sharpness",        "Exif.Casio2.Sharpness",        "Exif.Casio2.Sharpness2"};
   return findMetadatum(ed, keys, EXV_COUNTOF(keys));
 }
 
 ExifData::const_iterator contrast(const ExifData& ed) {
-  static const char* keys[] = {
-      "Exif.Photo.Contrast",        "Exif.CanonCs.Contrast",     "Exif.Fujifilm.Tone",        "Exif.MinoltaCsNew.Contrast",
-      "Exif.MinoltaCsOld.Contrast", "Exif.MinoltaCs7D.Contrast", "Exif.MinoltaCs5D.Contrast", "Exif.Olympus.Contrast",
-      "Exif.Panasonic.Contrast",    "Exif.Pentax.Contrast",      "Exif.PentaxDng.Contrast",   "Exif.Sigma.Contrast",
-      "Exif.Casio.Contrast",        "Exif.Casio2.Contrast",      "Exif.Casio2.Contrast2"
+  static const char* keys[] = {"Exif.Photo.Contrast",        "Exif.CanonCs.Contrast",
+                               "Exif.Fujifilm.Tone",         "Exif.MinoltaCsNew.Contrast",
+                               "Exif.MinoltaCsOld.Contrast", "Exif.MinoltaCs7D.Contrast",
+                               "Exif.MinoltaCs5D.Contrast",  "Exif.Olympus.Contrast",
+                               "Exif.Panasonic.Contrast",    "Exif.Pentax.Contrast",
+                               "Exif.PentaxDng.Contrast",    "Exif.Sigma.Contrast",
+                               "Exif.Casio.Contrast",        "Exif.Casio2.Contrast",
+                               "Exif.Casio2.Contrast2"
 
   };
   return findMetadatum(ed, keys, EXV_COUNTOF(keys));
@@ -333,11 +342,12 @@ ExifData::const_iterator maxApertureValue(const ExifData& ed) {
 }
 
 ExifData::const_iterator subjectDistance(const ExifData& ed) {
-  static const char* keys[] = {"Exif.Photo.SubjectDistance",      "Exif.Image.SubjectDistance",      "Exif.CanonSi.SubjectDistance",
-                               "Exif.CanonFi.FocusDistanceUpper", "Exif.CanonFi.FocusDistanceLower", "Exif.MinoltaCsNew.FocusDistance",
-                               "Exif.Nikon1.FocusDistance",       "Exif.Nikon3.FocusDistance",       "Exif.NikonLd2.FocusDistance",
-                               "Exif.NikonLd3.FocusDistance",     "Exif.Olympus.FocusDistance",      "Exif.OlympusFi.FocusDistance",
-                               "Exif.Casio.ObjectDistance",       "Exif.Casio2.ObjectDistance"};
+  static const char* keys[] = {
+      "Exif.Photo.SubjectDistance",      "Exif.Image.SubjectDistance",      "Exif.CanonSi.SubjectDistance",
+      "Exif.CanonFi.FocusDistanceUpper", "Exif.CanonFi.FocusDistanceLower", "Exif.MinoltaCsNew.FocusDistance",
+      "Exif.Nikon1.FocusDistance",       "Exif.Nikon3.FocusDistance",       "Exif.NikonLd2.FocusDistance",
+      "Exif.NikonLd3.FocusDistance",     "Exif.Olympus.FocusDistance",      "Exif.OlympusFi.FocusDistance",
+      "Exif.Casio.ObjectDistance",       "Exif.Casio2.ObjectDistance"};
   return findMetadatum(ed, keys, EXV_COUNTOF(keys));
 }
 
@@ -352,16 +362,17 @@ ExifData::const_iterator flash(const ExifData& ed) {
 }
 
 ExifData::const_iterator serialNumber(const ExifData& ed) {
-  static const char* keys[] = {"Exif.Image.CameraSerialNumber", "Exif.Canon.SerialNumber",    "Exif.Nikon3.SerialNumber",
-                               "Exif.Nikon3.SerialNO",          "Exif.Fujifilm.SerialNumber", "Exif.Olympus.SerialNumber2",
-                               "Exif.Sigma.SerialNumber"};
+  static const char* keys[] = {
+      "Exif.Image.CameraSerialNumber", "Exif.Canon.SerialNumber",    "Exif.Nikon3.SerialNumber", "Exif.Nikon3.SerialNO",
+      "Exif.Fujifilm.SerialNumber",    "Exif.Olympus.SerialNumber2", "Exif.Sigma.SerialNumber"};
   return findMetadatum(ed, keys, EXV_COUNTOF(keys));
 }
 
 ExifData::const_iterator focalLength(const ExifData& ed) {
-  static const char* keys[] = {"Exif.Photo.FocalLength",    "Exif.Image.FocalLength",     "Exif.Canon.FocalLength",
-                               "Exif.NikonLd2.FocalLength", "Exif.NikonLd3.FocalLength",  "Exif.MinoltaCsNew.FocalLength",
-                               "Exif.Pentax.FocalLength",   "Exif.PentaxDng.FocalLength", "Exif.Casio2.FocalLength"};
+  static const char* keys[] = {
+      "Exif.Photo.FocalLength",    "Exif.Image.FocalLength",     "Exif.Canon.FocalLength",
+      "Exif.NikonLd2.FocalLength", "Exif.NikonLd3.FocalLength",  "Exif.MinoltaCsNew.FocalLength",
+      "Exif.Pentax.FocalLength",   "Exif.PentaxDng.FocalLength", "Exif.Casio2.FocalLength"};
   return findMetadatum(ed, keys, EXV_COUNTOF(keys));
 }
 
@@ -411,4 +422,4 @@ ExifData::const_iterator afPoint(const ExifData& ed) {
   return findMetadatum(ed, keys, EXV_COUNTOF(keys));
 }
 
-} // namespace Exiv2
+}  // namespace Exiv2

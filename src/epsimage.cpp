@@ -51,13 +51,14 @@ const std::string dosEpsSignature = "\xC5\xD0\xD3\xC6";
 // first line of EPS
 const std::array<std::string, 3> epsFirstLine{
     "%!PS-Adobe-3.0 EPSF-3.0",
-    "%!PS-Adobe-3.0 EPSF-3.0 ", // OpenOffice
-    "%!PS-Adobe-3.1 EPSF-3.0", // Illustrator
+    "%!PS-Adobe-3.0 EPSF-3.0 ",  // OpenOffice
+    "%!PS-Adobe-3.1 EPSF-3.0",   // Illustrator
 };
 
 // blank EPS file
-const std::string epsBlank = "%!PS-Adobe-3.0 EPSF-3.0\n"
-                             "%%BoundingBox: 0 0 0 0\n";
+const std::string epsBlank =
+    "%!PS-Adobe-3.0 EPSF-3.0\n"
+    "%%BoundingBox: 0 0 0 0\n";
 
 // list of all valid XMP headers
 const std::string xmpHeaders[] = {
@@ -223,7 +224,8 @@ void findXmp(size_t& xmpPos, size_t& xmpSize, const byte* data, size_t startPos,
           }
 
           // search for end of XMP trailer
-          for (size_t trailerEndPos = trailerPos + trailer.size(); trailerEndPos + xmpTrailerEnd.size() <= size; trailerEndPos++) {
+          for (size_t trailerEndPos = trailerPos + trailer.size(); trailerEndPos + xmpTrailerEnd.size() <= size;
+               trailerEndPos++) {
             if (memcmp(data + trailerEndPos, xmpTrailerEnd.data(), xmpTrailerEnd.size()) == 0) {
               xmpSize = (trailerEndPos + xmpTrailerEnd.size()) - xmpPos;
               return;
@@ -264,7 +266,8 @@ void readWriteEpsMetadata(BasicIo& io, std::string& xmpPacket, NativePreviewList
   uint32_t sizeTiff = 0;
 
   // check for DOS EPS
-  const bool dosEps = (size >= dosEpsSignature.size() && memcmp(data, dosEpsSignature.data(), dosEpsSignature.size()) == 0);
+  const bool dosEps =
+      (size >= dosEpsSignature.size() && memcmp(data, dosEpsSignature.data(), dosEpsSignature.size()) == 0);
   if (dosEps) {
 #ifdef DEBUG
     EXV_DEBUG << "readWriteEpsMetadata: Found DOS EPS signature\n";
@@ -310,14 +313,16 @@ void readWriteEpsMetadata(BasicIo& io, std::string& xmpPacket, NativePreviewList
     }
     if (sizeWmf != 0 && (posWmf < 30 || posWmf + sizeWmf > size)) {
 #ifndef SUPPRESS_WARNINGS
-      EXV_WARNING << "DOS EPS file has invalid position (" << posWmf << ") or size (" << sizeWmf << ") for WMF section.\n";
+      EXV_WARNING << "DOS EPS file has invalid position (" << posWmf << ") or size (" << sizeWmf
+                  << ") for WMF section.\n";
 #endif
       if (write)
         throw Error(kerImageWriteFailed);
     }
     if (sizeTiff != 0 && (posTiff < 30 || posTiff + sizeTiff > size)) {
 #ifndef SUPPRESS_WARNINGS
-      EXV_WARNING << "DOS EPS file has invalid position (" << posTiff << ") or size (" << sizeTiff << ") for TIFF section.\n";
+      EXV_WARNING << "DOS EPS file has invalid position (" << posTiff << ") or size (" << sizeTiff
+                  << ") for TIFF section.\n";
 #endif
       if (write)
         throw Error(kerImageWriteFailed);
@@ -341,7 +346,6 @@ void readWriteEpsMetadata(BasicIo& io, std::string& xmpPacket, NativePreviewList
   }
   const std::string lineEnding(reinterpret_cast<const char*>(data + posEps + firstLine.size()),
                                posSecondLine - (posEps + firstLine.size()));
-
 
   // scan comments
   size_t posLanguageLevel = posEndEps;
@@ -418,7 +422,8 @@ void readWriteEpsMetadata(BasicIo& io, std::string& xmpPacket, NativePreviewList
     } else if (posPage != posEndEps && startsWith(line, "%%Page:")) {
       if (implicitPage) {
 #ifndef SUPPRESS_WARNINGS
-        EXV_WARNING << "Page at position " << startPos << " conflicts with implicit page at position: " << posPage << "\n";
+        EXV_WARNING << "Page at position " << startPos << " conflicts with implicit page at position: " << posPage
+                    << "\n";
 #endif
         throw Error(write ? kerImageWriteFailed : kerFailedToReadImageData);
       }
@@ -493,7 +498,7 @@ void readWriteEpsMetadata(BasicIo& io, std::string& xmpPacket, NativePreviewList
 #endif
     }
     if (!line.empty() && line[0] != '%')
-      continue; // performance optimization
+      continue;  // performance optimization
     if (line == "%%EOF" || line == "%%Trailer" || line == "%%PageTrailer") {
       if (posBeginPageSetup == posEndEps) {
         posBeginPageSetup = startPos;
@@ -591,10 +596,12 @@ void readWriteEpsMetadata(BasicIo& io, std::string& xmpPacket, NativePreviewList
     std::string line2;
     const size_t posLine2 = readPrevLine(line2, data, posLine1, posEndEps);
     size_t posXmpTrailer;
-    if (line1 == "[/EMC pdfmark") { // Exiftool style
+    if (line1 == "[/EMC pdfmark") {  // Exiftool style
       posXmpTrailer = posLine1;
-    } else if (line1 == "[/NamespacePop pdfmark" && line2 == "[{nextImage} 1 dict begin /Metadata {photoshop_metadata_stream} def "
-                                                             "currentdict end /PUT pdfmark") { // Photoshop style
+    } else if (line1 == "[/NamespacePop pdfmark" &&
+               line2 ==
+                   "[{nextImage} 1 dict begin /Metadata {photoshop_metadata_stream} def "
+                   "currentdict end /PUT pdfmark") {  // Photoshop style
       posXmpTrailer = posLine2;
     } else {
 #ifndef SUPPRESS_WARNINGS
@@ -647,7 +654,8 @@ void readWriteEpsMetadata(BasicIo& io, std::string& xmpPacket, NativePreviewList
     const size_t posLineAfterXmp = readLine(line, data, xmpPos + xmpSize, posEndEps);
     if (!line.empty()) {
 #ifndef SUPPRESS_WARNINGS
-      EXV_WARNING << "Unexpected " << line.size() << " bytes of data after XMP at position: " << (xmpPos + xmpSize) << "\n";
+      EXV_WARNING << "Unexpected " << line.size() << " bytes of data after XMP at position: " << (xmpPos + xmpSize)
+                  << "\n";
 #endif
     } else if (!deleteXmp) {
       readLine(line, data, posLineAfterXmp, posEndEps);
@@ -940,7 +948,8 @@ void readWriteEpsMetadata(BasicIo& io, std::string& xmpPacket, NativePreviewList
           if (pos == removableEmbedding.first) {
             skipPos = removableEmbedding.second;
 #ifdef DEBUG
-            EXV_DEBUG << "readWriteEpsMetadata: Skipping to " << skipPos << " at " << __FILE__ << ":" << __LINE__ << "\n";
+            EXV_DEBUG << "readWriteEpsMetadata: Skipping to " << skipPos << " at " << __FILE__ << ":" << __LINE__
+                      << "\n";
 #endif
             break;
           }
@@ -965,21 +974,24 @@ void readWriteEpsMetadata(BasicIo& io, std::string& xmpPacket, NativePreviewList
           writeTemp(*tempIo, "[/NamespacePush Exiv2_pdfmark" + lineEnding);
           writeTemp(*tempIo, "[/_objdef {Exiv2_metadata_stream} /type /stream /OBJ Exiv2_pdfmark" + lineEnding);
           writeTemp(*tempIo, "[{Exiv2_metadata_stream} 2 dict begin" + lineEnding);
-          writeTemp(*tempIo, "    /Type /Metadata def /Subtype /XML def currentdict end /PUT Exiv2_pdfmark" + lineEnding);
+          writeTemp(*tempIo,
+                    "    /Type /Metadata def /Subtype /XML def currentdict end /PUT Exiv2_pdfmark" + lineEnding);
           writeTemp(*tempIo, "[{Exiv2_metadata_stream}" + lineEnding);
           writeTemp(*tempIo, "    currentfile 0 (% &&end XMP packet marker&&)" + lineEnding);
           writeTemp(*tempIo, "    /SubFileDecode filter Exiv2_metafile_pdfmark" + lineEnding);
           if (posBeginPhotoshop != posEndEps) {
-            writeTemp(*tempIo, "%Exiv2Notice: The following line is needed by Photoshop. "
-                               "Parameter must be exact size of XMP metadata." +
-                                   lineEnding);
+            writeTemp(*tempIo,
+                      "%Exiv2Notice: The following line is needed by Photoshop. "
+                      "Parameter must be exact size of XMP metadata." +
+                          lineEnding);
             writeTemp(*tempIo, "%begin_xml_packet: " + toString(xmpPacket.size()) + lineEnding);
           }
           writeTemp(*tempIo, xmpPacket);
           writeTemp(*tempIo, lineEnding);
           writeTemp(*tempIo, "% &&end XMP packet marker&&" + lineEnding);
           writeTemp(*tempIo, "[/Document 1 dict begin" + lineEnding);
-          writeTemp(*tempIo, "    /Metadata {Exiv2_metadata_stream} def currentdict end /BDC Exiv2_pdfmark" + lineEnding);
+          writeTemp(*tempIo,
+                    "    /Metadata {Exiv2_metadata_stream} def currentdict end /BDC Exiv2_pdfmark" + lineEnding);
           if (posBeginPhotoshop != posEndEps) {
             writeTemp(*tempIo, "%Exiv2Notice: The following line is needed by Photoshop." + lineEnding);
             writeTemp(*tempIo, "%end_xml_code" + lineEnding);
@@ -1001,7 +1013,8 @@ void readWriteEpsMetadata(BasicIo& io, std::string& xmpPacket, NativePreviewList
           if (!implicitPageTrailer) {
             skipPos = posLineEnd;
 #ifdef DEBUG
-            EXV_DEBUG << "readWriteEpsMetadata: Skipping to " << skipPos << " at " << __FILE__ << ":" << __LINE__ << "\n";
+            EXV_DEBUG << "readWriteEpsMetadata: Skipping to " << skipPos << " at " << __FILE__ << ":" << __LINE__
+                      << "\n";
 #endif
           }
           writeTemp(*tempIo, "%%PageTrailer" + lineEnding);
@@ -1052,15 +1065,15 @@ void readWriteEpsMetadata(BasicIo& io, std::string& xmpPacket, NativePreviewList
     io.close();
     io.transfer(*tempIo);
   }
-} // readWriteEpsMetadata
+}  // readWriteEpsMetadata
 
-} // namespace
+}  // namespace
 
 // *****************************************************************************
 namespace Exiv2 {
 
 EpsImage::EpsImage(BasicIo::UniquePtr io, bool create) : Image(ImageType::eps, mdXmp, std::move(io)) {
-  //LogMsg::setLevel(LogMsg::debug);
+  // LogMsg::setLevel(LogMsg::debug);
   if (create) {
     if (io_->open() == 0) {
 #ifdef DEBUG
@@ -1132,4 +1145,4 @@ bool isEpsType(BasicIo& iIo, bool advance) {
   return matched;
 }
 
-} // namespace Exiv2
+}  // namespace Exiv2

@@ -35,7 +35,7 @@ namespace Exiv2 {
 
 // Add PNG to the supported image formats
 namespace ImageType {
-const int png = 6; //!< PNG image type (see class PngImage)
+const int png = 6;  //!< PNG image type (see class PngImage)
 }
 
 /*!
@@ -43,7 +43,7 @@ const int png = 6; //!< PNG image type (see class PngImage)
       directly.
   */
 class EXIV2API PngImage : public Image {
-public:
+ public:
   //! @name Creators
   //@{
   /*!
@@ -80,10 +80,10 @@ public:
   PngImage& operator=(const PngImage& rhs) = delete;
   //@}
 
-private:
+ private:
   std::string profileName_;
 
-}; // class PngImage
+};  // class PngImage
 
 // *****************************************************************************
 // template, inline and free functions
@@ -100,6 +100,6 @@ EXIV2API Image::UniquePtr newPngInstance(BasicIo::UniquePtr io, bool create);
 //! Check if the file iIo is a PNG image.
 EXIV2API bool isPngType(BasicIo& iIo, bool advance);
 
-} // namespace Exiv2
+}  // namespace Exiv2
 
-#endif // #ifndef PNGIMAGE_HPP_
+#endif  // #ifndef PNGIMAGE_HPP_

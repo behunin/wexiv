@@ -35,14 +35,14 @@ namespace Exiv2 {
 
 // Add WEBP to the supported image formats
 namespace ImageType {
-const int webp = 23; //!< Treating webp as an image type>
+const int webp = 23;  //!< Treating webp as an image type>
 }
 
 /*!
   @brief Class to access WEBP video files.
   */
 class EXIV2API WebPImage : public Image {
-public:
+ public:
   //! @name Creators
   //@{
   /*!
@@ -74,7 +74,7 @@ public:
   WebPImage& operator=(const WebPImage& rhs) = delete;
   //@}
 
-private:
+ private:
   void doWriteMetadata(BasicIo& outIo);
   //! @name NOT Implemented
   //@{
@@ -99,7 +99,7 @@ private:
   static const char* const WEBP_CHUNK_HEADER_EXIF;
   static const char* const WEBP_CHUNK_HEADER_XMP;
 
-}; //Class WebPImage
+};  // Class WebPImage
 
 // *****************************************************************************
 // template, inline and free functions
@@ -116,6 +116,6 @@ EXIV2API Image::UniquePtr newWebPInstance(BasicIo::UniquePtr io, bool create);
 //! Check if the file iIo is a WebP Video.
 EXIV2API bool isWebPType(BasicIo& iIo, bool advance);
 
-} // namespace Exiv2
+}  // namespace Exiv2
 
-#endif // WEBPIMAGE_HPP
+#endif  // WEBPIMAGE_HPP

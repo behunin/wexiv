@@ -34,7 +34,7 @@ namespace Internal {
         class to decode and encode PNG-based data.
 */
 class PngChunk {
-public:
+ public:
   /*!
     @brief Text Chunk types.
   */
@@ -69,7 +69,6 @@ public:
   */
   static DataBuf decodeTXTChunk(const DataBuf& data, TxtChunkType type);
 
-
   /*!
     @brief Return PNG TXT chunk key as data buffer.
 
@@ -88,7 +87,7 @@ public:
   */
   static std::string makeMetadataChunk(const std::string& metadata, MetadataId type);
 
-private:
+ private:
   /*!
     @brief Parse PNG Text chunk to determine type and extract content.
           Supported Chunk types are tTXt, zTXt, and iTXt.
@@ -145,9 +144,9 @@ private:
 
   friend class Exiv2::PngImage;
 
-}; // class PngChunk
+};  // class PngChunk
 
-} // namespace Internal
-} // namespace Exiv2
+}  // namespace Internal
+}  // namespace Exiv2
 
-#endif // #ifndef PNGCHUNK_INT_HPP_
+#endif  // #ifndef PNGCHUNK_INT_HPP_

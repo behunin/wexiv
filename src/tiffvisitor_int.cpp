@@ -19,19 +19,19 @@
  */
 // *****************************************************************************
 // included header files
-#include "tiffvisitor_int.hpp" // see bug #487
+#include "tiffvisitor_int.hpp"  // see bug #487
 
 #include "config.h"
 #include "enforce.hpp"
 #include "exif.hpp"
-#include "i18n.h" // NLS support.
+#include "i18n.h"  // NLS support.
 #include "image.hpp"
 #include "image_int.hpp"
 #include "iptc.hpp"
 #include "jpgimage.hpp"
 #include "makernote_int.hpp"
 #include "sonymn_int.hpp"
-#include "tiffcomposite_int.hpp" // Do not change the order of these 2 includes,
+#include "tiffcomposite_int.hpp"  // Do not change the order of these 2 includes,
 #include "tiffimage_int.hpp"
 #include "value.hpp"
 
@@ -39,17 +39,20 @@
 namespace {
 //! Unary predicate that matches an Exifdatum with a given group and index.
 class FindExifdatum2 {
-public:
+ public:
   //! Constructor, initializes the object with the group and index to look for.
-  FindExifdatum2(Exiv2::Internal::IfdId group, int idx) : groupName_(Exiv2::Internal::groupName(group)), idx_(idx) {}
+  FindExifdatum2(Exiv2::Internal::IfdId group, int idx) : groupName_(Exiv2::Internal::groupName(group)), idx_(idx) {
+  }
   //! Returns true if group and index match.
-  bool operator()(const Exiv2::Exifdatum& md) const { return idx_ == md.idx() && 0 == strcmp(md.groupName().c_str(), groupName_); }
+  bool operator()(const Exiv2::Exifdatum& md) const {
+    return idx_ == md.idx() && 0 == strcmp(md.groupName().c_str(), groupName_);
+  }
 
-private:
+ private:
   const char* groupName_;
   int idx_;
 
-}; // class FindExifdatum2
+};  // class FindExifdatum2
 
 Exiv2::ByteOrder stringToByteOrder(const std::string& val) {
   Exiv2::ByteOrder bo = Exiv2::invalidByteOrder;
@@ -60,7 +63,7 @@ Exiv2::ByteOrder stringToByteOrder(const std::string& val) {
 
   return bo;
 }
-} // namespace
+}  // namespace
 
 // *****************************************************************************
 // class member definitions
@@ -187,9 +190,14 @@ void TiffCopier::visitBinaryElement(TiffBinaryElement* object) {
   copyObject(object);
 }
 
-TiffDecoder::TiffDecoder(
-    emscripten::val& exifData, emscripten::val& iptcData, emscripten::val& xmpData, TiffComponent* const pRoot, FindDecoderFct findDecoderFct)
-  : exifData_(exifData), iptcData_(iptcData), xmpData_(xmpData), pRoot_(pRoot), findDecoderFct_(findDecoderFct), decodedIptc_(false) {
+TiffDecoder::TiffDecoder(emscripten::val& exifData, emscripten::val& iptcData, emscripten::val& xmpData,
+                         TiffComponent* const pRoot, FindDecoderFct findDecoderFct) :
+    exifData_(exifData),
+    iptcData_(iptcData),
+    xmpData_(xmpData),
+    pRoot_(pRoot),
+    findDecoderFct_(findDecoderFct),
+    decodedIptc_(false) {
   assert(pRoot != 0);
 
   // #1402 Fujifilm RAF. Search for the make
@@ -283,7 +291,8 @@ void TiffDecoder::decodeXmp(const TiffEntryBase* object) {
     std::string::size_type idx = xmpPacket.find_first_of('<');
     if (idx != std::string::npos && idx > 0) {
 #ifndef SUPPRESS_WARNINGS
-      EXV_WARNING << "Removing " << static_cast<unsigned long>(idx) << " characters from the beginning of the XMP packet\n";
+      EXV_WARNING << "Removing " << static_cast<unsigned long>(idx)
+                  << " characters from the beginning of the XMP packet\n";
 #endif
       xmpPacket = xmpPacket.substr(idx);
     }
@@ -293,7 +302,7 @@ void TiffDecoder::decodeXmp(const TiffEntryBase* object) {
 #endif
     }
   }
-} // TiffDecoder::decodeXmp
+}  // TiffDecoder::decodeXmp
 
 void TiffDecoder::decodeIptc(const TiffEntryBase* object) {
   // add Exif tag anyway
@@ -341,7 +350,7 @@ void TiffDecoder::decodeIptc(const TiffEntryBase* object) {
 
 #endif
   }
-} // TiffMetadataDecoder::decodeIptc
+}  // TiffMetadataDecoder::decodeIptc
 
 static const TagInfo* findTag(const TagInfo* pList, uint16_t tag) {
   while (pList->tag_ != 0xffff && pList->tag_ != tag)
@@ -353,7 +362,7 @@ void TiffDecoder::decodeCanonAFInfo(const TiffEntryBase* object) {
   // report Exif.Canon.AFInfo as usual
   TiffDecoder::decodeStdTiffEntry(object);
   if (object->pValue()->count() < 3 || object->pValue()->typeId() != unsignedShort)
-    return; // insufficient data
+    return;  // insufficient data
 
   // create vector of signedShorts from unsignedShorts in Exif.Canon.AFInfo
   std::vector<int16_t> ints;
@@ -377,21 +386,21 @@ void TiffDecoder::decodeCanonAFInfo(const TiffEntryBase* object) {
     uint16_t size;
     bool bSigned;
   } records[] = {
-      {0x2600, 1, true}, // AFInfoSize
-      {0x2601, 1, true}, // AFAreaMode
-      {0x2602, 1, true}, // AFNumPoints
-      {0x2603, 1, true}, // AFValidPoints
-      {0x2604, 1, true}, // AFCanonImageWidth
-      {0x2605, 1, true}, // AFCanonImageHeight
-      {0x2606, 1, true}, // AFImageWidth"
-      {0x2607, 1, true}, // AFImageHeight
-      {0x2608, nPoints, true}, // AFAreaWidths
-      {0x2609, nPoints, true}, // AFAreaHeights
-      {0x260a, nPoints, true}, // AFXPositions
-      {0x260b, nPoints, true}, // AFYPositions
-      {0x260c, nMasks, false}, // AFPointsInFocus
-      {0x260d, nMasks, false}, // AFPointsSelected
-      {0x260e, nMasks, false}, // AFPointsUnusable
+      {0x2600, 1, true},        // AFInfoSize
+      {0x2601, 1, true},        // AFAreaMode
+      {0x2602, 1, true},        // AFNumPoints
+      {0x2603, 1, true},        // AFValidPoints
+      {0x2604, 1, true},        // AFCanonImageWidth
+      {0x2605, 1, true},        // AFCanonImageHeight
+      {0x2606, 1, true},        // AFImageWidth"
+      {0x2607, 1, true},        // AFImageHeight
+      {0x2608, nPoints, true},  // AFAreaWidths
+      {0x2609, nPoints, true},  // AFAreaHeights
+      {0x260a, nPoints, true},  // AFXPositions
+      {0x260b, nPoints, true},  // AFYPositions
+      {0x260c, nMasks, false},  // AFPointsInFocus
+      {0x260d, nMasks, false},  // AFPointsSelected
+      {0x260e, nMasks, false},  // AFPointsUnusable
   };
   // check we have enough data!
   uint16_t count = 0;
@@ -433,7 +442,7 @@ void TiffDecoder::decodeTiffEntry(const TiffEntryBase* object) {
   if (decoderFct) {
     EXV_CALL_MEMBER_FN(*this, decoderFct)(object);
   }
-} // TiffDecoder::decodeTiffEntry
+}  // TiffDecoder::decodeTiffEntry
 
 void TiffDecoder::decodeStdTiffEntry(const TiffEntryBase* object) {
   assert(object != 0);
@@ -441,7 +450,7 @@ void TiffDecoder::decodeStdTiffEntry(const TiffEntryBase* object) {
   key.setIdx(object->idx());
   exifData_.set(key.key(), object->pValue()->toString());
 
-} // TiffDecoder::decodeTiffEntry
+}  // TiffDecoder::decodeTiffEntry
 
 void TiffDecoder::visitBinaryArray(TiffBinaryArray* object) {
   if (object->cfg() == nullptr || !object->decoded()) {
@@ -453,13 +462,19 @@ void TiffDecoder::visitBinaryElement(TiffBinaryElement* object) {
   decodeTiffEntry(object);
 }
 
-TiffReader::TiffReader(const byte* pData, uint32_t size, TiffComponent* pRoot, TiffRwState state)
-  : pData_(pData), size_(size), pLast_(pData + size), pRoot_(pRoot), origState_(state), mnState_(state), postProc_(false) {
+TiffReader::TiffReader(const byte* pData, uint32_t size, TiffComponent* pRoot, TiffRwState state) :
+    pData_(pData),
+    size_(size),
+    pLast_(pData + size),
+    pRoot_(pRoot),
+    origState_(state),
+    mnState_(state),
+    postProc_(false) {
   pState_ = &origState_;
   assert(pData_);
   assert(size_ > 0);
 
-} // TiffReader::TiffReader
+}  // TiffReader::TiffReader
 
 void TiffReader::setOrigState() {
   pState_ = &origState_;
@@ -527,7 +542,8 @@ bool TiffReader::circularReference(const byte* start, IfdId group) {
   DirList::const_iterator pos = dirList_.find(start);
   if (pos != dirList_.end()) {
 #ifndef SUPPRESS_WARNINGS
-    EXV_ERROR << groupName(group) << " pointer references previously read " << groupName(pos->second) << " directory; ignored.\n";
+    EXV_ERROR << groupName(group) << " pointer references previously read " << groupName(pos->second)
+              << " directory; ignored.\n";
 #endif
     return true;
   }
@@ -540,7 +556,7 @@ int TiffReader::nextIdx(IfdId group) {
 }
 
 void TiffReader::postProcess() {
-  setMnState(); // All components to be post-processed must be from the Makernote
+  setMnState();  // All components to be post-processed must be from the Makernote
   postProc_ = true;
   for (auto&& pos : postList_) {
     pos->accept(*this);
@@ -569,14 +585,16 @@ void TiffReader::visitDirectory(TiffDirectory* object) {
   // Sanity check with an "unreasonably" large number
   if (n > 256) {
 #ifndef SUPPRESS_WARNINGS
-    EXV_ERROR << "Directory " << groupName(object->group()) << " with " << n << " entries considered invalid; not read.\n";
+    EXV_ERROR << "Directory " << groupName(object->group()) << " with " << n
+              << " entries considered invalid; not read.\n";
 #endif
     return;
   }
   for (uint16_t i = 0; i < n; ++i) {
     if (p + 12 > pLast_) {
 #ifndef SUPPRESS_WARNINGS
-      EXV_ERROR << "Directory " << groupName(object->group()) << ": IFD entry " << i << " lies outside of the data buffer.\n";
+      EXV_ERROR << "Directory " << groupName(object->group()) << ": IFD entry " << i
+                << " lies outside of the data buffer.\n";
 #endif
       return;
     }
@@ -596,7 +614,8 @@ void TiffReader::visitDirectory(TiffDirectory* object) {
   if (object->hasNext()) {
     if (p + 4 > pLast_) {
 #ifndef SUPPRESS_WARNINGS
-      EXV_ERROR << "Directory " << groupName(object->group()) << ": IFD exceeds data buffer, cannot read next pointer.\n";
+      EXV_ERROR << "Directory " << groupName(object->group())
+                << ": IFD exceeds data buffer, cannot read next pointer.\n";
 #endif
       return;
     }
@@ -620,9 +639,9 @@ void TiffReader::visitDirectory(TiffDirectory* object) {
       tc->setStart(pData_ + baseOffset() + next);
       object->addNext(std::move(tc));
     }
-  } // object->hasNext()
+  }  // object->hasNext()
 
-} // TiffReader::visitDirectory
+}  // TiffReader::visitDirectory
 
 void TiffReader::visitSubIfd(TiffSubIfd* object) {
   assert(object != 0);
@@ -638,15 +657,15 @@ void TiffReader::visitSubIfd(TiffSubIfd* object) {
       uint32_t offset = getLong(object->pData() + 4 * i, byteOrder());
       if (baseOffset() + offset > size_) {
 #ifndef SUPPRESS_WARNINGS
-        EXV_ERROR << "Directory " << groupName(object->group()) << ", entry 0x" << std::setw(4) << std::setfill('0') << std::hex
-                  << object->tag() << " Sub-IFD pointer " << i << " is out of bounds; ignoring it.\n";
+        EXV_ERROR << "Directory " << groupName(object->group()) << ", entry 0x" << std::setw(4) << std::setfill('0')
+                  << std::hex << object->tag() << " Sub-IFD pointer " << i << " is out of bounds; ignoring it.\n";
 #endif
         return;
       }
       if (i >= maxi) {
 #ifndef SUPPRESS_WARNINGS
-        EXV_WARNING << "Directory " << groupName(object->group()) << ", entry 0x" << std::setw(4) << std::setfill('0') << std::hex
-                    << object->tag() << ": Skipping sub-IFDs beyond the first " << i << ".\n";
+        EXV_WARNING << "Directory " << groupName(object->group()) << ", entry 0x" << std::setw(4) << std::setfill('0')
+                    << std::hex << object->tag() << ": Skipping sub-IFDs beyond the first " << i << ".\n";
 #endif
         break;
       }
@@ -658,12 +677,12 @@ void TiffReader::visitSubIfd(TiffSubIfd* object) {
   }
 #ifndef SUPPRESS_WARNINGS
   else {
-    EXV_WARNING << "Directory " << groupName(object->group()) << ", entry 0x" << std::setw(4) << std::setfill('0') << std::hex
-                << object->tag() << " doesn't look like a sub-IFD.\n";
+    EXV_WARNING << "Directory " << groupName(object->group()) << ", entry 0x" << std::setw(4) << std::setfill('0')
+                << std::hex << object->tag() << " doesn't look like a sub-IFD.\n";
   }
 #endif
 
-} // TiffReader::visitSubIfd
+}  // TiffReader::visitSubIfd
 
 void TiffReader::visitMnEntry(TiffMnEntry* object) {
   assert(object != 0);
@@ -677,17 +696,18 @@ void TiffReader::visitMnEntry(TiffMnEntry* object) {
   if (te && te->pValue()) {
     make = te->pValue()->toString();
     // create concrete makernote, based on make and makernote contents
-    object->mn_ = TiffMnCreator::create(object->tag(), object->mnGroup_, make, object->pData_, object->size_, byteOrder());
+    object->mn_ =
+        TiffMnCreator::create(object->tag(), object->mnGroup_, make, object->pData_, object->size_, byteOrder());
   }
   if (object->mn_)
     object->mn_->setStart(object->pData());
 
-} // TiffReader::visitMnEntry
+}  // TiffReader::visitMnEntry
 
 void TiffReader::visitIfdMakernote(TiffIfdMakernote* object) {
   assert(object != 0);
 
-  object->setImageByteOrder(byteOrder()); // set the byte order for the image
+  object->setImageByteOrder(byteOrder());  // set the byte order for the image
 
   if (!object->readHeader(object->start(), static_cast<uint32_t>(pLast_ - object->start()), byteOrder())) {
 #ifndef SUPPRESS_WARNINGS
@@ -696,8 +716,8 @@ void TiffReader::visitIfdMakernote(TiffIfdMakernote* object) {
     if (static_cast<uint32_t>(pLast_ - object->start()) >= 16) {
       hexdump(std::cerr, object->start(), 16);
     }
-#endif // EXIV2_DEBUG_MESSAGES
-#endif // SUPPRESS_WARNINGS
+#endif  // EXIV2_DEBUG_MESSAGES
+#endif  // SUPPRESS_WARNINGS
     setGo(geKnownMakernote, false);
     return;
   }
@@ -709,12 +729,12 @@ void TiffReader::visitIfdMakernote(TiffIfdMakernote* object) {
   TiffRwState state(object->byteOrder(), object->baseOffset());
   setMnState(&state);
 
-} // TiffReader::visitIfdMakernote
+}  // TiffReader::visitIfdMakernote
 
 void TiffReader::visitIfdMakernoteEnd(TiffIfdMakernote* /*object*/) {
   // Reset state (byte order, create function, offset) back to that for the image
   setOrigState();
-} // TiffReader::visitIfdMakernoteEnd
+}  // TiffReader::visitIfdMakernoteEnd
 
 void TiffReader::readTiffEntry(TiffEntryBase* object) {
   assert(object != 0);
@@ -724,7 +744,8 @@ void TiffReader::readTiffEntry(TiffEntryBase* object) {
 
   if (p + 12 > pLast_) {
 #ifndef SUPPRESS_WARNINGS
-    EXV_ERROR << "Entry in directory " << groupName(object->group()) << "requests access to memory beyond the data buffer. "
+    EXV_ERROR << "Entry in directory " << groupName(object->group())
+              << "requests access to memory beyond the data buffer. "
               << "Skipping entry.\n";
 #endif
     return;
@@ -736,8 +757,9 @@ void TiffReader::readTiffEntry(TiffEntryBase* object) {
   long typeSize = TypeInfo::typeSize(typeId);
   if (0 == typeSize) {
 #ifndef SUPPRESS_WARNINGS
-    EXV_WARNING << "Directory " << groupName(object->group()) << ", entry 0x" << std::setw(4) << std::setfill('0') << std::hex
-                << object->tag() << " has unknown Exif (TIFF) type " << std::dec << tiffType << "; setting type size 1.\n";
+    EXV_WARNING << "Directory " << groupName(object->group()) << ", entry 0x" << std::setw(4) << std::setfill('0')
+                << std::hex << object->tag() << " has unknown Exif (TIFF) type " << std::dec << tiffType
+                << "; setting type size 1.\n";
 #endif
     typeSize = 1;
   }
@@ -745,13 +767,14 @@ void TiffReader::readTiffEntry(TiffEntryBase* object) {
   uint32_t count = getULong(p, byteOrder());
   if (count >= 0x10000000) {
 #ifndef SUPPRESS_WARNINGS
-    EXV_ERROR << "Directory " << groupName(object->group()) << ", entry 0x" << std::setw(4) << std::setfill('0') << std::hex
-              << object->tag() << " has invalid size " << std::dec << count << "*" << typeSize << "; skipping entry.\n";
+    EXV_ERROR << "Directory " << groupName(object->group()) << ", entry 0x" << std::setw(4) << std::setfill('0')
+              << std::hex << object->tag() << " has invalid size " << std::dec << count << "*" << typeSize
+              << "; skipping entry.\n";
 #endif
     return;
   }
   p += 4;
-  uint32_t isize = 0; // size of Exif.Sony1.PreviewImage
+  uint32_t isize = 0;  // size of Exif.Sony1.PreviewImage
 
   if (count > std::numeric_limits<uint32_t>::max() / typeSize) {
     throw Error(kerArithmeticOverflow);
@@ -765,9 +788,10 @@ void TiffReader::readTiffEntry(TiffEntryBase* object) {
       isize = size;
     } else {
 #ifndef SUPPRESS_WARNINGS
-      EXV_ERROR << "Offset of directory " << groupName(object->group()) << ", entry 0x" << std::setw(4) << std::setfill('0')
-                << std::hex << object->tag() << " is out of bounds: "
-                << "Offset = 0x" << std::setw(8) << std::setfill('0') << std::hex << offset << "; truncating the entry\n";
+      EXV_ERROR << "Offset of directory " << groupName(object->group()) << ", entry 0x" << std::setw(4)
+                << std::setfill('0') << std::hex << object->tag() << " is out of bounds: "
+                << "Offset = 0x" << std::setw(8) << std::setfill('0') << std::hex << offset
+                << "; truncating the entry\n";
 #endif
     }
     size = 0;
@@ -775,10 +799,11 @@ void TiffReader::readTiffEntry(TiffEntryBase* object) {
   if (size > 4) {
     // setting pData to pData_ + baseOffset() + offset can result in pData pointing to invalid memory,
     // as offset can be arbitrarily large
-    if ((static_cast<uintptr_t>(baseOffset()) > std::numeric_limits<uintptr_t>::max() - static_cast<uintptr_t>(offset)) ||
+    if ((static_cast<uintptr_t>(baseOffset()) >
+         std::numeric_limits<uintptr_t>::max() - static_cast<uintptr_t>(offset)) ||
         (static_cast<uintptr_t>(baseOffset() + offset) >
          std::numeric_limits<uintptr_t>::max() - reinterpret_cast<uintptr_t>(pData_))) {
-      throw Error(kerCorruptedMetadata); // #562 don't throw kerArithmeticOverflow
+      throw Error(kerCorruptedMetadata);  // #562 don't throw kerArithmeticOverflow
     }
     if (pData_ + static_cast<uintptr_t>(baseOffset()) + static_cast<uintptr_t>(offset) > pLast_) {
       throw Error(kerCorruptedMetadata);
@@ -789,9 +814,10 @@ void TiffReader::readTiffEntry(TiffEntryBase* object) {
     if (size > static_cast<uint32_t>(pLast_ - pData)) {
 #ifndef SUPPRESS_WARNINGS
       EXV_ERROR << "Upper boundary of data for "
-                << "directory " << groupName(object->group()) << ", entry 0x" << std::setw(4) << std::setfill('0') << std::hex
-                << object->tag() << " is out of bounds: "
-                << "Offset = 0x" << std::setw(8) << std::setfill('0') << std::hex << offset << ", size = " << std::dec << size
+                << "directory " << groupName(object->group()) << ", entry 0x" << std::setw(4) << std::setfill('0')
+                << std::hex << object->tag() << " is out of bounds: "
+                << "Offset = 0x" << std::setw(8) << std::setfill('0') << std::hex << offset << ", size = " << std::dec
+                << size
                 << ", exceeds buffer size by "
                 // cast to make MSVC happy
                 << static_cast<uint32_t>(pData + size - pLast_) << " Bytes; truncating the entry\n";
@@ -816,7 +842,7 @@ void TiffReader::readTiffEntry(TiffEntryBase* object) {
   object->setOffset(offset);
   object->setIdx(nextIdx(object->group()));
 
-} // TiffReader::readTiffEntry
+}  // TiffReader::readTiffEntry
 
 void TiffReader::visitBinaryArray(TiffBinaryArray* object) {
   assert(object != 0);
@@ -835,8 +861,9 @@ void TiffReader::visitBinaryArray(TiffBinaryArray* object) {
   auto te = dynamic_cast<TiffEntryBase*>(finder.result());
   if (te && te->idx() != object->idx()) {
 #ifndef SUPPRESS_WARNINGS
-    EXV_WARNING << "Not decoding duplicate binary array tag 0x" << std::setw(4) << std::setfill('0') << std::hex << object->tag()
-                << std::dec << ", group " << groupName(object->group()) << ", idx " << object->idx() << "\n";
+    EXV_WARNING << "Not decoding duplicate binary array tag 0x" << std::setw(4) << std::setfill('0') << std::hex
+                << object->tag() << std::dec << ", group " << groupName(object->group()) << ", idx " << object->idx()
+                << "\n";
 #endif
     object->setDecoded(false);
     return;
@@ -892,10 +919,10 @@ void TiffReader::visitBinaryArray(TiffBinaryArray* object) {
         }
       }
     }
-    idx += object->addElement(idx, *def); // idx may be different from def->idx_
+    idx += object->addElement(idx, *def);  // idx may be different from def->idx_
   }
 
-} // TiffReader::visitBinaryArray
+}  // TiffReader::visitBinaryArray
 
 void TiffReader::visitBinaryElement(TiffBinaryElement* object) {
   byte* pData = object->start();
@@ -912,7 +939,7 @@ void TiffReader::visitBinaryElement(TiffBinaryElement* object) {
   object->setOffset(0);
   object->setIdx(nextIdx(object->group()));
 
-} // TiffReader::visitBinaryElement
+}  // TiffReader::visitBinaryElement
 
-} // namespace Internal
-} // namespace Exiv2
+}  // namespace Internal
+}  // namespace Exiv2

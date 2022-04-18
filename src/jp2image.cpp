@@ -33,31 +33,31 @@
 #include "types.hpp"
 
 // JPEG-2000 box types
-const uint32_t kJp2BoxTypeJp2Header = 0x6a703268; // 'jp2h'
-const uint32_t kJp2BoxTypeImageHeader = 0x69686472; // 'ihdr'
-const uint32_t kJp2BoxTypeColorHeader = 0x636f6c72; // 'colr'
-const uint32_t kJp2BoxTypeUuid = 0x75756964; // 'uuid'
-const uint32_t kJp2BoxTypeClose = 0x6a703263; // 'jp2c'
+const uint32_t kJp2BoxTypeJp2Header = 0x6a703268;    // 'jp2h'
+const uint32_t kJp2BoxTypeImageHeader = 0x69686472;  // 'ihdr'
+const uint32_t kJp2BoxTypeColorHeader = 0x636f6c72;  // 'colr'
+const uint32_t kJp2BoxTypeUuid = 0x75756964;         // 'uuid'
+const uint32_t kJp2BoxTypeClose = 0x6a703263;        // 'jp2c'
 
 // from openjpeg-2.1.2/src/lib/openjp2/jp2.h
 /*#define JPIP_JPIP 0x6a706970*/
 
-#define JP2_JP 0x6a502020 /**< JPEG 2000 signature box */
+#define JP2_JP 0x6a502020   /**< JPEG 2000 signature box */
 #define JP2_FTYP 0x66747970 /**< File type box */
 #define JP2_JP2H 0x6a703268 /**< JP2 header box (super-box) */
 #define JP2_IHDR 0x69686472 /**< Image header box */
 #define JP2_COLR 0x636f6c72 /**< Colour specification box */
 #define JP2_JP2C 0x6a703263 /**< Contiguous codestream box */
-#define JP2_URL 0x75726c20 /**< Data entry URL box */
+#define JP2_URL 0x75726c20  /**< Data entry URL box */
 #define JP2_PCLR 0x70636c72 /**< Palette box */
 #define JP2_CMAP 0x636d6170 /**< Component Mapping box */
 #define JP2_CDEF 0x63646566 /**< Channel Definition box */
 #define JP2_DTBL 0x6474626c /**< Data Reference box */
 #define JP2_BPCC 0x62706363 /**< Bits per component box */
-#define JP2_JP2 0x6a703220 /**< File type fields */
+#define JP2_JP2 0x6a703220  /**< File type fields */
 
 /* For the future */
-/* #define JP2_RES 0x72657320 */ /**< Resolution box (super-box) */
+/* #define JP2_RES 0x72657320 */  /**< Resolution box (super-box) */
 /* #define JP2_JP2I 0x6a703269 */ /**< Intellectual property box */
 /* #define JP2_XML  0x786d6c20 */ /**< XML box */
 /* #define JP2_UUID 0x75756994 */ /**< UUID box */
@@ -67,7 +67,8 @@ const uint32_t kJp2BoxTypeClose = 0x6a703263; // 'jp2c'
 // JPEG-2000 UUIDs for embedded metadata
 //
 // See http://www.jpeg.org/public/wg1n2600.doc for information about embedding IPTC-NAA data in JPEG-2000 files
-// See http://www.adobe.com/devnet/xmp/pdfs/xmp_specification.pdf for information about embedding XMP data in JPEG-2000 files
+// See http://www.adobe.com/devnet/xmp/pdfs/xmp_specification.pdf for information about embedding XMP data in JPEG-2000
+// files
 const unsigned char kJp2UuidExif[] = "JpgTiffExif->JP2";
 const unsigned char kJp2UuidIptc[] = "\x33\xc7\xa4\xd2\xb8\x1d\x47\x23\xa0\xba\xf1\xa3\xe0\x97\xad\x38";
 const unsigned char kJp2UuidXmp[] = "\xbe\x7a\xcf\xcb\x97\xa9\x42\xe8\x9c\x71\x99\x94\x91\xe3\xaf\xac";
@@ -131,7 +132,7 @@ void Jp2Image::readMetadata() {
   Jp2ImageHeaderBox ihdr = {0, 0, 0, 0, 0, 0, 0, 0};
   Jp2UuidBox uuid = {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
   size_t boxes = 0;
-  size_t boxem = 1000; // boxes max
+  size_t boxem = 1000;  // boxes max
 
   while (io_->read(reinterpret_cast<byte*>(&box), sizeof(box)) == sizeof(box)) {
     boxes_check(boxes++, boxem);
@@ -159,8 +160,7 @@ void Jp2Image::readMetadata() {
             throw Error(kerCorruptedMetadata);
           }
           if (subBox.type == kJp2BoxTypeColorHeader && subBox.length != 15) {
-
-            const long pad = 3; // 3 padding bytes 2 0 0
+            const long pad = 3;  // 3 padding bytes 2 0 0
             const size_t data_length = Safe::add(subBox.length, static_cast<uint32_t>(8));
             // data_length makes no sense if it is larger than the rest of the file
             if (data_length > io_->size() - io_->tell()) {
@@ -200,7 +200,6 @@ void Jp2Image::readMetadata() {
       }
 
       case kJp2BoxTypeUuid: {
-
         if (io_->read(reinterpret_cast<byte*>(&uuid), sizeof(uuid)) == sizeof(uuid)) {
           DataBuf rawData;
           long bufRead;
@@ -217,10 +216,13 @@ void Jp2Image::readMetadata() {
             if (bufRead != rawData.size_)
               throw Error(kerInputDataReadFailed);
 
-            if (rawData.size_ > 8) // "II*\0long"
+            if (rawData.size_ > 8)  // "II*\0long"
             {
               // Find the position of Exif header in bytes array.
-              long pos = ((rawData.pData_[0] == rawData.pData_[1]) && (rawData.pData_[0] == 'I' || rawData.pData_[0] == 'M')) ? 0 : -1;
+              long pos =
+                  ((rawData.pData_[0] == rawData.pData_[1]) && (rawData.pData_[0] == 'I' || rawData.pData_[0] == 'M'))
+                      ? 0
+                      : -1;
 
               // #1242  Forgive having Exif\0\0 in rawData.pData_
               const byte exifHeader[] = {0x45, 0x78, 0x69, 0x66, 0x00, 0x00};
@@ -235,7 +237,8 @@ void Jp2Image::readMetadata() {
 
               // If found it, store only these data at from this place.
               if (pos >= 0) {
-                ByteOrder bo = TiffParser::decode(exifData(), iptcData(), xmpData(), rawData.pData_ + pos, rawData.size_ - pos);
+                ByteOrder bo =
+                    TiffParser::decode(exifData(), iptcData(), xmpData(), rawData.pData_ + pos, rawData.size_ - pos);
                 setByteOrder(bo);
               }
             } else {
@@ -274,8 +277,8 @@ void Jp2Image::readMetadata() {
             std::string::size_type idx = xmpPacket_.find_first_of('<');
             if (idx != std::string::npos && idx > 0) {
 #ifndef SUPPRESS_WARNINGS
-              EXV_WARNING << "Removing " << static_cast<uint32_t>(idx) << " characters from the beginning of the XMP packet"
-                          << std::endl;
+              EXV_WARNING << "Removing " << static_cast<uint32_t>(idx)
+                          << " characters from the beginning of the XMP packet" << std::endl;
 #endif
               xmpPacket_ = xmpPacket_.substr(idx);
             }
@@ -301,7 +304,7 @@ void Jp2Image::readMetadata() {
       throw Error(kerFailedToReadImageData);
   }
 
-} // Jp2Image::readMetadata
+}  // Jp2Image::readMetadata
 
 Image::UniquePtr newJp2Instance(BasicIo::UniquePtr io, bool create) {
   Image::UniquePtr image(new Jp2Image(std::move(io)));
@@ -324,4 +327,4 @@ bool isJp2Type(BasicIo& iIo, bool advance) {
   }
   return matched;
 }
-} // namespace Exiv2
+}  // namespace Exiv2

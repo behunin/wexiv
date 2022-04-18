@@ -21,7 +21,8 @@
   @file    canonmn_int.hpp
   @brief   Canon makernote tags.<BR>References:<BR>
            [1] <a href="http://www.burren.cx/david/canon.html">EXIF MakerNote of Canon</a> by David Burren<br>
-           [2] <a href="http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/Canon.html">Canon makernote tags</a> by Phil Harvey
+           [2] <a href="http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/Canon.html">Canon makernote tags</a> by
+  Phil Harvey
   @author  <a href="mailto:ahuggel@gmx.net">Andreas Huggel (ahu)</a><br>
            <a href="mailto:david@edeca.net">David Cannings (dc)</a>
            <a href="mailto:andi.clemens@gmx.net">Andi Clemens (ac)</a>
@@ -52,7 +53,7 @@ namespace Internal {
 
 //! MakerNote for Canon cameras
 class CanonMakerNote {
-public:
+ public:
   //! Return read-only list of built-in Canon tags
   static const TagInfo* tagList();
   //! Return read-only list of built-in Canon Camera Settings tags
@@ -124,7 +125,6 @@ public:
   //! Return read-only list of built-in Canon AFInfo2 Info tags
   static const TagInfo* tagListAf2();
 
-
   //! @name Print functions for Canon %MakerNote tags
   //@{
   //! Print the FileInfo FileNumber
@@ -169,7 +169,7 @@ public:
   static std::ostream& printFiFocusDistance(std::ostream& os, const Value& value, const ExifData*);
   //@}
 
-private:
+ private:
   // DATA
 
   //! Tag information
@@ -209,8 +209,7 @@ private:
   static const TagInfo tagInfoWbi_[];
   static const TagInfo tagInfoRawB_[];
 
-
-}; // class CanonMakerNote
+};  // class CanonMakerNote
 
 // *****************************************************************************
 
@@ -231,7 +230,7 @@ private:
 */
 float canonEv(long val);
 
-} // namespace Internal
-} // namespace Exiv2
+}  // namespace Internal
+}  // namespace Exiv2
 
-#endif // #ifndef CANONMN_INT_HPP_
+#endif  // #ifndef CANONMN_INT_HPP_

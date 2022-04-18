@@ -38,8 +38,8 @@ bool TiffMappingInfo::operator==(const TiffMappingInfo::Key& key) const {
          (Tag::all == extendedTag_ || key.e_ == extendedTag_) && key.g_ == group_;
 }
 
-IoWrapper::IoWrapper(BasicIo& io, const byte* pHeader, long size, OffsetWriter* pow)
-  : io_(io), pHeader_(pHeader), size_(size), wroteHeader_(false), pow_(pow) {
+IoWrapper::IoWrapper(BasicIo& io, const byte* pHeader, long size, OffsetWriter* pow) :
+    io_(io), pHeader_(pHeader), size_(size), wroteHeader_(false), pow_(pow) {
   if (pHeader_ == nullptr || size_ == 0)
     wroteHeader_ = true;
 }
@@ -47,8 +47,8 @@ IoWrapper::IoWrapper(BasicIo& io, const byte* pHeader, long size, OffsetWriter* 
 TiffComponent::TiffComponent(uint16_t tag, IfdId group) : tag_(tag), group_(group), pStart_(nullptr) {
 }
 
-TiffEntryBase::TiffEntryBase(uint16_t tag, IfdId group, TiffType tiffType)
-  : TiffComponent(tag, group),
+TiffEntryBase::TiffEntryBase(uint16_t tag, IfdId group, TiffType tiffType) :
+    TiffComponent(tag, group),
     tiffType_(tiffType),
     count_(0),
     offset_(0),
@@ -59,19 +59,25 @@ TiffEntryBase::TiffEntryBase(uint16_t tag, IfdId group, TiffType tiffType)
     pValue_(nullptr) {
 }
 
-TiffSubIfd::TiffSubIfd(uint16_t tag, IfdId group, IfdId newGroup) : TiffEntryBase(tag, group, ttUnsignedLong), newGroup_(newGroup) {
+TiffSubIfd::TiffSubIfd(uint16_t tag, IfdId group, IfdId newGroup) :
+    TiffEntryBase(tag, group, ttUnsignedLong), newGroup_(newGroup) {
 }
 
-TiffMnEntry::TiffMnEntry(uint16_t tag, IfdId group, IfdId mnGroup)
-  : TiffEntryBase(tag, group, ttUndefined), mnGroup_(mnGroup), mn_(nullptr) {
+TiffMnEntry::TiffMnEntry(uint16_t tag, IfdId group, IfdId mnGroup) :
+    TiffEntryBase(tag, group, ttUndefined), mnGroup_(mnGroup), mn_(nullptr) {
 }
 
-TiffIfdMakernote::TiffIfdMakernote(uint16_t tag, IfdId group, IfdId mnGroup, MnHeader* pHeader, bool hasNext)
-  : TiffComponent(tag, group), pHeader_(pHeader), ifd_(tag, mnGroup, hasNext), mnOffset_(0), imageByteOrder_(invalidByteOrder) {
+TiffIfdMakernote::TiffIfdMakernote(uint16_t tag, IfdId group, IfdId mnGroup, MnHeader* pHeader, bool hasNext) :
+    TiffComponent(tag, group),
+    pHeader_(pHeader),
+    ifd_(tag, mnGroup, hasNext),
+    mnOffset_(0),
+    imageByteOrder_(invalidByteOrder) {
 }
 
-TiffBinaryArray::TiffBinaryArray(uint16_t tag, IfdId group, const ArrayCfg* arrayCfg, const ArrayDef* arrayDef, int defSize)
-  : TiffEntryBase(tag, group, arrayCfg->elTiffType_),
+TiffBinaryArray::TiffBinaryArray(uint16_t tag, IfdId group, const ArrayCfg* arrayCfg, const ArrayDef* arrayDef,
+                                 int defSize) :
+    TiffEntryBase(tag, group, arrayCfg->elTiffType_),
     cfgSelFct_(nullptr),
     arraySet_(nullptr),
     arrayCfg_(arrayCfg),
@@ -85,8 +91,9 @@ TiffBinaryArray::TiffBinaryArray(uint16_t tag, IfdId group, const ArrayCfg* arra
   assert(arrayCfg != 0);
 }
 
-TiffBinaryArray::TiffBinaryArray(uint16_t tag, IfdId group, const ArraySet* arraySet, int setSize, CfgSelFct cfgSelFct)
-  : TiffEntryBase(tag, group), // Todo: Does it make a difference that there is no type?
+TiffBinaryArray::TiffBinaryArray(uint16_t tag, IfdId group, const ArraySet* arraySet, int setSize,
+                                 CfgSelFct cfgSelFct) :
+    TiffEntryBase(tag, group),  // Todo: Does it make a difference that there is no type?
     cfgSelFct_(cfgSelFct),
     arraySet_(arraySet),
     arrayCfg_(nullptr),
@@ -102,7 +109,8 @@ TiffBinaryArray::TiffBinaryArray(uint16_t tag, IfdId group, const ArraySet* arra
   assert(arraySet_ != 0);
 }
 
-TiffBinaryElement::TiffBinaryElement(uint16_t tag, IfdId group) : TiffEntryBase(tag, group), elByteOrder_(invalidByteOrder) {
+TiffBinaryElement::TiffBinaryElement(uint16_t tag, IfdId group) :
+    TiffEntryBase(tag, group), elByteOrder_(invalidByteOrder) {
   elDef_.idx_ = 0;
   elDef_.tiffType_ = ttUndefined;
   elDef_.count_ = 0;
@@ -142,8 +150,8 @@ TiffBinaryArray::~TiffBinaryArray() {
   }
 }
 
-TiffEntryBase::TiffEntryBase(const TiffEntryBase& rhs)
-  : TiffComponent(rhs),
+TiffEntryBase::TiffEntryBase(const TiffEntryBase& rhs) :
+    TiffComponent(rhs),
     tiffType_(rhs.tiffType_),
     count_(rhs.count_),
     offset_(rhs.offset_),
@@ -164,8 +172,8 @@ TiffDirectory::TiffDirectory(const TiffDirectory& rhs) : TiffComponent(rhs), has
 TiffSubIfd::TiffSubIfd(const TiffSubIfd& rhs) : TiffEntryBase(rhs), newGroup_(rhs.newGroup_) {
 }
 
-TiffBinaryArray::TiffBinaryArray(const TiffBinaryArray& rhs)
-  : TiffEntryBase(rhs),
+TiffBinaryArray::TiffBinaryArray(const TiffBinaryArray& rhs) :
+    TiffEntryBase(rhs),
     cfgSelFct_(rhs.cfgSelFct_),
     arraySet_(rhs.arraySet_),
     arrayCfg_(rhs.arrayCfg_),
@@ -265,24 +273,24 @@ uint32_t TiffIfdMakernote::sizeHeader() const {
 
 void TiffComponent::accept(TiffVisitor& visitor) {
   if (visitor.go(TiffVisitor::geTraverse))
-    doAccept(visitor); // one for NVI :)
-} // TiffComponent::accept
+    doAccept(visitor);  // one for NVI :)
+}  // TiffComponent::accept
 
 void TiffEntry::doAccept(TiffVisitor& visitor) {
   visitor.visitEntry(this);
-} // TiffEntry::doAccept
+}  // TiffEntry::doAccept
 
 void TiffDataEntry::doAccept(TiffVisitor& visitor) {
   visitor.visitDataEntry(this);
-} // TiffDataEntry::doAccept
+}  // TiffDataEntry::doAccept
 
 void TiffImageEntry::doAccept(TiffVisitor& visitor) {
   visitor.visitImageEntry(this);
-} // TiffImageEntry::doAccept
+}  // TiffImageEntry::doAccept
 
 void TiffSizeEntry::doAccept(TiffVisitor& visitor) {
   visitor.visitSizeEntry(this);
-} // TiffSizeEntry::doAccept
+}  // TiffSizeEntry::doAccept
 
 void TiffDirectory::doAccept(TiffVisitor& visitor) {
   visitor.visitDirectory(this);
@@ -297,7 +305,7 @@ void TiffDirectory::doAccept(TiffVisitor& visitor) {
     pNext_->accept(visitor);
   if (visitor.go(TiffVisitor::geTraverse))
     visitor.visitDirectoryEnd(this);
-} // TiffDirectory::doAccept
+}  // TiffDirectory::doAccept
 
 void TiffSubIfd::doAccept(TiffVisitor& visitor) {
   visitor.visitSubIfd(this);
@@ -306,7 +314,7 @@ void TiffSubIfd::doAccept(TiffVisitor& visitor) {
       break;
     ifd->accept(visitor);
   }
-} // TiffSubIfd::doAccept
+}  // TiffSubIfd::doAccept
 
 void TiffMnEntry::doAccept(TiffVisitor& visitor) {
   visitor.visitMnEntry(this);
@@ -317,7 +325,7 @@ void TiffMnEntry::doAccept(TiffVisitor& visitor) {
     mn_ = nullptr;
   }
 
-} // TiffMnEntry::doAccept
+}  // TiffMnEntry::doAccept
 
 void TiffIfdMakernote::doAccept(TiffVisitor& visitor) {
   if (visitor.go(TiffVisitor::geTraverse))
@@ -337,11 +345,11 @@ void TiffBinaryArray::doAccept(TiffVisitor& visitor) {
   }
   if (visitor.go(TiffVisitor::geTraverse))
     visitor.visitBinaryArrayEnd(this);
-} // TiffBinaryArray::doAccept
+}  // TiffBinaryArray::doAccept
 
 void TiffBinaryElement::doAccept(TiffVisitor& visitor) {
   visitor.visitBinaryElement(this);
-} // TiffBinaryElement::doAccept
+}  // TiffBinaryElement::doAccept
 
 uint32_t ArrayDef::size(uint16_t tag, IfdId group) const {
   TypeId typeId = toTypeId(tiffType_, tag, group);
@@ -365,7 +373,7 @@ void TiffEntryBase::setData(byte* pData, int32_t size) {
 }
 
 TiffMnEntry* TiffMnEntry::doClone() const {
-  assert(false); // Not implemented
+  assert(false);  // Not implemented
   return nullptr;
 }
 
@@ -374,7 +382,7 @@ TiffComponent* TiffSubIfd::doAddChild(TiffComponent::UniquePtr tiffComponent) {
   assert(d);
   ifds_.push_back(d);
   return d;
-} // TiffSubIfd::doAddChild
+}  // TiffSubIfd::doAddChild
 
 TiffComponent* TiffMnEntry::doAddChild(TiffComponent::UniquePtr tiffComponent) {
   TiffComponent* tc = nullptr;
@@ -382,7 +390,7 @@ TiffComponent* TiffMnEntry::doAddChild(TiffComponent::UniquePtr tiffComponent) {
     tc = mn_->addChild(std::move(tiffComponent));
   }
   return tc;
-} // TiffMnEntry::doAddChild
+}  // TiffMnEntry::doAddChild
 
 TiffComponent* TiffMnEntry::doAddNext(TiffComponent::UniquePtr tiffComponent) {
   TiffComponent* tc = nullptr;
@@ -390,7 +398,7 @@ TiffComponent* TiffMnEntry::doAddNext(TiffComponent::UniquePtr tiffComponent) {
     tc = mn_->addNext(std::move(tiffComponent));
   }
   return tc;
-} // TiffMnEntry::doAddNext
+}  // TiffMnEntry::doAddNext
 
 TiffComponent* TiffIfdMakernote::doAddNext(TiffComponent::UniquePtr tiffComponent) {
   return ifd_.addNext(std::move(tiffComponent));
@@ -401,7 +409,7 @@ TiffComponent* TiffIfdMakernote::doAddChild(TiffComponent::UniquePtr tiffCompone
 }
 
 TiffIfdMakernote* TiffIfdMakernote::doClone() const {
-  assert(false); // Not implemented
+  assert(false);  // Not implemented
   return nullptr;
 }
 
@@ -420,26 +428,26 @@ TiffComponent* TiffDirectory::doAddNext(TiffComponent::UniquePtr tiffComponent) 
     pNext_ = tc;
   }
   return tc;
-} // TiffDirectory::doAddNext
+}  // TiffDirectory::doAddNext
 
 TiffComponent* TiffDirectory::doAddChild(TiffComponent::UniquePtr tiffComponent) {
   TiffComponent* tc = tiffComponent.release();
   components_.push_back(tc);
   return tc;
-} // TiffDirectory::doAddChild
+}  // TiffDirectory::doAddChild
 
 void TiffImageEntry::setStrips(const Value* pSize, const byte* pData, uint32_t sizeData, uint32_t baseOffset) {
   if (!pValue() || !pSize) {
 #ifndef SUPPRESS_WARNINGS
-    EXV_WARNING << "Directory " << groupName(group()) << ", entry 0x" << std::setw(4) << std::setfill('0') << std::hex << tag()
-                << ": Size or data offset value not set, ignoring them.\n";
+    EXV_WARNING << "Directory " << groupName(group()) << ", entry 0x" << std::setw(4) << std::setfill('0') << std::hex
+                << tag() << ": Size or data offset value not set, ignoring them.\n";
 #endif
     return;
   }
   if (pValue()->count() != pSize->count()) {
 #ifndef SUPPRESS_WARNINGS
-    EXV_WARNING << "Directory " << groupName(group()) << ", entry 0x" << std::setw(4) << std::setfill('0') << std::hex << tag()
-                << ": Size and data offset entries have different"
+    EXV_WARNING << "Directory " << groupName(group()) << ", entry 0x" << std::setw(4) << std::setfill('0') << std::hex
+                << tag() << ": Size and data offset entries have different"
                 << " number of components, ignoring them.\n";
 #endif
     return;
@@ -451,35 +459,34 @@ void TiffImageEntry::setStrips(const Value* pSize, const byte* pData, uint32_t s
 
     if (offset > sizeData || size > sizeData || baseOffset + offset > sizeData - size) {
 #ifndef SUPPRESS_WARNINGS
-      EXV_WARNING << "Directory " << groupName(group()) << ", entry 0x" << std::setw(4) << std::setfill('0') << std::hex << tag()
-                  << ": Strip " << std::dec << i << " is outside of the data area; ignored.\n";
+      EXV_WARNING << "Directory " << groupName(group()) << ", entry 0x" << std::setw(4) << std::setfill('0') << std::hex
+                  << tag() << ": Strip " << std::dec << i << " is outside of the data area; ignored.\n";
 #endif
     } else if (size != 0) {
       strips_.push_back(std::make_pair(pStrip, size));
     }
   }
-} // TiffImageEntry::setStrips
-
+}  // TiffImageEntry::setStrips
 
 void TiffDataEntry::setStrips(const Value* pSize, const byte* pData, uint32_t sizeData, uint32_t baseOffset) {
   if (!pValue() || !pSize) {
 #ifndef SUPPRESS_WARNINGS
-    EXV_WARNING << "Directory " << groupName(group()) << ", entry 0x" << std::setw(4) << std::setfill('0') << std::hex << tag()
-                << ": Size or data offset value not set, ignoring them.\n";
+    EXV_WARNING << "Directory " << groupName(group()) << ", entry 0x" << std::setw(4) << std::setfill('0') << std::hex
+                << tag() << ": Size or data offset value not set, ignoring them.\n";
 #endif
     return;
   }
   if (pValue()->count() == 0) {
 #ifndef SUPPRESS_WARNINGS
-    EXV_WARNING << "Directory " << groupName(group()) << ", entry 0x" << std::setw(4) << std::setfill('0') << std::hex << tag()
-                << ": Data offset entry value is empty, ignoring it.\n";
+    EXV_WARNING << "Directory " << groupName(group()) << ", entry 0x" << std::setw(4) << std::setfill('0') << std::hex
+                << tag() << ": Data offset entry value is empty, ignoring it.\n";
 #endif
     return;
   }
   if (pValue()->count() != pSize->count()) {
 #ifndef SUPPRESS_WARNINGS
-    EXV_WARNING << "Directory " << groupName(group()) << ", entry 0x" << std::setw(4) << std::setfill('0') << std::hex << tag()
-                << ": Size and data offset entries have different"
+    EXV_WARNING << "Directory " << groupName(group()) << ", entry 0x" << std::setw(4) << std::setfill('0') << std::hex
+                << tag() << ": Size and data offset entries have different"
                 << " number of components, ignoring them.\n";
 #endif
     return;
@@ -491,26 +498,26 @@ void TiffDataEntry::setStrips(const Value* pSize, const byte* pData, uint32_t si
   auto offset = static_cast<uint32_t>(pValue()->toLong(0));
   // Todo: Remove limitation of JPEG writer: strips must be contiguous
   // Until then we check: last offset + last size - first offset == size?
-  if (static_cast<uint32_t>(pValue()->toLong(pValue()->count() - 1)) + static_cast<uint32_t>(pSize->toLong(pSize->count() - 1)) -
-          offset !=
+  if (static_cast<uint32_t>(pValue()->toLong(pValue()->count() - 1)) +
+          static_cast<uint32_t>(pSize->toLong(pSize->count() - 1)) - offset !=
       size) {
 #ifndef SUPPRESS_WARNINGS
-    EXV_WARNING << "Directory " << groupName(group()) << ", entry 0x" << std::setw(4) << std::setfill('0') << std::hex << tag()
-                << ": Data area is not contiguous, ignoring it.\n";
+    EXV_WARNING << "Directory " << groupName(group()) << ", entry 0x" << std::setw(4) << std::setfill('0') << std::hex
+                << tag() << ": Data area is not contiguous, ignoring it.\n";
 #endif
     return;
   }
   if (offset > sizeData || size > sizeData || baseOffset + offset > sizeData - size) {
 #ifndef SUPPRESS_WARNINGS
-    EXV_WARNING << "Directory " << groupName(group()) << ", entry 0x" << std::setw(4) << std::setfill('0') << std::hex << tag()
-                << ": Data area exceeds data buffer, ignoring it.\n";
+    EXV_WARNING << "Directory " << groupName(group()) << ", entry 0x" << std::setw(4) << std::setfill('0') << std::hex
+                << tag() << ": Data area exceeds data buffer, ignoring it.\n";
 #endif
     return;
   }
   pDataArea_ = const_cast<byte*>(pData) + baseOffset + offset;
   sizeDataArea_ = size;
   const_cast<Value*>(pValue())->setDataArea(pDataArea_, sizeDataArea_);
-} // TiffDataEntry::setStrips
+}  // TiffDataEntry::setStrips
 
 uint32_t TiffEntryBase::doCount() const {
   return count_;
@@ -528,7 +535,7 @@ uint32_t TiffMnEntry::doCount() const {
 
 uint32_t TiffIfdMakernote::doCount() const {
   return ifd_.count();
-} // TiffIfdMakernote::doCount
+}  // TiffIfdMakernote::doCount
 
 uint32_t TiffBinaryArray::doCount() const {
   if (cfg() == nullptr || !decoded())
@@ -541,8 +548,8 @@ uint32_t TiffBinaryArray::doCount() const {
   long typeSize = TypeInfo::typeSize(typeId);
   if (0 == typeSize) {
 #ifndef SUPPRESS_WARNINGS
-    EXV_WARNING << "Directory " << groupName(group()) << ", entry 0x" << std::setw(4) << std::setfill('0') << std::hex << tag()
-                << " has unknown Exif (TIFF) type " << std::dec << tiffType() << "; setting type size 1.\n";
+    EXV_WARNING << "Directory " << groupName(group()) << ", entry 0x" << std::setw(4) << std::setfill('0') << std::hex
+                << tag() << " has unknown Exif (TIFF) type " << std::dec << tiffType() << "; setting type size 1.\n";
 #endif
     typeSize = 1;
   }
@@ -556,7 +563,7 @@ uint32_t TiffBinaryElement::doCount() const {
 
 uint32_t TiffComponent::size() const {
   return doSize();
-} // TiffComponent::size
+}  // TiffComponent::size
 
 uint32_t TiffDirectory::doSize() const {
   uint32_t compCount = count();
@@ -566,11 +573,11 @@ uint32_t TiffDirectory::doSize() const {
   for (auto&& component : components_) {
     uint32_t sv = component->size();
     if (sv > 4) {
-      sv += sv & 1; // Align value to word boundary
+      sv += sv & 1;  // Align value to word boundary
       len += sv;
     }
     uint32_t sd = component->sizeData();
-    sd += sd & 1; // Align data to word boundary
+    sd += sd & 1;  // Align data to word boundary
     len += sd;
   }
   // Size of next-IFD, if any
@@ -583,7 +590,7 @@ uint32_t TiffDirectory::doSize() const {
   if (compCount == 0 && sizeNext == 0)
     len = 0;
   return len;
-} // TiffDirectory::doSize
+}  // TiffDirectory::doSize
 
 void TiffEntryBase::setValue(Value::UniquePtr value) {
   if (value.get() == nullptr)
@@ -592,30 +599,30 @@ void TiffEntryBase::setValue(Value::UniquePtr value) {
   count_ = value->count();
   delete pValue_;
   pValue_ = value.release();
-} // TiffEntryBase::setValue
+}  // TiffEntryBase::setValue
 
 uint32_t TiffEntryBase::doSize() const {
   return size_;
-} // TiffEntryBase::doSize
+}  // TiffEntryBase::doSize
 
 uint32_t TiffImageEntry::doSize() const {
   return static_cast<uint32_t>(strips_.size()) * 4;
-} // TiffImageEntry::doSize
+}  // TiffImageEntry::doSize
 
 uint32_t TiffSubIfd::doSize() const {
   return static_cast<uint32_t>(ifds_.size()) * 4;
-} // TiffSubIfd::doSize
+}  // TiffSubIfd::doSize
 
 uint32_t TiffMnEntry::doSize() const {
   if (!mn_) {
     return TiffEntryBase::doSize();
   }
   return mn_->size();
-} // TiffMnEntry::doSize
+}  // TiffMnEntry::doSize
 
 uint32_t TiffIfdMakernote::doSize() const {
   return sizeHeader() + ifd_.size();
-} // TiffIfdMakernote::doSize
+}  // TiffIfdMakernote::doSize
 
 uint32_t TiffBinaryArray::doSize() const {
   if (cfg() == nullptr || !decoded())
@@ -644,7 +651,7 @@ uint32_t TiffBinaryArray::doSize() const {
   }
   return idx;
 
-} // TiffBinaryArray::doSize
+}  // TiffBinaryArray::doSize
 
 uint32_t TiffBinaryArray::addElement(uint32_t idx, const ArrayDef& def) {
   auto tag = static_cast<uint16_t>(idx / cfg()->tagStep());
@@ -660,30 +667,30 @@ uint32_t TiffBinaryArray::addElement(uint32_t idx, const ArrayDef& def) {
   tp->setElByteOrder(cfg()->byteOrder_);
   addChild(std::move(tc));
   return sz;
-} // TiffBinaryArray::addElement
+}  // TiffBinaryArray::addElement
 
 uint32_t TiffBinaryElement::doSize() const {
   if (!pValue())
     return 0;
   return pValue()->size();
-} // TiffBinaryElement::doSize
+}  // TiffBinaryElement::doSize
 
 uint32_t TiffComponent::sizeData() const {
   return doSizeData();
-} // TiffComponent::sizeData
+}  // TiffComponent::sizeData
 
 uint32_t TiffDirectory::doSizeData() const {
   assert(false);
   return 0;
-} // TiffDirectory::doSizeData
+}  // TiffDirectory::doSizeData
 
 uint32_t TiffEntryBase::doSizeData() const {
   return 0;
-} // TiffEntryBase::doSizeData
+}  // TiffEntryBase::doSizeData
 
 bool TiffBinaryArray::initialize(IfdId group) {
   if (arrayCfg_ != nullptr)
-    return true; // Not a complex array or already initialized
+    return true;  // Not a complex array or already initialized
 
   for (int idx = 0; idx < setSize_; ++idx) {
     if (arraySet_[idx].cfg_.group_ == group) {
@@ -698,7 +705,7 @@ bool TiffBinaryArray::initialize(IfdId group) {
 
 bool TiffBinaryArray::initialize(TiffComponent* const pRoot) {
   if (cfgSelFct_ == nullptr)
-    return true; // Not a complex array
+    return true;  // Not a complex array
 
   int idx = cfgSelFct_(tag(), pData(), TiffEntryBase::doSize(), pRoot);
   if (idx > -1) {
@@ -717,17 +724,17 @@ void TiffBinaryArray::iniOrigDataBuf() {
 uint32_t TiffImageEntry::doSizeData() const {
   uint32_t len = 0;
   // For makernotes, TIFF image data is written to the data area
-  if (group() > mnId) { // Todo: Fix this hack!!
+  if (group() > mnId) {  // Todo: Fix this hack!!
     len = sizeImage();
   }
   return len;
-} // TiffImageEntry::doSizeData
+}  // TiffImageEntry::doSizeData
 
 uint32_t TiffDataEntry::doSizeData() const {
   if (!pValue())
     return 0;
   return pValue()->sizeDataArea();
-} // TiffDataEntry::doSizeData
+}  // TiffDataEntry::doSizeData
 
 uint32_t TiffSubIfd::doSizeData() const {
   uint32_t len = 0;
@@ -735,16 +742,16 @@ uint32_t TiffSubIfd::doSizeData() const {
     len += ifd->size();
   }
   return len;
-} // TiffSubIfd::doSizeData
+}  // TiffSubIfd::doSizeData
 
 uint32_t TiffIfdMakernote::doSizeData() const {
   assert(false);
   return 0;
-} // TiffIfdMakernote::doSizeData
+}  // TiffIfdMakernote::doSizeData
 
 uint32_t TiffComponent::sizeImage() const {
   return doSizeImage();
-} // TiffComponent::sizeImage
+}  // TiffComponent::sizeImage
 
 uint32_t TiffDirectory::doSizeImage() const {
   uint32_t len = 0;
@@ -755,7 +762,7 @@ uint32_t TiffDirectory::doSizeImage() const {
     len += pNext_->sizeImage();
   }
   return len;
-} // TiffDirectory::doSizeImage
+}  // TiffDirectory::doSizeImage
 
 uint32_t TiffSubIfd::doSizeImage() const {
   uint32_t len = 0;
@@ -763,15 +770,15 @@ uint32_t TiffSubIfd::doSizeImage() const {
     len += ifd->sizeImage();
   }
   return len;
-} // TiffSubIfd::doSizeImage
+}  // TiffSubIfd::doSizeImage
 
 uint32_t TiffIfdMakernote::doSizeImage() const {
   return ifd_.sizeImage();
-} // TiffIfdMakernote::doSizeImage
+}  // TiffIfdMakernote::doSizeImage
 
 uint32_t TiffEntryBase::doSizeImage() const {
   return 0;
-} // TiffEntryBase::doSizeImage
+}  // TiffEntryBase::doSizeImage
 
 uint32_t TiffImageEntry::doSizeImage() const {
   if (!pValue())
@@ -783,23 +790,23 @@ uint32_t TiffImageEntry::doSizeImage() const {
     }
   }
   return len;
-} // TiffImageEntry::doSizeImage
+}  // TiffImageEntry::doSizeImage
 
 TiffComponent* TiffComponent::addChild(TiffComponent::UniquePtr tiffComponent) {
   return doAddChild(std::move(tiffComponent));
-} // TiffComponent::addChild
+}  // TiffComponent::addChild
 
 TiffComponent* TiffComponent::doAddChild(UniquePtr /*tiffComponent*/) {
   return nullptr;
-} // TiffComponent::doAddChild
+}  // TiffComponent::doAddChild
 
 TiffComponent* TiffComponent::addNext(TiffComponent::UniquePtr tiffComponent) {
   return doAddNext(std::move(tiffComponent));
-} // TiffComponent::addNext
+}  // TiffComponent::addNext
 
 TiffComponent* TiffComponent::doAddNext(UniquePtr /*tiffComponent*/) {
   return nullptr;
-} // TiffComponent::doAddNext
+}  // TiffComponent::doAddNext
 
 static const TagInfo* findTagInfo(uint16_t tag, IfdId group) {
   const TagInfo* result = nullptr;
@@ -871,5 +878,5 @@ TiffComponent::UniquePtr newTiffBinaryElement(uint16_t tag, IfdId group) {
   return TiffComponent::UniquePtr(new TiffBinaryElement(tag, group));
 }
 
-} // namespace Internal
-} // namespace Exiv2
+}  // namespace Internal
+}  // namespace Exiv2

@@ -30,8 +30,9 @@
 // *****************************************************************************
 namespace Exiv2 {
 
-MrwImage::MrwImage(BasicIo::UniquePtr io, bool /*create*/) : Image(ImageType::mrw, mdExif | mdIptc | mdXmp, std::move(io)) {
-} // MrwImage::MrwImage
+MrwImage::MrwImage(BasicIo::UniquePtr io, bool /*create*/) :
+    Image(ImageType::mrw, mdExif | mdIptc | mdXmp, std::move(io)) {
+}  // MrwImage::MrwImage
 
 std::string MrwImage::mimeType() const {
   return "image/x-minolta-mrw";
@@ -62,7 +63,6 @@ void MrwImage::readMetadata() {
       throw Error(kerFailedToReadImageData);
     throw Error(kerNotAnImage, "MRW");
   }
-
 
   // Find the TTW block and read it into a buffer
   uint32_t const len = 8;
@@ -103,7 +103,7 @@ void MrwImage::readMetadata() {
 
   ByteOrder bo = TiffParser::decode(exifData_, iptcData_, xmpData_, buf.pData_, buf.size_);
   setByteOrder(bo);
-} // MrwImage::readMetadata
+}  // MrwImage::readMetadata
 
 Image::UniquePtr newMrwInstance(BasicIo::UniquePtr io, bool create) {
   Image::UniquePtr image(new MrwImage(std::move(io), create));
@@ -129,4 +129,4 @@ bool isMrwType(BasicIo& iIo, bool advance) {
   return rc == 0;
 }
 
-} // namespace Exiv2
+}  // namespace Exiv2

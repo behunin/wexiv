@@ -187,24 +187,24 @@ enum IfdId {
 */
 enum SectionId {
   sectionIdNotSet,
-  imgStruct, // 4.6.4 A
-  recOffset, // 4.6.4 B
-  imgCharacter, // 4.6.4 C
-  otherTags, // 4.6.4 D
-  exifFormat, // 4.6.3
-  exifVersion, // 4.6.5 A
-  imgConfig, // 4.6.5 C
-  userInfo, // 4.6.5 D
-  relatedFile, // 4.6.5 E
-  dateTime, // 4.6.5 F
-  captureCond, // 4.6.5 G
-  gpsTags, // 4.6.6
-  iopTags, // 4.6.7
+  imgStruct,     // 4.6.4 A
+  recOffset,     // 4.6.4 B
+  imgCharacter,  // 4.6.4 C
+  otherTags,     // 4.6.4 D
+  exifFormat,    // 4.6.3
+  exifVersion,   // 4.6.5 A
+  imgConfig,     // 4.6.5 C
+  userInfo,      // 4.6.5 D
+  relatedFile,   // 4.6.5 E
+  dateTime,      // 4.6.5 F
+  captureCond,   // 4.6.5 G
+  gpsTags,       // 4.6.6
+  iopTags,       // 4.6.7
   mpfTags,
-  makerTags, // MakerNote
-  dngTags, // DNG Spec
+  makerTags,  // MakerNote
+  dngTags,    // DNG Spec
   panaRaw,
-  tiffEp, // TIFF-EP Spec
+  tiffEp,  // TIFF-EP Spec
   tiffPm6,
   adobeOpi,
   lastSectionId
@@ -212,9 +212,9 @@ enum SectionId {
 
 //! The details of a section.
 struct SectionInfo {
-  SectionId sectionId_; //!< Section id
-  const char* name_; //!< Section name (one word)
-  const char* desc_; //!< Section description
+  SectionId sectionId_;  //!< Section id
+  const char* name_;     //!< Section name (one word)
+  const char* desc_;     //!< Section description
 };
 
 /*!
@@ -222,29 +222,31 @@ struct SectionInfo {
           tag values to human readable labels.
 */
 struct TagDetails {
-  int64_t val_; //!< Tag value
-  const char* label_; //!< Translation of the tag value
+  int64_t val_;        //!< Tag value
+  const char* label_;  //!< Translation of the tag value
 
   //! Comparison operator for use with the find template
-  bool operator==(long key) const { return val_ == key; }
-}; // struct TagDetails
+  bool operator==(long key) const {
+    return val_ == key;
+  }
+};  // struct TagDetails
 
 /*!
   @brief Helper structure for lookup tables for translations of bitmask
           values to human readable labels.
 */
 struct TagDetailsBitmask {
-  uint32_t mask_; //!< Bitmask value
-  const char* label_; //!< Description of the tag value
-}; // struct TagDetailsBitmask
+  uint32_t mask_;      //!< Bitmask value
+  const char* label_;  //!< Description of the tag value
+};                     // struct TagDetailsBitmask
 
 /*!
   @brief Helper structure for lookup tables for translations of controlled
           vocabulary strings to their descriptions.
 */
 struct TagVocabulary {
-  const char* voc_; //!< Vocabulary string
-  const char* label_; //!< Description of the vocabulary string
+  const char* voc_;    //!< Vocabulary string
+  const char* label_;  //!< Description of the vocabulary string
 
   /*!
     @brief Comparison operator for use with the find template
@@ -254,13 +256,13 @@ struct TagVocabulary {
     string matches the end of the key.
   */
   bool operator==(const std::string& key) const;
-}; // struct TagDetails
+};  // struct TagDetails
 
 /*!
   @brief Generic pretty-print function to translate a long value to a description
           by looking up a reference table.
 */
-template<int N, const TagDetails (&array)[N]>
+template <int N, const TagDetails (&array)[N]>
 std::ostream& printTag(std::ostream& os, const Value& value, const ExifData*) {
   const TagDetails* td = find(array, value.toLong());
   if (td) {
@@ -278,7 +280,7 @@ std::ostream& printTag(std::ostream& os, const Value& value, const ExifData*) {
   @brief Generic print function to translate a long value to a description
           by looking up bitmasks in a reference table.
 */
-template<int N, const TagDetailsBitmask (&array)[N]>
+template <int N, const TagDetailsBitmask (&array)[N]>
 std::ostream& printTagBitmask(std::ostream& os, const Value& value, const ExifData*) {
   const auto val = static_cast<uint32_t>(value.toLong());
   if (val == 0 && N > 0) {
@@ -310,7 +312,7 @@ std::ostream& printTagBitmask(std::ostream& os, const Value& value, const ExifDa
   @brief Generic pretty-print function to translate a controlled vocabulary value (string)
           to a description by looking up a reference table.
 */
-template<int N, const TagVocabulary (&array)[N]>
+template <int N, const TagVocabulary (&array)[N]>
 std::ostream& printTagVocabulary(std::ostream& os, const Value& value, const ExifData*) {
   const TagVocabulary* td = find(array, value.toString());
   if (td) {
@@ -467,7 +469,8 @@ std::ostream& printExifVersion(std::ostream& os, const Value& value, const ExifD
 std::ostream& printXmpVersion(std::ostream& os, const Value& value, const ExifData*);
 //! Print a date following the format YYYY-MM-DDTHH:MM:SSZ
 std::ostream& printXmpDate(std::ostream& os, const Value& value, const ExifData*);
-//! Print a bitmask as (none) | n | n,m... where: (none) = no bits set | n = bit n from left (0=left-most) | n,m.. = multiple bits "
+//! Print a bitmask as (none) | n | n,m... where: (none) = no bits set | n = bit n from left (0=left-most) | n,m.. =
+//! multiple bits "
 std::ostream& printBitmask(std::ostream& os, const Value& value, const ExifData*);
 //@}
 
@@ -477,7 +480,7 @@ float fnumber(float apertureValue);
 //! Calculate the exposure time from an APEX shutter speed value
 URational exposureTime(float shutterSpeedValue);
 
-} // namespace Internal
-} // namespace Exiv2
+}  // namespace Internal
+}  // namespace Exiv2
 
-#endif // #ifndef TAGS_INT_HPP_
+#endif  // #ifndef TAGS_INT_HPP_

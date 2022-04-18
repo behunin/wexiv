@@ -120,7 +120,6 @@ EXIV2API bool testVersion(int major, int minor, int patch);
           used by exiv2 test suite to inspect libraries loaded at run-time
   */
 EXIV2API void dumpLibraryInfo(std::ostream& os, const std::vector<std::regex>& keys);
-} // namespace Exiv2
+}  // namespace Exiv2
 
-
-#endif // VERSION_HPP_
+#endif  // VERSION_HPP_

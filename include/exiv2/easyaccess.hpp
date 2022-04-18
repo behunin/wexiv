@@ -107,6 +107,6 @@ EXIV2API ExifData::const_iterator sensingMethod(const ExifData& ed);
 //! Return the AF point
 EXIV2API ExifData::const_iterator afPoint(const ExifData& ed);
 
-} // namespace Exiv2
+}  // namespace Exiv2
 
-#endif // EASYACCESS_HPP_
+#endif  // EASYACCESS_HPP_

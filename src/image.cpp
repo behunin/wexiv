@@ -57,7 +57,9 @@ using namespace Exiv2;
 //! Struct for storing image types and function pointers.
 struct Registry {
   //! Comparison operator to compare a Registry structure with an image type
-  bool operator==(const int& imageType) const { return imageType == imageType_; }
+  bool operator==(const int& imageType) const {
+    return imageType == imageType_;
+  }
 
   // DATA
   int imageType_;
@@ -70,7 +72,7 @@ struct Registry {
 };
 
 const Registry registry[] = {
-    //image type       creation fct     type check  Exif mode    IPTC mode    XMP mode     Comment mode
+    // image type       creation fct     type check  Exif mode    IPTC mode    XMP mode     Comment mode
     //---------------  ---------------  ----------  -----------  -----------  -----------  ------------
     {ImageType::jpeg, newJpegInstance, isJpegType, amReadWrite, amReadWrite, amReadWrite, amReadWrite},
     {ImageType::cr2, newCr2Instance, isCr2Type, amReadWrite, amReadWrite, amReadWrite, amNone},
@@ -88,7 +90,7 @@ const Registry registry[] = {
     {ImageType::orf, newOrfInstance, isOrfType, amReadWrite, amReadWrite, amReadWrite, amNone},
 #ifdef EXV_HAVE_LIBZ
     {ImageType::png, newPngInstance, isPngType, amReadWrite, amReadWrite, amReadWrite, amReadWrite},
-#endif // EXV_HAVE_LIBZ
+#endif  // EXV_HAVE_LIBZ
     {ImageType::pgf, newPgfInstance, isPgfType, amReadWrite, amReadWrite, amReadWrite, amReadWrite},
     {ImageType::raf, newRafInstance, isRafType, amRead, amRead, amRead, amNone},
     {ImageType::eps, newEpsInstance, isEpsType, amNone, amNone, amReadWrite, amNone},
@@ -99,11 +101,11 @@ const Registry registry[] = {
     {ImageType::jp2, newJp2Instance, isJp2Type, amReadWrite, amReadWrite, amReadWrite, amNone},
 #ifdef EXV_ENABLE_BMFF
     {ImageType::bmff, newBmffInstance, isBmffType, amRead, amRead, amRead, amNone},
-#endif // EXV_ENABLE_BMFF \
+#endif  // EXV_ENABLE_BMFF \
     // End of list marker
     {ImageType::none, nullptr, nullptr, amNone, amNone, amNone, amNone}};
 
-} // namespace
+}  // namespace
 
 // *****************************************************************************
 namespace Exiv2 {
@@ -120,8 +122,8 @@ static void seekOrThrow(BasicIo& iIo, long offset, BasicIo::Position pos, ErrorC
   enforce(r == 0, err);
 }
 
-Image::Image(int imageType, uint16_t supportedMetadata, BasicIo::UniquePtr io)
-  : exifData_{emscripten::val::object()},
+Image::Image(int imageType, uint16_t supportedMetadata, BasicIo::UniquePtr io) :
+    exifData_{emscripten::val::object()},
     iptcData_{emscripten::val::object()},
     xmpData_{emscripten::val::object()},
     headData_{emscripten::val::object()},
@@ -140,7 +142,8 @@ Image::Image(int imageType, uint16_t supportedMetadata, BasicIo::UniquePtr io)
 }
 
 bool Image::isStringType(uint16_t type) {
-  return type == Exiv2::asciiString || type == Exiv2::unsignedByte || type == Exiv2::signedByte || type == Exiv2::undefined;
+  return type == Exiv2::asciiString || type == Exiv2::unsignedByte || type == Exiv2::signedByte ||
+         type == Exiv2::undefined;
 }
 bool Image::isShortType(uint16_t type) {
   return type == Exiv2::unsignedShort || type == Exiv2::signedShort;
@@ -510,7 +513,7 @@ bool ImageFactory::checkType(int type, BasicIo& io, bool advance) {
     return r->isThisType_(io, advance);
   }
   return false;
-} // ImageFactory::checkType
+}  // ImageFactory::checkType
 
 int ImageFactory::getType(const byte* data, long size) {
   MemIo memIo(data, size);
@@ -527,11 +530,11 @@ int ImageFactory::getType(BasicIo& io) {
     }
   }
   return ImageType::none;
-} // ImageFactory::getType
+}  // ImageFactory::getType
 
 Image::UniquePtr ImageFactory::open(const byte* data, long size) {
   BasicIo::UniquePtr io(new MemIo(data, size));
-  Image::UniquePtr image = open(std::move(io)); // may throw
+  Image::UniquePtr image = open(std::move(io));  // may throw
   if (image.get() == nullptr)
     throw Error(kerMemoryContainsUnknownImageType);
   return image;
@@ -547,7 +550,7 @@ Image::UniquePtr ImageFactory::open(BasicIo::UniquePtr io) {
     }
   }
   return Image::UniquePtr();
-} // ImageFactory::open
+}  // ImageFactory::open
 
 // *****************************************************************************
 
@@ -561,6 +564,6 @@ void append(Blob& blob, const byte* buf, uint32_t len) {
     blob.resize(size + len);
     std::memcpy(&blob[size], buf, len);
   }
-} // append
+}  // append
 
-} // namespace Exiv2
+}  // namespace Exiv2

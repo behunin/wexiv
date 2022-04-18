@@ -42,7 +42,7 @@ namespace Exiv2 {
 
 // Add CR2 to the supported image formats
 namespace ImageType {
-const int cr2 = 7; //!< CR2 image type (see class Cr2Image)
+const int cr2 = 7;  //!< CR2 image type (see class Cr2Image)
 }
 
 /*!
@@ -50,7 +50,7 @@ const int cr2 = 7; //!< CR2 image type (see class Cr2Image)
       is supported directly, IPTC is read from the Exif data, if present.
   */
 class EXIV2API Cr2Image : public Image {
-public:
+ public:
   //! @name Creators
   //@{
   /*!
@@ -91,7 +91,7 @@ public:
   Cr2Image& operator=(const Cr2Image& rhs) = delete;
   //@}
 
-}; // class Cr2Image
+};  // class Cr2Image
 
 /*!
   @brief Stateless parser class for data in CR2 format. Images use this
@@ -99,15 +99,16 @@ public:
           See class TiffParser for details.
   */
 class EXIV2API Cr2Parser {
-public:
+ public:
   /*!
     @brief Decode metadata from a buffer \em pData of length \em size
             with data in CR2 format to the provided metadata containers.
             See TiffParser::decode().
   */
-  static ByteOrder decode(emscripten::val& exifData, emscripten::val& iptcData, emscripten::val& xmpData, const byte* pData, uint32_t size);
+  static ByteOrder decode(emscripten::val& exifData, emscripten::val& iptcData, emscripten::val& xmpData,
+                          const byte* pData, uint32_t size);
 
-}; // class Cr2Parser
+};  // class Cr2Parser
 
 // *****************************************************************************
 // template, inline and free functions
@@ -124,6 +125,6 @@ EXIV2API Image::UniquePtr newCr2Instance(BasicIo::UniquePtr io, bool create);
 //! Check if the file iIo is a CR2 image.
 EXIV2API bool isCr2Type(BasicIo& iIo, bool advance);
 
-} // namespace Exiv2
+}  // namespace Exiv2
 
-#endif // #ifndef CR2IMAGE_HPP_
+#endif  // #ifndef CR2IMAGE_HPP_

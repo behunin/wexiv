@@ -35,7 +35,7 @@ namespace Exiv2 {
 
 // Add ORF to the supported image formats
 namespace ImageType {
-const int orf = 9; //!< ORF image type (see class OrfImage)
+const int orf = 9;  //!< ORF image type (see class OrfImage)
 }
 
 /*!
@@ -43,7 +43,7 @@ const int orf = 9; //!< ORF image type (see class OrfImage)
           directly, IPTC is read from the Exif data, if present.
   */
 class EXIV2API OrfImage : public TiffImage {
-public:
+ public:
   //! @name NOT Implemented
   //@{
   //! Copy constructor
@@ -83,7 +83,7 @@ public:
   int pixelWidth() const override;
   int pixelHeight() const override;
   //@}
-}; // class OrfImage
+};  // class OrfImage
 
 /*!
   @brief Stateless parser class for data in ORF format. Images use this
@@ -91,14 +91,15 @@ public:
           See class TiffParser for details.
   */
 class EXIV2API OrfParser {
-public:
+ public:
   /*!
     @brief Decode metadata from a buffer \em pData of length \em size
             with data in ORF format to the provided metadata containers.
             See TiffParser::decode().
   */
-  static ByteOrder decode(emscripten::val& exifData, emscripten::val& iptcData, emscripten::val& xmpData, const byte* pData, uint32_t size);
-}; // class OrfParser
+  static ByteOrder decode(emscripten::val& exifData, emscripten::val& iptcData, emscripten::val& xmpData,
+                          const byte* pData, uint32_t size);
+};  // class OrfParser
 
 // *****************************************************************************
 // template, inline and free functions
@@ -115,6 +116,6 @@ EXIV2API Image::UniquePtr newOrfInstance(BasicIo::UniquePtr io, bool create);
 //! Check if the file iIo is an ORF image.
 EXIV2API bool isOrfType(BasicIo& iIo, bool advance);
 
-} // namespace Exiv2
+}  // namespace Exiv2
 
-#endif // #ifndef ORFIMAGE_HPP_
+#endif  // #ifndef ORFIMAGE_HPP_

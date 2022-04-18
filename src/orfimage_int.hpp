@@ -34,7 +34,7 @@ namespace Internal {
   @brief Olympus ORF header structure.
 */
 class OrfHeader : public TiffHeaderBase {
-public:
+ public:
   //! @name Creators
   //@{
   //! Default constructor
@@ -47,12 +47,12 @@ public:
   //@{
   bool read(const byte* pData, uint32_t size) override;
   //@}
-private:
+ private:
   // DATA
-  uint16_t sig_; //<! The actual magic number
-}; // class OrfHeader
+  uint16_t sig_;  //<! The actual magic number
+};                // class OrfHeader
 
-} // namespace Internal
-} // namespace Exiv2
+}  // namespace Internal
+}  // namespace Exiv2
 
-#endif // #ifndef ORFIMAGE_INT_HPP_
+#endif  // #ifndef ORFIMAGE_INT_HPP_

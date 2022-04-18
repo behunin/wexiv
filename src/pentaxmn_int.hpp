@@ -30,7 +30,7 @@ namespace Internal {
 
 //! MakerNote for Pentaxfilm cameras
 class PentaxMakerNote {
-public:
+ public:
   //! Return read-only list of built-in Pentaxfilm tags
   static const TagInfo* tagList();
 
@@ -59,19 +59,21 @@ public:
   //! Print Pentax shutter count
   static std::ostream& printShutterCount(std::ostream& os, const Value& value, const ExifData*);
 
-private:
+ private:
   //! Tag information
   static const TagInfo tagInfo_[];
-}; // class PentaxMakerNote
+};  // class PentaxMakerNote
 
 /*!
   @brief Print function to translate Pentax "combi-values" to a description
           by looking up a reference table.
 */
-template<int N, const TagDetails (&array)[N], int count, int ignoredcount, int ignoredcountmax>
+template <int N, const TagDetails (&array)[N], int count, int ignoredcount, int ignoredcountmax>
 std::ostream& printCombiTag(std::ostream& os, const Value& value, const ExifData* metadata) {
   std::ios::fmtflags f(os.flags());
-  if ((value.count() != count && (value.count() < (count + ignoredcount) || value.count() > (count + ignoredcountmax))) || count > 4) {
+  if ((value.count() != count &&
+       (value.count() < (count + ignoredcount) || value.count() > (count + ignoredcountmax))) ||
+      count > 4) {
     return printValue(os, value, metadata);
   }
   unsigned long l = 0;
@@ -85,7 +87,8 @@ std::ostream& printCombiTag(std::ostream& os, const Value& value, const ExifData
   if (td) {
     os << exvGettext(td->label_);
   } else {
-    os << exvGettext("Unknown") << " (0x" << std::setw(2 * count) << std::setfill('0') << std::hex << l << std::dec << ")";
+    os << exvGettext("Unknown") << " (0x" << std::setw(2 * count) << std::setfill('0') << std::hex << l << std::dec
+       << ")";
   }
 
   os.flags(f);
@@ -93,13 +96,13 @@ std::ostream& printCombiTag(std::ostream& os, const Value& value, const ExifData
 }
 
 //! Shortcut for the printCombiTag template which requires typing the array name only once.
-#define EXV_PRINT_COMBITAG(array, count, ignoredcount) printCombiTag<EXV_COUNTOF(array), array, count, ignoredcount, ignoredcount>
+#define EXV_PRINT_COMBITAG(array, count, ignoredcount) \
+  printCombiTag<EXV_COUNTOF(array), array, count, ignoredcount, ignoredcount>
 //! Shortcut for the printCombiTag template which requires typing the array name only once.
 #define EXV_PRINT_COMBITAG_MULTI(array, count, ignoredcount, ignoredcountmax) \
   printCombiTag<EXV_COUNTOF(array), array, count, ignoredcount, ignoredcountmax>
 
-} // namespace Internal
-} // namespace Exiv2
+}  // namespace Internal
+}  // namespace Exiv2
 
-
-#endif // #ifndef PENTAXMN_INT_HPP_
+#endif  // #ifndef PENTAXMN_INT_HPP_

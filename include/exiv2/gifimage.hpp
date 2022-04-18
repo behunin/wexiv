@@ -35,7 +35,7 @@ namespace Exiv2 {
 
 // Add GIF to the supported image formats
 namespace ImageType {
-const int gif = 11; //!< GIF image type (see class GifImage)
+const int gif = 11;  //!< GIF image type (see class GifImage)
 }
 
 /*!
@@ -43,7 +43,7 @@ const int gif = 11; //!< GIF image type (see class GifImage)
           directly.
   */
 class EXIV2API GifImage : public Image {
-public:
+ public:
   //! @name NOT Implemented
   //@{
   //! Copy constructor
@@ -78,7 +78,7 @@ public:
   std::string mimeType() const override;
   //@}
 
-}; // class GifImage
+};  // class GifImage
 
 // *****************************************************************************
 // template, inline and free functions
@@ -95,6 +95,6 @@ EXIV2API Image::UniquePtr newGifInstance(BasicIo::UniquePtr io, bool create);
 //! Check if the file iIo is a GIF image.
 EXIV2API bool isGifType(BasicIo& iIo, bool advance);
 
-} // namespace Exiv2
+}  // namespace Exiv2
 
-#endif // #ifndef GIFIMAGE_HPP_
+#endif  // #ifndef GIFIMAGE_HPP_

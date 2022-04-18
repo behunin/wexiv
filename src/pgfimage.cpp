@@ -32,12 +32,12 @@
 const unsigned char pgfSignature[3] = {0x50, 0x47, 0x46};
 
 const unsigned char pgfBlank[] = {
-    0x50, 0x47, 0x46, 0x36, 0x10, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x03, 0x03, 0x00,
-    0x00, 0x00, 0x14, 0x00, 0x67, 0x08, 0x20, 0x00, 0xc0, 0x01, 0x00, 0x00, 0x37, 0x00, 0x00, 0x78, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00,
-    0x00, 0x00, 0x37, 0x00, 0x00, 0x78, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x37, 0x00, 0x00, 0x78, 0x00, 0x00, 0x00, 0x00,
-    0x01, 0x00, 0x00, 0x00, 0x37, 0x00, 0x00, 0x78, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x37, 0x00, 0x00, 0x78, 0x00, 0x00,
-    0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x37, 0x00, 0x00, 0x78, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00};
-
+    0x50, 0x47, 0x46, 0x36, 0x10, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x18, 0x03, 0x03, 0x00, 0x00, 0x00, 0x14, 0x00, 0x67, 0x08, 0x20, 0x00, 0xc0, 0x01, 0x00, 0x00, 0x37, 0x00,
+    0x00, 0x78, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x37, 0x00, 0x00, 0x78, 0x00, 0x00, 0x00, 0x00,
+    0x01, 0x00, 0x00, 0x00, 0x37, 0x00, 0x00, 0x78, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x37, 0x00,
+    0x00, 0x78, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x37, 0x00, 0x00, 0x78, 0x00, 0x00, 0x00, 0x00,
+    0x01, 0x00, 0x00, 0x00, 0x37, 0x00, 0x00, 0x78, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00};
 
 // *****************************************************************************
 // class member definitions
@@ -66,9 +66,9 @@ static uint32_t byteSwap_(Exiv2::DataBuf& buf, size_t offset, bool bSwap) {
   return result;
 }
 
-PgfImage::PgfImage(BasicIo::UniquePtr io, bool create)
-  : Image(ImageType::pgf, mdExif | mdIptc | mdXmp | mdComment, std::move(io)), bSwap_(isBigEndianPlatform()) {
-} // PgfImage::PgfImage
+PgfImage::PgfImage(BasicIo::UniquePtr io, bool create) :
+    Image(ImageType::pgf, mdExif | mdIptc | mdXmp | mdComment, std::move(io)), bSwap_(isBigEndianPlatform()) {
+}  // PgfImage::PgfImage
 
 void PgfImage::readMetadata() {
   if (io_->open() != 0) {
@@ -114,21 +114,21 @@ void PgfImage::readMetadata() {
   iptcData() = image->iptcData();
   xmpData() = image->xmpData();
 
-} // PgfImage::readMetadata
+}  // PgfImage::readMetadata
 
 byte PgfImage::readPgfMagicNumber(BasicIo& iIo) {
   byte b = iIo.getb();
   if (iIo.error())
     throw Error(kerFailedToReadImageData);
 
-  if (b < 0x36) // 0x36 = '6'.
+  if (b < 0x36)  // 0x36 = '6'.
   {
     // Not right Magick version.
     throw Error(kerFailedToReadImageData, "Exiv2::PgfImage::readMetadata: wrong Magick number");
   }
 
   return b;
-} // PgfImage::readPgfMagicNumber
+}  // PgfImage::readPgfMagicNumber
 
 uint32_t PgfImage::readPgfHeaderSize(BasicIo& iIo) const {
   DataBuf buffer(4);
@@ -143,7 +143,7 @@ uint32_t PgfImage::readPgfHeaderSize(BasicIo& iIo) const {
     throw Error(kerNoImageInInputData);
 
   return headerSize;
-} // PgfImage::readPgfHeaderSize
+}  // PgfImage::readPgfHeaderSize
 
 DataBuf PgfImage::readPgfHeaderStructure(BasicIo& iIo, int& width, int& height) const {
   DataBuf header(16);
@@ -153,7 +153,7 @@ DataBuf PgfImage::readPgfHeaderStructure(BasicIo& iIo, int& width, int& height) 
   if (bufRead != header.size_)
     throw Error(kerInputDataReadFailed);
 
-  DataBuf work(8); // don't disturb the binary data - doWriteMetadata reuses it
+  DataBuf work(8);  // don't disturb the binary data - doWriteMetadata reuses it
   memcpy(work.pData_, header.pData_, 8);
   width = byteSwap_(work, 0, bSwap_);
   height = byteSwap_(work, 4, bSwap_);
@@ -166,7 +166,7 @@ DataBuf PgfImage::readPgfHeaderStructure(BasicIo& iIo, int& width, int& height) 
         */
   byte mode = header.pData_[12];
 
-  if (mode == 2) // Indexed color image. We pass color table (256 * 3 bytes).
+  if (mode == 2)  // Indexed color image. We pass color table (256 * 3 bytes).
   {
     header.alloc(16 + 256 * 3);
 
@@ -178,7 +178,7 @@ DataBuf PgfImage::readPgfHeaderStructure(BasicIo& iIo, int& width, int& height) 
   }
 
   return header;
-} // PgfImage::readPgfHeaderStructure
+}  // PgfImage::readPgfHeaderStructure
 
 Image::UniquePtr newPgfInstance(BasicIo::UniquePtr io, bool create) {
   Image::UniquePtr image(new PgfImage(std::move(io), create));
@@ -201,5 +201,5 @@ bool isPgfType(BasicIo& iIo, bool advance) {
   }
 
   return rc == 0;
-} // Exiv2::isPgfType
-} // namespace Exiv2
+}  // Exiv2::isPgfType
+}  // namespace Exiv2

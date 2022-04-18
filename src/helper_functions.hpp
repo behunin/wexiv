@@ -39,4 +39,4 @@
 */
 std::string string_from_unterminated(const char* data, size_t data_length);
 
-#endif // HELPER_FUNCTIONS_HPP
+#endif  // HELPER_FUNCTIONS_HPP

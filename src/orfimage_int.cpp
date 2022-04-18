@@ -40,11 +40,11 @@ bool OrfHeader::read(const byte* pData, uint32_t size) {
 
   uint16_t sig = getUShort(pData + 2, byteOrder());
   if (tag() != sig && 0x5352 != sig)
-    return false; // #658: Added 0x5352 "SR" for SP-560UZ
+    return false;  // #658: Added 0x5352 "SR" for SP-560UZ
   sig_ = sig;
   setOffset(getULong(pData + 4, byteOrder()));
   return true;
-} // OrfHeader::read
+}  // OrfHeader::read
 
-} // namespace Internal
-} // namespace Exiv2
+}  // namespace Internal
+}  // namespace Exiv2

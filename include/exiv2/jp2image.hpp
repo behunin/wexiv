@@ -40,14 +40,14 @@ namespace Exiv2 {
 
 // Add JPEG-2000 to the supported image formats
 namespace ImageType {
-const int jp2 = 15; //!< JPEG-2000 image type
+const int jp2 = 15;  //!< JPEG-2000 image type
 }
 
 /*!
   @brief Class to access JPEG-2000 images.
   */
 class EXIV2API Jp2Image : public Image {
-public:
+ public:
   //! @name Creators
   //@{
   /*!
@@ -85,7 +85,7 @@ public:
   Jp2Image& operator=(const Jp2Image& rhs) = delete;
   //@}
 
-}; // class Jp2Image
+};  // class Jp2Image
 
 // *****************************************************************************
 // template, inline and free functions
@@ -102,6 +102,6 @@ EXIV2API Image::UniquePtr newJp2Instance(BasicIo::UniquePtr io, bool create);
 //! Check if the file iIo is a JPEG-2000 image.
 EXIV2API bool isJp2Type(BasicIo& iIo, bool advance);
 
-} // namespace Exiv2
+}  // namespace Exiv2
 
-#endif // #ifndef JP2IMAGE_HPP_
+#endif  // #ifndef JP2IMAGE_HPP_

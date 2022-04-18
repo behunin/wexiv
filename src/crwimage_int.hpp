@@ -57,7 +57,7 @@ enum DataLocId { valueData, directoryData, lastDataLocId };
         (non-virtual interface).
 */
 class CiffComponent {
-public:
+ public:
   //! CiffComponent auto_ptr type
   using UniquePtr = std::unique_ptr<CiffComponent>;
   //! Container type to hold all metadata
@@ -66,9 +66,12 @@ public:
   //! @name Creators
   //@{
   //! Default constructor
-  CiffComponent() : dir_(0), tag_(0), size_(0), offset_(0), pData_(0), isAllocated_(false) {}
+  CiffComponent() : dir_(0), tag_(0), size_(0), offset_(0), pData_(0), isAllocated_(false) {
+  }
   //! Constructor taking a tag and directory
-  CiffComponent(uint16_t tag, uint16_t dir) : dir_(dir), tag_(tag), size_(0), offset_(0), pData_(0), isAllocated_(false) {}
+  CiffComponent(uint16_t tag, uint16_t dir) :
+      dir_(dir), tag_(tag), size_(0), offset_(0), pData_(0), isAllocated_(false) {
+  }
   //! Virtual destructor.
   virtual ~CiffComponent();
   //@}
@@ -137,7 +140,9 @@ public:
   */
   uint32_t writeValueData(Blob& blob, uint32_t offset);
   //! Set the directory tag for this component.
-  void setDir(uint16_t dir) { dir_ = dir; }
+  void setDir(uint16_t dir) {
+    dir_ = dir;
+  }
   //! Set the data value of the entry.
   void setValue(DataBuf buf);
   //@}
@@ -172,10 +177,14 @@ public:
   */
   void writeDirEntry(Blob& blob, ByteOrder byteOrder) const;
   //! Return the tag of the directory containing this component
-  uint16_t dir() const { return dir_; }
+  uint16_t dir() const {
+    return dir_;
+  }
 
   //! Return the tag of this component
-  uint16_t tag() const { return tag_; }
+  uint16_t tag() const {
+    return tag_;
+  }
 
   //! Return true if the component is empty, else false
   bool empty() const;
@@ -188,22 +197,34 @@ public:
           of data bytes this component can have. The actual size,
           i.e., used data bytes, may be less than 8.
   */
-  uint32_t size() const { return size_; }
+  uint32_t size() const {
+    return size_;
+  }
 
   //! Return the offset to the data from the start of the directory
-  uint32_t offset() const { return offset_; }
+  uint32_t offset() const {
+    return offset_;
+  }
 
   //! Return a pointer to the data area of this component
-  const byte* pData() const { return pData_; }
+  const byte* pData() const {
+    return pData_;
+  }
 
   //! Return the tag id of this component
-  uint16_t tagId() const { return tag_ & 0x3fff; }
+  uint16_t tagId() const {
+    return tag_ & 0x3fff;
+  }
 
   //! Return the type id of thi component
-  TypeId typeId() const { return typeId(tag_); }
+  TypeId typeId() const {
+    return typeId(tag_);
+  }
 
   //! Return the data location for this component
-  DataLocId dataLocation() const { return dataLocation(tag_); }
+  DataLocId dataLocation() const {
+    return dataLocation(tag_);
+  }
 
   /*!
     @brief Finds \em crwTagId in directory \em crwDir, returning a pointer to
@@ -212,7 +233,7 @@ public:
   CiffComponent* findComponent(uint16_t crwTagId, uint16_t crwDir) const;
   //@}
 
-protected:
+ protected:
   //! @name Manipulators
   //@{
   //! Implements add()
@@ -226,9 +247,13 @@ protected:
   //! Implements write()
   virtual uint32_t doWrite(Blob& blob, ByteOrder byteOrder, uint32_t offset) = 0;
   //! Set the size of the data area.
-  void setSize(uint32_t size) { size_ = size; }
+  void setSize(uint32_t size) {
+    size_ = size;
+  }
   //! Set the offset for this component.
-  void setOffset(uint32_t offset) { offset_ = offset; }
+  void setOffset(uint32_t offset) {
+    offset_ = offset;
+  }
   //@}
 
   //! @name Accessors
@@ -243,29 +268,31 @@ protected:
   virtual CiffComponent* doFindComponent(uint16_t crwTagId, uint16_t crwDir) const;
   //@}
 
-private:
+ private:
   // DATA
-  uint16_t dir_; //!< Tag of the directory containing this component
-  uint16_t tag_; //!< Tag of the entry
-  uint32_t size_; //!< Size of the data area
-  uint32_t offset_; //!< Offset to the data area from start of dir
-  const byte* pData_; //!< Pointer to the data area
-  bool isAllocated_; //!< True if this entry owns the value data
+  uint16_t dir_;       //!< Tag of the directory containing this component
+  uint16_t tag_;       //!< Tag of the entry
+  uint32_t size_;      //!< Size of the data area
+  uint32_t offset_;    //!< Offset to the data area from start of dir
+  const byte* pData_;  //!< Pointer to the data area
+  bool isAllocated_;   //!< True if this entry owns the value data
 
-}; // class CiffComponent
+};  // class CiffComponent
 
 /*!
   @brief This class models one directory entry of a CIFF directory of
         a CRW (Canon Raw data) image.
 */
 class CiffEntry : public CiffComponent {
-public:
+ public:
   //! @name Creators
   //@{
   //! Default constructor
-  CiffEntry() {}
+  CiffEntry() {
+  }
   //! Constructor taking a tag and directory
-  CiffEntry(uint16_t tag, uint16_t dir) : CiffComponent(tag, dir) {}
+  CiffEntry(uint16_t tag, uint16_t dir) : CiffComponent(tag, dir) {
+  }
 
   //! Virtual destructor.
   ~CiffEntry() override = default;
@@ -273,7 +300,7 @@ public:
 
   // Default assignment operator is fine
 
-private:
+ private:
   //! @name Manipulators
   //@{
   using CiffComponent::doAdd;
@@ -292,17 +319,19 @@ private:
   void doDecode(Image& image, ByteOrder byteOrder) const override;
   //@}
 
-}; // class CiffEntry
+};  // class CiffEntry
 
 //! This class models a CIFF directory of a CRW (Canon Raw data) image.
 class CiffDirectory : public CiffComponent {
-public:
+ public:
   //! @name Creators
   //@{
   //! Default constructor
-  CiffDirectory() : cc_(NULL) {}
+  CiffDirectory() : cc_(NULL) {
+  }
   //! Constructor taking a tag and directory
-  CiffDirectory(uint16_t tag, uint16_t dir) : CiffComponent(tag, dir), cc_(NULL) {}
+  CiffDirectory(uint16_t tag, uint16_t dir) : CiffComponent(tag, dir), cc_(NULL) {
+  }
 
   //! Virtual destructor
   ~CiffDirectory() override;
@@ -322,7 +351,7 @@ public:
   void readDirectory(const byte* pData, uint32_t size, ByteOrder byteOrder);
   //@}
 
-private:
+ private:
   //! @name Manipulators
   //@{
   // See base class comment
@@ -355,13 +384,13 @@ private:
   CiffComponent* doFindComponent(uint16_t crwTagId, uint16_t crwDir) const override;
   //@}
 
-private:
+ private:
   // DATA
-  Components components_; //!< List of components in this dir
-  UniquePtr m_; // used by recursive doAdd
+  Components components_;  //!< List of components in this dir
+  UniquePtr m_;            // used by recursive doAdd
   CiffComponent* cc_;
 
-}; // class CiffDirectory
+};  // class CiffDirectory
 
 /*!
   @brief This class models the header of a CRW (Canon Raw data) image.  It
@@ -370,14 +399,15 @@ private:
         perform the requested action.
 */
 class CiffHeader {
-public:
+ public:
   //! CiffHeader auto_ptr type
   using UniquePtr = std::unique_ptr<CiffHeader>;
 
   //! @name Creators
   //@{
   //! Default constructor
-  CiffHeader() : pRootDir_(0), byteOrder_(littleEndian), offset_(0x0000001a), pPadding_(0), padded_(0) {}
+  CiffHeader() : pRootDir_(0), byteOrder_(littleEndian), offset_(0x0000001a), pPadding_(0), padded_(0) {
+  }
   //! Virtual destructor
   virtual ~CiffHeader();
   //@}
@@ -416,7 +446,9 @@ public:
   //@}
 
   //! Return a pointer to the Canon CRW signature.
-  static const char* signature() { return signature_; }
+  static const char* signature() {
+    return signature_;
+  }
 
   //! @name Accessors
   //@{
@@ -446,7 +478,9 @@ public:
   */
   void print(std::ostream& os, const std::string& prefix = "") const;
   //! Return the byte order (little or big endian).
-  ByteOrder byteOrder() const { return byteOrder_; }
+  ByteOrder byteOrder() const {
+    return byteOrder_;
+  }
   /*!
     @brief Finds \em crwTagId in directory \em crwDir in the parse tree,
           returning a pointer to the component or 0 if not found.
@@ -454,23 +488,23 @@ public:
   CiffComponent* findComponent(uint16_t crwTagId, uint16_t crwDir) const;
   //@}
 
-private:
+ private:
   // DATA
-  static const char signature_[]; //!< Canon CRW signature "HEAPCCDR"
+  static const char signature_[];  //!< Canon CRW signature "HEAPCCDR"
 
-  CiffDirectory* pRootDir_; //!< Pointer to the root directory
-  ByteOrder byteOrder_; //!< Applicable byte order
-  uint32_t offset_; //!< Offset to the start of the root dir
-  byte* pPadding_; //!< Pointer to the (unknown) remainder
-  uint32_t padded_; //!< Number of padding-bytes
+  CiffDirectory* pRootDir_;  //!< Pointer to the root directory
+  ByteOrder byteOrder_;      //!< Applicable byte order
+  uint32_t offset_;          //!< Offset to the start of the root dir
+  byte* pPadding_;           //!< Pointer to the (unknown) remainder
+  uint32_t padded_;          //!< Number of padding-bytes
 
-}; // class CiffHeader
+};  // class CiffHeader
 
 //! Structure for the CIFF directory hierarchy
 struct CrwSubDir {
-  uint16_t crwDir_; //!< Directory tag
-  uint16_t parent_; //!< Parent directory tag
-}; // struct CrwSubDir
+  uint16_t crwDir_;  //!< Directory tag
+  uint16_t parent_;  //!< Parent directory tag
+};                   // struct CrwSubDir
 
 /*!
   @brief Structure for a mapping table for conversion of CIFF entries to
@@ -480,24 +514,21 @@ struct CrwMapping {
   //! @name Creators
   //@{
   //! Default constructor
-  CrwMapping(uint16_t crwTagId,
-             uint16_t crwDir,
-             uint32_t size,
-             uint16_t tag,
-             Internal::IfdId ifdId,
-             CrwDecodeFct toExif)
-    : crwTagId_(crwTagId), crwDir_(crwDir), size_(size), tag_(tag), ifdId_(ifdId), toExif_(toExif){}
+  CrwMapping(uint16_t crwTagId, uint16_t crwDir, uint32_t size, uint16_t tag, Internal::IfdId ifdId,
+             CrwDecodeFct toExif) :
+      crwTagId_(crwTagId), crwDir_(crwDir), size_(size), tag_(tag), ifdId_(ifdId), toExif_(toExif) {
+  }
   //@}
 
   // DATA
-  uint16_t crwTagId_; //!< CRW tag id
-  uint16_t crwDir_; //!< CRW directory tag
-  uint32_t size_; //!< Data size (overwrites the size from the entry)
-  uint16_t tag_; //!< Exif tag to map to
-  IfdId ifdId_; //!< Exif Ifd id to map to
-  CrwDecodeFct toExif_; //!< Conversion function
+  uint16_t crwTagId_;    //!< CRW tag id
+  uint16_t crwDir_;      //!< CRW directory tag
+  uint32_t size_;        //!< Data size (overwrites the size from the entry)
+  uint16_t tag_;         //!< Exif tag to map to
+  IfdId ifdId_;          //!< Exif Ifd id to map to
+  CrwDecodeFct toExif_;  //!< Conversion function
 
-}; // struct CrwMapping
+};  // struct CrwMapping
 
 /*!
   @brief Static class providing mapping functionality from CRW entries
@@ -510,7 +541,7 @@ class CrwMap {
   CrwMap();
   //@}
 
-public:
+ public:
   /*!
     @brief Decode image metadata from a CRW entry, convert and add it
           to the image metadata. This function converts only one CRW
@@ -531,7 +562,7 @@ public:
   */
   static void loadStack(CrwDirs& crwDirs, uint16_t crwDir);
 
-private:
+ private:
   //! Return conversion information for one \em crwDir and \em crwTagId
   static const CrwMapping* crwMapping(uint16_t crwDir, uint16_t crwTagId);
 
@@ -544,32 +575,39 @@ private:
     is not 0, then it is used instead of the \em size provided by the
     entry itself.
   */
-  static void decodeBasic(const CiffComponent& ciffComponent, const CrwMapping* pCrwMapping, Image& image, ByteOrder byteOrder);
+  static void decodeBasic(const CiffComponent& ciffComponent, const CrwMapping* pCrwMapping, Image& image,
+                          ByteOrder byteOrder);
 
   //! Decode the user comment
-  static void decode0x0805(const CiffComponent& ciffComponent, const CrwMapping* pCrwMapping, Image& image, ByteOrder byteOrder);
+  static void decode0x0805(const CiffComponent& ciffComponent, const CrwMapping* pCrwMapping, Image& image,
+                           ByteOrder byteOrder);
 
   //! Decode camera Make and Model information
-  static void decode0x080a(const CiffComponent& ciffComponent, const CrwMapping* pCrwMapping, Image& image, ByteOrder byteOrder);
+  static void decode0x080a(const CiffComponent& ciffComponent, const CrwMapping* pCrwMapping, Image& image,
+                           ByteOrder byteOrder);
 
   //! Decode Canon Camera Settings 1, 2 and Custom Function arrays
-  static void decodeArray(const CiffComponent& ciffComponent, const CrwMapping* pCrwMapping, Image& image, ByteOrder byteOrder);
+  static void decodeArray(const CiffComponent& ciffComponent, const CrwMapping* pCrwMapping, Image& image,
+                          ByteOrder byteOrder);
 
   //! Decode the date when the picture was taken
-  static void decode0x180e(const CiffComponent& ciffComponent, const CrwMapping* pCrwMapping, Image& image, ByteOrder byteOrder);
+  static void decode0x180e(const CiffComponent& ciffComponent, const CrwMapping* pCrwMapping, Image& image,
+                           ByteOrder byteOrder);
 
   //! Decode image width and height
-  static void decode0x1810(const CiffComponent& ciffComponent, const CrwMapping* pCrwMapping, Image& image, ByteOrder byteOrder);
+  static void decode0x1810(const CiffComponent& ciffComponent, const CrwMapping* pCrwMapping, Image& image,
+                           ByteOrder byteOrder);
 
   //! Decode the thumbnail image
-  static void decode0x2008(const CiffComponent& ciffComponent, const CrwMapping* pCrwMapping, Image& image, ByteOrder byteOrder);
+  static void decode0x2008(const CiffComponent& ciffComponent, const CrwMapping* pCrwMapping, Image& image,
+                           ByteOrder byteOrder);
 
-private:
+ private:
   // DATA
-  static const CrwMapping crwMapping_[]; //!< Metadata conversion table
-  static const CrwSubDir crwSubDir_[]; //!< Ciff directory hierarchy
+  static const CrwMapping crwMapping_[];  //!< Metadata conversion table
+  static const CrwSubDir crwSubDir_[];    //!< Ciff directory hierarchy
 
-}; // class CrwMap
+};  // class CrwMap
 
 // *****************************************************************************
 
@@ -580,7 +618,7 @@ private:
 */
 DataBuf packIfdId(const ExifData& exifData, IfdId ifdId, ByteOrder byteOrder);
 
-} // namespace Internal
-} // namespace Exiv2
+}  // namespace Internal
+}  // namespace Exiv2
 
-#endif // #ifndef CRWIMAGE_INT_HPP_
+#endif  // #ifndef CRWIMAGE_INT_HPP_

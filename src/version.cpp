@@ -55,7 +55,7 @@ const char* version() {
 bool testVersion(int major, int minor, int patch) {
   return versionNumber() >= EXIV2_MAKE_VERSION(major, minor, patch);
 }
-} // namespace Exiv2
+}  // namespace Exiv2
 
 static bool shouldOutput(const std::vector<std::regex>& greps, const char* key, const std::string& value) {
   bool bPrint = greps.empty();

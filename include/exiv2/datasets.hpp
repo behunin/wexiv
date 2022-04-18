@@ -46,29 +46,29 @@ namespace Exiv2 {
 
 //! Details of an IPTC record.
 struct EXIV2API RecordInfo {
-  uint16_t recordId_; //!< Record id
-  const char* name_; //!< Record name (one word)
-  const char* desc_; //!< Record description
+  uint16_t recordId_;  //!< Record id
+  const char* name_;   //!< Record name (one word)
+  const char* desc_;   //!< Record description
 };
 
 //! Details of an IPTC dataset.
 struct EXIV2API DataSet {
-  uint16_t number_; //!< Dataset number
-  const char* name_; //!< Dataset name
-  const char* title_; //!< Dataset title or label
-  const char* desc_; //!< Dataset description
-  bool mandatory_; //!< True if dataset is mandatory
-  bool repeatable_; //!< True if dataset is repeatable
-  uint32_t minbytes_; //!< Minimum number of bytes
-  uint32_t maxbytes_; //!< Maximum number of bytes
-  TypeId type_; //!< Exiv2 default type
-  uint16_t recordId_; //!< Record id
-  const char* photoshop_; //!< Photoshop string
-}; // struct DataSet
+  uint16_t number_;        //!< Dataset number
+  const char* name_;       //!< Dataset name
+  const char* title_;      //!< Dataset title or label
+  const char* desc_;       //!< Dataset description
+  bool mandatory_;         //!< True if dataset is mandatory
+  bool repeatable_;        //!< True if dataset is repeatable
+  uint32_t minbytes_;      //!< Minimum number of bytes
+  uint32_t maxbytes_;      //!< Maximum number of bytes
+  TypeId type_;            //!< Exiv2 default type
+  uint16_t recordId_;      //!< Record id
+  const char* photoshop_;  //!< Photoshop string
+};                         // struct DataSet
 
 //! IPTC dataset reference, implemented as a static class.
 class EXIV2API IptcDataSets {
-public:
+ public:
   /*!
     @name Record identifiers
     @brief Record identifiers to logically group dataSets. There are other
@@ -242,20 +242,20 @@ public:
   //! Print a list of all dataSets to output stream
   static void dataSetList(std::ostream& os);
 
-private:
+ private:
   static int dataSetIdx(uint16_t number, uint16_t recordId);
   static int dataSetIdx(const std::string& dataSetName, uint16_t recordId);
 
   static const DataSet* const records_[];
   static const RecordInfo recordInfo_[];
 
-}; // class IptcDataSets
+};  // class IptcDataSets
 
 /*!
   @brief Concrete keys for IPTC metadata.
   */
 class EXIV2API IptcKey : public Key {
-public:
+ public:
   //! Shortcut for an %IptcKey auto pointer.
   typedef std::unique_ptr<IptcKey> UniquePtr;
 
@@ -309,7 +309,7 @@ public:
   uint16_t record() const;
   //@}
 
-protected:
+ protected:
   //! @name Manipulators
   //@{
   /*!
@@ -327,18 +327,18 @@ protected:
   void decomposeKey();
   //@}
 
-private:
+ private:
   //! Internal virtual copy constructor.
   IptcKey* clone_() const override;
 
   // DATA
   static constexpr auto familyName_ = "Iptc";
 
-  uint16_t tag_; //!< Tag value
-  uint16_t record_; //!< Record value
-  std::string key_; //!< Key
+  uint16_t tag_;     //!< Tag value
+  uint16_t record_;  //!< Record value
+  std::string key_;  //!< Key
 
-}; // class IptcKey
+};  // class IptcKey
 
 /*!
   @brief typedef for string:string map
@@ -351,6 +351,6 @@ typedef std::map<std::string, std::string> Dictionary;
 //! Output operator for dataSet
 EXIV2API std::ostream& operator<<(std::ostream& os, const DataSet& dataSet);
 
-} // namespace Exiv2
+}  // namespace Exiv2
 
-#endif // #ifndef DATASETS_HPP_
+#endif  // #ifndef DATASETS_HPP_

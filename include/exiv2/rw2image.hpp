@@ -35,7 +35,7 @@ namespace Exiv2 {
 
 // Add RW2 to the supported image formats
 namespace ImageType {
-const int rw2 = 16; //!< RW2 image type (see class Rw2Image)
+const int rw2 = 16;  //!< RW2 image type (see class Rw2Image)
 }
 
 /*!
@@ -44,7 +44,7 @@ const int rw2 = 16; //!< RW2 image type (see class Rw2Image)
       present.
   */
 class EXIV2API Rw2Image : public Image {
-public:
+ public:
   //! @name Creators
   //@{
   /*!
@@ -82,7 +82,7 @@ public:
   Rw2Image& operator=(const Rw2Image& rhs) = delete;
   //@}
 
-}; // class Rw2Image
+};  // class Rw2Image
 
 /*!
   @brief Stateless parser class for data in RW2 format. Images use this
@@ -90,15 +90,16 @@ public:
           implemented. See class TiffParser for details.
   */
 class EXIV2API Rw2Parser {
-public:
+ public:
   /*!
     @brief Decode metadata from a buffer \em pData of length \em size
             with data in RW2 format to the provided metadata containers.
             See TiffParser::decode().
   */
-  static ByteOrder decode(emscripten::val& exifData, emscripten::val& iptcData, emscripten::val& xmpData, const byte* pData, uint32_t size);
+  static ByteOrder decode(emscripten::val& exifData, emscripten::val& iptcData, emscripten::val& xmpData,
+                          const byte* pData, uint32_t size);
 
-}; // class Rw2Parser
+};  // class Rw2Parser
 
 // *****************************************************************************
 // template, inline and free functions
@@ -115,6 +116,6 @@ EXIV2API Image::UniquePtr newRw2Instance(BasicIo::UniquePtr io, bool create);
 //! Check if the file iIo is a RW2 image.
 EXIV2API bool isRw2Type(BasicIo& iIo, bool advance);
 
-} // namespace Exiv2
+}  // namespace Exiv2
 
-#endif // #ifndef RW2IMAGE_HPP_
+#endif  // #ifndef RW2IMAGE_HPP_

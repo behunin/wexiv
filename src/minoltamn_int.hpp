@@ -32,7 +32,7 @@ namespace Internal {
 
 //! MakerNote for Minolta cameras
 class MinoltaMakerNote {
-public:
+ public:
   //! Return read-only list of built-in Minolta tags
   static const TagInfo* tagList();
   //! Return read-only list of built-in Minolta Standard Camera Settings tags
@@ -73,7 +73,7 @@ public:
   static std::ostream& printMinoltaExposureCompensation5D(std::ostream& os, const Value& value, const ExifData*);
   //@}
 
-private:
+ private:
   //! Tag information
   static const TagInfo tagInfo_[];
   static const TagInfo tagInfoCsA100_[];
@@ -81,7 +81,7 @@ private:
   static const TagInfo tagInfoCs7D_[];
   static const TagInfo tagInfoCsStd_[];
 
-}; // class MinoltaMakerNote
+};  // class MinoltaMakerNote
 
 // -- Minolta and Sony MakerNote Common Values ---------------------------------------
 
@@ -135,7 +135,7 @@ std::ostream& printMinoltaSonyFlashExposureComp(std::ostream&, const Value&, con
 
 // TODO: Added shared methods here.
 
-} // namespace Internal
-} // namespace Exiv2
+}  // namespace Internal
+}  // namespace Exiv2
 
-#endif // #ifndef MINOLTAMN_INT_HPP_
+#endif  // #ifndef MINOLTAMN_INT_HPP_

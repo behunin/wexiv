@@ -29,4 +29,4 @@ bool isValidBoxFileType(const std::vector<uint8_t>& boxData) {
   }
   return (brand == brandJp2 && minorVersion == 0 && clWithRightBrand);
 }
-} // namespace Exiv2::Internal
+}  // namespace Exiv2::Internal

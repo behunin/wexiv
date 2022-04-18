@@ -30,7 +30,7 @@ namespace Internal {
 
 //! MakerNote for Panasonic cameras
 class PanasonicMakerNote {
-public:
+ public:
   //! Return read-only list of built-in Panasonic tags
   static const TagInfo* tagList();
   //! Return read-only list of built-in Panasonic RAW image tags (IFD0)
@@ -62,15 +62,15 @@ public:
   static std::ostream& printPitchAngle(std::ostream& os, const Value& value, const ExifData*);
   //@}
 
-private:
+ private:
   //! Makernote tag list
   static const TagInfo tagInfo_[];
   //! Taglist for IFD0 of Panasonic RAW images
   static const TagInfo tagInfoRaw_[];
 
-}; // class PanasonicMakerNote
+};  // class PanasonicMakerNote
 
-} // namespace Internal
-} // namespace Exiv2
+}  // namespace Internal
+}  // namespace Exiv2
 
-#endif // #ifndef PANASONICMN_INT_HPP_
+#endif  // #ifndef PANASONICMN_INT_HPP_

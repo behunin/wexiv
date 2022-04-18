@@ -25,7 +25,7 @@
 #include "casiomn_int.hpp"
 #include "error.hpp"
 #include "fujimn_int.hpp"
-#include "i18n.h" // NLS support.
+#include "i18n.h"  // NLS support.
 #include "minoltamn_int.hpp"
 #include "nikonmn_int.hpp"
 #include "olympusmn_int.hpp"
@@ -49,13 +49,13 @@ bool TagVocabulary::operator==(const std::string& key) const {
 }
 
 // Unknown Tag
-static const TagInfo unknownTag{0xffff, "Unknown tag", N_("Unknown tag"), N_("Unknown tag"), ifdIdNotSet, sectionIdNotSet, asciiString,
-                                -1,     printValue};
+static const TagInfo unknownTag{0xffff,      "Unknown tag",   N_("Unknown tag"), N_("Unknown tag"),
+                                ifdIdNotSet, sectionIdNotSet, asciiString,       -1,
+                                printValue};
 
-} // namespace Internal
+}  // namespace Internal
 
 using namespace Internal;
-
 
 //! List of all defined Exif sections.
 constexpr SectionInfo sectionInfo[] = {{sectionIdNotSet, "(UnknownSection)", N_("Unknown section")},
@@ -149,7 +149,7 @@ void ExifTags::taglist(std::ostream& os) {
   for (int i = 0; gps[i].tag_ != 0xffff; ++i) {
     os << gps[i] << "\n";
   }
-} // ExifTags::taglist
+}  // ExifTags::taglist
 
 void ExifTags::taglist(std::ostream& os, const std::string& groupName) {
   IfdId ifdId = Internal::groupId(groupName);
@@ -160,7 +160,7 @@ void ExifTags::taglist(std::ostream& os, const std::string& groupName) {
 struct ExifKey::Impl {
   //! @name Creators
   //@{
-  Impl() = default; //!< Default constructor
+  Impl() = default;  //!< Default constructor
   //@}
 
   //! @name Manipulators
@@ -187,14 +187,14 @@ struct ExifKey::Impl {
   //@}
 
   // DATA
-  static constexpr auto familyName_ = "Exif"; //!< "Exif"
+  static constexpr auto familyName_ = "Exif";  //!< "Exif"
 
-  const TagInfo* tagInfo_{nullptr}; //!< Tag info
-  uint16_t tag_{0}; //!< Tag value
-  IfdId ifdId_{ifdIdNotSet}; //!< The IFD associated with this tag
-  int idx_{0}; //!< Unique id of the Exif key in the image
-  std::string groupName_; //!< The group name
-  std::string key_; //!< %Key
+  const TagInfo* tagInfo_{nullptr};  //!< Tag info
+  uint16_t tag_{0};                  //!< Tag value
+  IfdId ifdId_{ifdIdNotSet};         //!< The IFD associated with this tag
+  int idx_{0};                       //!< Unique id of the Exif key in the image
+  std::string groupName_;            //!< The group name
+  std::string key_;                  //!< %Key
 };
 
 std::string ExifKey::Impl::tagName() const {
@@ -358,8 +358,8 @@ std::ostream& operator<<(std::ostream& os, const TagInfo& ti) {
   std::ios::fmtflags f(os.flags());
   ExifKey exifKey(ti);
   os << exifKey.tagName() << "," << std::dec << exifKey.tag() << ","
-     << "0x" << std::setw(4) << std::setfill('0') << std::right << std::hex << exifKey.tag() << "," << exifKey.groupName() << ","
-     << exifKey.key() << "," << TypeInfo::typeName(exifKey.defaultTypeId()) << ",";
+     << "0x" << std::setw(4) << std::setfill('0') << std::right << std::hex << exifKey.tag() << ","
+     << exifKey.groupName() << "," << exifKey.key() << "," << TypeInfo::typeName(exifKey.defaultTypeId()) << ",";
   // CSV encoded I am \"dead\" beat" => "I am ""dead"" beat"
   char Q = '"';
   os << Q;
@@ -374,4 +374,4 @@ std::ostream& operator<<(std::ostream& os, const TagInfo& ti) {
   return os;
 }
 
-} // namespace Exiv2
+}  // namespace Exiv2

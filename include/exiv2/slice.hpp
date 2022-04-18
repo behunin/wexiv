@@ -29,40 +29,40 @@
 namespace Exiv2 {
 namespace Internal {
 // TODO: remove these custom implementations once we have C++11
-template<class T>
+template <class T>
 struct remove_const {
   typedef T type;
 };
 
-template<class T>
+template <class T>
 struct remove_const<const T> {
   typedef T type;
 };
 
-template<class T>
+template <class T>
 struct remove_volatile {
   typedef T type;
 };
-template<class T>
+template <class T>
 struct remove_volatile<volatile T> {
   typedef T type;
 };
-template<class T>
+template <class T>
 struct remove_cv {
   typedef typename remove_const<typename remove_volatile<T>::type>::type type;
 };
 
-template<class T>
+template <class T>
 struct remove_pointer {
   typedef T type;
 };
 
-template<class T>
+template <class T>
 struct remove_pointer<T*> {
   typedef T type;
 };
 
-template<class T>
+template <class T>
 struct remove_pointer<T* const> {
   typedef T type;
 };
@@ -88,7 +88,7 @@ struct SliceBase {
     return end_ - begin_;
   }
 
-protected:
+ protected:
   /*!
    * Throw an exception when index is too large.
    *
@@ -134,7 +134,7 @@ protected:
  * - Must provide appropriate typedefs for iterator, const_iterator and
  *   value_type
  */
-template<template<typename data_type> class storage_type, typename data_type>
+template <template <typename data_type> class storage_type, typename data_type>
 struct ConstSliceBase : SliceBase {
   typedef typename storage_type<data_type>::iterator iterator;
   typedef typename storage_type<data_type>::const_iterator const_iterator;
@@ -145,7 +145,8 @@ struct ConstSliceBase : SliceBase {
    * otherwise an exception is thrown. Also forwards all parameters to
    * the constructor of storage_
    */
-  ConstSliceBase(data_type& data, size_t begin, size_t end) : SliceBase(begin, end), storage_(data, begin, end) {}
+  ConstSliceBase(data_type& data, size_t begin, size_t end) : SliceBase(begin, end), storage_(data, begin, end) {
+  }
 
   /*!
    * Obtain a constant reference to the element with the specified
@@ -165,12 +166,16 @@ struct ConstSliceBase : SliceBase {
   /*!
    * Obtain a constant iterator to the first element in the slice.
    */
-  const_iterator cbegin() const noexcept { return storage_.unsafeGetIteratorAt(begin_); }
+  const_iterator cbegin() const noexcept {
+    return storage_.unsafeGetIteratorAt(begin_);
+  }
 
   /*!
    * Obtain a constant iterator to the first beyond the slice.
    */
-  const_iterator cend() const noexcept { return storage_.unsafeGetIteratorAt(end_); }
+  const_iterator cend() const noexcept {
+    return storage_.unsafeGetIteratorAt(end_);
+  }
 
   /*!
    * Create a constant sub-slice with the given bounds (with respect
@@ -180,7 +185,7 @@ struct ConstSliceBase : SliceBase {
    * return. Provide it with the type of the class that derives from
    * mutable_slice_base.
    */
-  template<typename slice_type>
+  template <typename slice_type>
   slice_type subSlice(size_t begin, size_t end) const {
     this->rangeCheck(begin);
     // end == size() is a legal value, since end is the first
@@ -197,10 +202,10 @@ struct ConstSliceBase : SliceBase {
     return slice_type(storage_.data_, new_begin, new_end);
   }
 
-protected:
+ protected:
   /*!
-             * Stores a reference to the actual data.
-             */
+   * Stores a reference to the actual data.
+   */
   storage_type<data_type> storage_;
 };
 
@@ -209,7 +214,7 @@ protected:
  * slices. It only re-implements the const-qualified versions as
  * non-const.
  */
-template<template<typename> class storage_type, typename data_type>
+template <template <typename> class storage_type, typename data_type>
 struct MutableSliceBase : public ConstSliceBase<storage_type, data_type> {
   typedef typename ConstSliceBase<storage_type, data_type>::iterator iterator;
   typedef typename ConstSliceBase<storage_type, data_type>::const_iterator const_iterator;
@@ -220,7 +225,9 @@ struct MutableSliceBase : public ConstSliceBase<storage_type, data_type> {
    *
    * @todo use using once we have C++11
    */
-  MutableSliceBase(data_type& data, size_t begin, size_t end) : ConstSliceBase<storage_type, data_type>(data, begin, end) {}
+  MutableSliceBase(data_type& data, size_t begin, size_t end) :
+      ConstSliceBase<storage_type, data_type>(data, begin, end) {
+  }
 
   /*!
    * Obtain a reference to the element with the specified index in the
@@ -241,14 +248,18 @@ struct MutableSliceBase : public ConstSliceBase<storage_type, data_type> {
   /*!
    * Obtain an iterator to the first element in the slice.
    */
-  iterator begin() noexcept { return this->storage_.unsafeGetIteratorAt(this->begin_); }
+  iterator begin() noexcept {
+    return this->storage_.unsafeGetIteratorAt(this->begin_);
+  }
 
   /*!
    * Obtain an iterator to the first element beyond the slice.
    */
-  iterator end() noexcept { return this->storage_.unsafeGetIteratorAt(this->end_); }
+  iterator end() noexcept {
+    return this->storage_.unsafeGetIteratorAt(this->end_);
+  }
 
-protected:
+ protected:
   /*!
    * Explicitly convert this instance into a base-class of the
    * appropriate constant version of this slice.
@@ -280,7 +291,7 @@ protected:
    * return. Provide it with the type of the class that derives from
    * mutable_slice_base.
    */
-  template<typename slice_type>
+  template <typename slice_type>
   slice_type subSlice(size_t begin, size_t end) {
     this->rangeCheck(begin);
     // end == size() is a legal value, since end is the first
@@ -304,7 +315,7 @@ protected:
  *
  * @tparam container  Type of the STL-container.
  */
-template<typename container>
+template <typename container>
 struct ContainerStorage {
   typedef typename container::iterator iterator;
 
@@ -328,9 +339,13 @@ struct ContainerStorage {
    *
    * @throw whatever container::at() throws
    */
-  const value_type& unsafeAt(size_t index) const { return data_.at(index); }
+  const value_type& unsafeAt(size_t index) const {
+    return data_.at(index);
+  }
 
-  value_type& unsafeAt(size_t index) { return data_.at(index); }
+  value_type& unsafeAt(size_t index) {
+    return data_.at(index);
+  }
 
   /*!
    * Obtain an iterator at the position of the element with the given
@@ -365,7 +380,7 @@ struct ContainerStorage {
  * this parameter to save constant arrays as `const` and mutable ones as
  * non-`const`.
  */
-template<typename storage_type>
+template <typename storage_type>
 struct PtrSliceStorage {
   typedef typename remove_cv<typename remove_pointer<storage_type>::type>::type value_type;
   typedef value_type* iterator;
@@ -390,9 +405,13 @@ struct PtrSliceStorage {
    *
    * @throw nothing
    */
-  value_type& unsafeAt(size_t index) noexcept { return data_[index]; }
+  value_type& unsafeAt(size_t index) noexcept {
+    return data_[index];
+  }
 
-  const value_type& unsafeAt(size_t index) const noexcept { return data_[index]; }
+  const value_type& unsafeAt(size_t index) const noexcept {
+    return data_[index];
+  }
 
   /*!
    * Obtain an iterator (=pointer) at the position of the element with
@@ -400,14 +419,18 @@ struct PtrSliceStorage {
    *
    * @throw nothing
    */
-  iterator unsafeGetIteratorAt(size_t index) noexcept { return data_ + index; }
+  iterator unsafeGetIteratorAt(size_t index) noexcept {
+    return data_ + index;
+  }
 
-  const_iterator unsafeGetIteratorAt(size_t index) const noexcept { return data_ + index; }
+  const_iterator unsafeGetIteratorAt(size_t index) const noexcept {
+    return data_ + index;
+  }
 
   storage_type data_;
 };
 
-} // namespace Internal
+}  // namespace Internal
 
 /*!
  * @brief Slice (= view) for STL containers.
@@ -453,7 +476,7 @@ struct PtrSliceStorage {
  * @tparam container A STL container type, like vector or array. Must support
  * array-like access via the `at()` method.
  */
-template<typename container>
+template <typename container>
 struct Slice : public Internal::MutableSliceBase<Internal::ContainerStorage, container> {
   typedef typename container::iterator iterator;
 
@@ -477,8 +500,9 @@ struct Slice : public Internal::MutableSliceBase<Internal::ContainerStorage, con
    * than `begin` (they cannot be equal) it is impossible to construct a
    * slice with zero length.
    */
-  Slice(container& cont, size_t begin, size_t end)
-    : Internal::MutableSliceBase<Internal::ContainerStorage, container>(cont, begin, end) {}
+  Slice(container& cont, size_t begin, size_t end) :
+      Internal::MutableSliceBase<Internal::ContainerStorage, container>(cont, begin, end) {
+  }
 
   /*!
    * Construct a sub-slice of this slice with the given bounds. The bounds
@@ -505,7 +529,7 @@ struct Slice : public Internal::MutableSliceBase<Internal::ContainerStorage, con
 /*!
  * @brief Specialization of slices for constant containers.
  */
-template<typename container>
+template <typename container>
 struct Slice<const container> : public Internal::ConstSliceBase<Internal::ContainerStorage, const container> {
   typedef typename container::iterator iterator;
 
@@ -513,12 +537,13 @@ struct Slice<const container> : public Internal::ConstSliceBase<Internal::Contai
 
   typedef typename Internal::remove_cv<typename container::value_type>::type value_type;
 
-  Slice(const container& cont, size_t begin, size_t end)
-    : Internal::ConstSliceBase<Internal::ContainerStorage, const container>(cont, begin, end) {}
+  Slice(const container& cont, size_t begin, size_t end) :
+      Internal::ConstSliceBase<Internal::ContainerStorage, const container>(cont, begin, end) {
+  }
 
   Slice subSlice(size_t begin, size_t end) const {
-    return Internal::ConstSliceBase<Internal::ContainerStorage, const container>::template subSlice<Slice<const container>>(begin,
-                                                                                                                            end);
+    return Internal::ConstSliceBase<Internal::ContainerStorage,
+                                    const container>::template subSlice<Slice<const container>>(begin, end);
   }
 };
 
@@ -530,7 +555,7 @@ struct Slice<const container> : public Internal::ConstSliceBase<Internal::Contai
  * a proper bounds check! It can only verify that you didn't accidentally
  * swap begin and end!
  */
-template<typename T>
+template <typename T>
 struct Slice<const T*> : public Internal::ConstSliceBase<Internal::PtrSliceStorage, const T*> {
   /*!
    * Constructor.
@@ -544,19 +569,21 @@ struct Slice<const T*> : public Internal::ConstSliceBase<Internal::PtrSliceStora
    * Please note that the constructor has no way how to verify that
    * `begin` and `end` are not out of bounds of the provided array!
    */
-  Slice(const T* ptr, size_t begin, size_t end) : Internal::ConstSliceBase<Internal::PtrSliceStorage, const T*>(ptr, begin, end) {
+  Slice(const T* ptr, size_t begin, size_t end) :
+      Internal::ConstSliceBase<Internal::PtrSliceStorage, const T*>(ptr, begin, end) {
     // TODO: use using in C++11
   }
 
   Slice<const T*> subSlice(size_t begin, size_t end) const {
-    return Internal::ConstSliceBase<Internal::PtrSliceStorage, const T*>::template subSlice<Slice<const T*>>(begin, end);
+    return Internal::ConstSliceBase<Internal::PtrSliceStorage, const T*>::template subSlice<Slice<const T*>>(begin,
+                                                                                                             end);
   }
 };
 
 /*!
  * Specialization of slices for (mutable) C-arrays.
  */
-template<typename T>
+template <typename T>
 struct Slice<T*> : public Internal::MutableSliceBase<Internal::PtrSliceStorage, T*> {
   Slice(T* ptr, size_t begin, size_t end) : Internal::MutableSliceBase<Internal::PtrSliceStorage, T*>(ptr, begin, end) {
     // TODO: use using in C++11
@@ -577,7 +604,7 @@ struct Slice<T*> : public Internal::MutableSliceBase<Internal::PtrSliceStorage, 
  * Convenience wrapper around the slice's constructor for automatic template
  * parameter deduction.
  */
-template<typename T>
+template <typename T>
 inline Slice<T> makeSlice(T& cont, size_t begin, size_t end) {
   return Slice<T>(cont, begin, end);
 }
@@ -585,7 +612,7 @@ inline Slice<T> makeSlice(T& cont, size_t begin, size_t end) {
 /*!
  * Overload of makeSlice for slices of C-arrays.
  */
-template<typename T>
+template <typename T>
 inline Slice<T*> makeSlice(T* ptr, size_t begin, size_t end) {
   return Slice<T*>(ptr, begin, end);
 }
@@ -593,7 +620,7 @@ inline Slice<T*> makeSlice(T* ptr, size_t begin, size_t end) {
 /*!
  * @brief Return a new slice spanning the whole container.
  */
-template<typename container>
+template <typename container>
 inline Slice<container> makeSlice(container& cont) {
   return Slice<container>(cont, 0, cont.size());
 }
@@ -602,7 +629,7 @@ inline Slice<container> makeSlice(container& cont) {
  * @brief Return a new slice spanning from begin until the end of the
  * container.
  */
-template<typename container>
+template <typename container>
 inline Slice<container> makeSliceFrom(container& cont, size_t begin) {
   return Slice<container>(cont, begin, cont.size());
 }
@@ -610,7 +637,7 @@ inline Slice<container> makeSliceFrom(container& cont, size_t begin) {
 /*!
  * @brief Return a new slice spanning until `end`.
  */
-template<typename container>
+template <typename container>
 inline Slice<container> makeSliceUntil(container& cont, size_t end) {
   return Slice<container>(cont, 0, end);
 }
@@ -618,11 +645,11 @@ inline Slice<container> makeSliceUntil(container& cont, size_t end) {
 /*!
  * Overload of makeSliceUntil for pointer based slices.
  */
-template<typename T>
+template <typename T>
 inline Slice<T*> makeSliceUntil(T* ptr, size_t end) {
   return Slice<T*>(ptr, 0, end);
 }
 
-} // namespace Exiv2
+}  // namespace Exiv2
 
 #endif /* EXIV2_INCLUDE_SLICE_HPP */

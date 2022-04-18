@@ -58,24 +58,24 @@ namespace Internal {
  * enum with the property VALUE which is true when the type is signed or
  * false if it is unsigned.
  */
-template<typename T>
+template <typename T>
 struct is_signed {
   enum { VALUE = T(-1) < T(0) };
 };
 
 /*!
- * @brief Helper struct for SFINAE, from C++11 
+ * @brief Helper struct for SFINAE, from C++11
  *
  * This struct has a public typedef called type typedef'd to T if B is
  * true. Otherwise there is no typedef.
  */
-template<bool B, class T = void>
+template <bool B, class T = void>
 struct enable_if {};
 
 /*!
  * @brief Specialization of enable_if for the case B == true
  */
-template<class T>
+template <class T>
 struct enable_if<true, T> {
   using type = T;
 };
@@ -97,7 +97,7 @@ struct enable_if<true, T> {
  * Further information:
  * https://wiki.sei.cmu.edu/confluence/display/c/INT32-C.+Ensure+that+operations+on+signed+integers+do+not+result+in+overflow
  */
-template<typename T>
+template <typename T>
 typename enable_if<is_signed<T>::VALUE && sizeof(T) >= sizeof(int), bool>::type fallback_add_overflow(T summand_1,
                                                                                                       T summand_2,
                                                                                                       T& result) {
@@ -129,7 +129,7 @@ typename enable_if<is_signed<T>::VALUE && sizeof(T) >= sizeof(int), bool>::type 
  * Further information:
  * https://wiki.sei.cmu.edu/confluence/display/c/INT02-C.+Understand+integer+conversion+rules
  */
-template<typename T>
+template <typename T>
 typename enable_if<is_signed<T>::VALUE && sizeof(T) < sizeof(int), bool>::type fallback_add_overflow(T summand_1,
                                                                                                      T summand_2,
                                                                                                      T& result) {
@@ -158,7 +158,7 @@ typename enable_if<is_signed<T>::VALUE && sizeof(T) < sizeof(int), bool>::type f
  * Further information:
  * https://wiki.sei.cmu.edu/confluence/display/c/INT30-C.+Ensure+that+unsigned+integer+operations+do+not+wrap
  */
-template<typename T>
+template <typename T>
 typename enable_if<!is_signed<T>::VALUE, bool>::type fallback_add_overflow(T summand_1, T summand_2, T& result) {
   result = summand_1 + summand_2;
   return result < summand_1;
@@ -177,7 +177,7 @@ typename enable_if<!is_signed<T>::VALUE, bool>::type fallback_add_overflow(T sum
  *
  * This function is fully specialized for each compiler.
  */
-template<typename T>
+template <typename T>
 bool builtin_add_overflow(T summand_1, T summand_2, T& result) {
   return fallback_add_overflow(summand_1, summand_2, result);
 }
@@ -195,12 +195,12 @@ bool builtin_add_overflow(T summand_1, T summand_2, T& result) {
  * The intrinsics are documented here:
  * https://gcc.gnu.org/onlinedocs/gcc/Integer-Overflow-Builtins.html#Integer-Overflow-Builtins
  */
-#define SPECIALIZE_builtin_add_overflow(type, builtin_name) \
-  /* Full specialization of builtin_add_overflow for type using the */ \
-  /* builtin_name intrinsic */ \
-  template<> \
+#define SPECIALIZE_builtin_add_overflow(type, builtin_name)                               \
+  /* Full specialization of builtin_add_overflow for type using the */                    \
+  /* builtin_name intrinsic */                                                            \
+  template <>                                                                             \
   inline bool builtin_add_overflow<type>(type summand_1, type summand_2, type & result) { \
-    return builtin_name(summand_1, summand_2, &result); \
+    return builtin_name(summand_1, summand_2, &result);                                   \
   }
 
 SPECIALIZE_builtin_add_overflow(int, __builtin_sadd_overflow);
@@ -212,10 +212,10 @@ SPECIALIZE_builtin_add_overflow(unsigned long, __builtin_uaddl_overflow);
 SPECIALIZE_builtin_add_overflow(unsigned long long, __builtin_uaddll_overflow);
 
 #undef SPECIALIZE_builtin_add_overflow
-#endif // __GNUC__ >= 5 || __clang_major >= 3
+#endif  // __GNUC__ >= 5 || __clang_major >= 3
 #endif
 
-} // namespace Internal
+}  // namespace Internal
 
 /*!
  * @brief Safe addition, throws an exception on overflow.
@@ -236,7 +236,7 @@ SPECIALIZE_builtin_add_overflow(unsigned long long, __builtin_uaddll_overflow);
  * - GCC/Clang for signed and unsigned int, long and long long (not char & short)
  * - MSVC for unsigned int, long and long long
  */
-template<typename T>
+template <typename T>
 T add(T summand_1, T summand_2) {
   T res = 0;
   if (Internal::builtin_add_overflow(summand_1, summand_2, res)) {
@@ -267,7 +267,7 @@ T add(T summand_1, T summand_2) {
  * @return  The absolute value of `num` or `std::numeric_limits<T>::max()`
  *          when `num == std::numeric_limits<T>::min()`.
  */
-template<typename T>
+template <typename T>
 typename Internal::enable_if<Internal::is_signed<T>::VALUE, T>::type abs(T num) throw() {
   if (num == std::numeric_limits<T>::min()) {
     return std::numeric_limits<T>::max();
@@ -275,6 +275,6 @@ typename Internal::enable_if<Internal::is_signed<T>::VALUE, T>::type abs(T num) 
   return num < 0 ? -num : num;
 }
 
-} // namespace Safe
+}  // namespace Safe
 
-#endif // SAFE_OP_HPP_
+#endif  // SAFE_OP_HPP_

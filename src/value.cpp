@@ -37,7 +37,7 @@ namespace Exiv2 {
 
 bool convertStringCharsetIconv(std::string& str, const char* from, const char* to) {
   if (0 == strcmp(from, to))
-    return true; // nothing to do
+    return true;  // nothing to do
 
   bool ret = true;
   iconv_t cd;
@@ -79,7 +79,7 @@ bool convertStringCharsetIconv(std::string& str, const char* from, const char* t
 
 bool convertStringCharset(std::string& str, const char* from, const char* to) {
   if (0 == strcmp(from, to))
-    return true; // nothing to do
+    return true;  // nothing to do
   bool ret = false;
 #if defined EXV_HAVE_ICONV
   ret = convertStringCharsetIconv(str, from, to);
@@ -157,7 +157,7 @@ Value::UniquePtr Value::create(TypeId typeId) {
       break;
   }
   return value;
-} // Value::create
+}  // Value::create
 
 int Value::setDataArea(const byte* /*buf*/, long /*len*/) {
   return -1;
@@ -357,8 +357,8 @@ std::ostream& AsciiValue::write(std::ostream& os) const {
   return os << value_.substr(0, pos);
 }
 
-CommentValue::CharsetTable::CharsetTable(CharsetId charsetId, const char* name, const char* code)
-  : charsetId_(charsetId), name_(name), code_(code) {
+CommentValue::CharsetTable::CharsetTable(CharsetId charsetId, const char* name, const char* code) :
+    charsetId_(charsetId), name_(name), code_(code) {
 }
 
 //! Lookup list of supported IFD type information
@@ -637,7 +637,7 @@ std::ostream& XmpTextValue::write(std::ostream& os) const {
         os << "type=\"Seq\"";
         break;
       case XmpValue::xaNone:
-        break; // just to suppress the warning
+        break;  // just to suppress the warning
     }
     del = true;
   } else if (xmpStruct() != XmpValue::xsNone) {
@@ -646,7 +646,7 @@ std::ostream& XmpTextValue::write(std::ostream& os) const {
         os << "type=\"Struct\"";
         break;
       case XmpValue::xsNone:
-        break; // just to suppress the warning
+        break;  // just to suppress the warning
     }
     del = true;
   }
@@ -917,8 +917,8 @@ DateValue* DateValue::clone_() const {
 
 std::ostream& DateValue::write(std::ostream& os) const {
   std::ios::fmtflags f(os.flags());
-  os << date_.year << '-' << std::right << std::setw(2) << std::setfill('0') << date_.month << '-' << std::setw(2) << std::setfill('0')
-     << date_.day;
+  os << date_.year << '-' << std::right << std::setw(2) << std::setfill('0') << date_.month << '-' << std::setw(2)
+     << std::setfill('0') << date_.day;
   os.flags(f);
   return os;
 }
@@ -1033,9 +1033,9 @@ long TimeValue::copy(byte* buf, ByteOrder /*byteOrder*/) const {
   if (time_.tzHour < 0 || time_.tzMinute < 0)
     plusMinus = '-';
 
-  const int wrote =
-      snprintf(temp, sizeof(temp), // 11 bytes are written + \0
-               "%02d%02d%02d%1c%02d%02d", time_.hour, time_.minute, time_.second, plusMinus, abs(time_.tzHour), abs(time_.tzMinute));
+  const int wrote = snprintf(temp, sizeof(temp),  // 11 bytes are written + \0
+                             "%02d%02d%02d%1c%02d%02d", time_.hour, time_.minute, time_.second, plusMinus,
+                             abs(time_.tzHour), abs(time_.tzMinute));
 
   enforce(wrote == 11, Exiv2::kerUnsupportedTimeFormat);
   std::memcpy(buf, temp, wrote);
@@ -1064,9 +1064,9 @@ std::ostream& TimeValue::write(std::ostream& os) const {
     plusMinus = '-';
 
   std::ios::fmtflags f(os.flags());
-  os << std::right << std::setw(2) << std::setfill('0') << time_.hour << ':' << std::setw(2) << std::setfill('0') << time_.minute
-     << ':' << std::setw(2) << std::setfill('0') << time_.second << plusMinus << std::setw(2) << std::setfill('0') << abs(time_.tzHour)
-     << ':' << std::setw(2) << std::setfill('0') << abs(time_.tzMinute);
+  os << std::right << std::setw(2) << std::setfill('0') << time_.hour << ':' << std::setw(2) << std::setfill('0')
+     << time_.minute << ':' << std::setw(2) << std::setfill('0') << time_.second << plusMinus << std::setw(2)
+     << std::setfill('0') << abs(time_.tzHour) << ':' << std::setw(2) << std::setfill('0') << abs(time_.tzMinute);
   os.flags(f);
 
   return os;
@@ -1092,4 +1092,4 @@ Rational TimeValue::toRational(long n) const {
   return {toLong(n), 1};
 }
 
-} // namespace Exiv2
+}  // namespace Exiv2

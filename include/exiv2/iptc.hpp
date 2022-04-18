@@ -49,7 +49,7 @@ class ExifData;
           Value and methods to manipulate these.
   */
 class EXIV2API Iptcdatum : public Metadatum {
-public:
+ public:
   //! @name Creators
   //@{
   /*!
@@ -147,12 +147,12 @@ public:
   const Value& value() const override;
   //@}
 
-private:
+ private:
   // DATA
-  IptcKey::UniquePtr key_; //!< Key
-  Value::UniquePtr value_; //!< Value
+  IptcKey::UniquePtr key_;  //!< Key
+  Value::UniquePtr value_;  //!< Value
 
-}; // class Iptcdatum
+};  // class Iptcdatum
 
 //! Container type to hold all metadata
 typedef std::vector<Iptcdatum> IptcMetadata;
@@ -169,7 +169,7 @@ typedef std::vector<Iptcdatum> IptcMetadata;
   - extract IPTC metadata to files, insert from these files
 */
 class EXIV2API IptcData {
-public:
+ public:
   //! IptcMetadata iterator type
   typedef IptcMetadata::iterator iterator;
   //! IptcMetadata const iterator type
@@ -213,15 +213,21 @@ public:
   /*!
     @brief Delete all Iptcdatum instances resulting in an empty container.
     */
-  void clear() { iptcMetadata_.clear(); }
+  void clear() {
+    iptcMetadata_.clear();
+  }
   //! Sort metadata by key
   void sortByKey();
   //! Sort metadata by tag (aka dataset)
   void sortByTag();
   //! Begin of the metadata
-  iterator begin() { return iptcMetadata_.begin(); }
+  iterator begin() {
+    return iptcMetadata_.begin();
+  }
   //! End of the metadata
-  iterator end() { return iptcMetadata_.end(); }
+  iterator end() {
+    return iptcMetadata_.end();
+  }
   /*!
     @brief Find the first Iptcdatum with the given key, return an iterator
             to it.
@@ -237,9 +243,13 @@ public:
   //! @name Accessors
   //@{
   //! Begin of the metadata
-  const_iterator begin() const { return iptcMetadata_.begin(); }
+  const_iterator begin() const {
+    return iptcMetadata_.begin();
+  }
   //! End of the metadata
-  const_iterator end() const { return iptcMetadata_.end(); }
+  const_iterator end() const {
+    return iptcMetadata_.end();
+  }
   /*!
     @brief Find the first Iptcdatum with the given key, return a const
             iterator to it.
@@ -251,9 +261,13 @@ public:
     */
   const_iterator findId(uint16_t dataset, uint16_t record = IptcDataSets::application2) const;
   //! Return true if there is no IPTC metadata
-  bool empty() const { return count() == 0; }
+  bool empty() const {
+    return count() == 0;
+  }
   //! Get the number of metadata entries
-  long count() const { return static_cast<long>(iptcMetadata_.size()); }
+  long count() const {
+    return static_cast<long>(iptcMetadata_.size());
+  }
   /*!
     @brief Return the exact size of all contained IPTC metadata
     */
@@ -264,17 +278,17 @@ public:
   const char* detectCharset() const;
   //@}
 
-private:
+ private:
   // DATA
   IptcMetadata iptcMetadata_;
-}; // class IptcData
+};  // class IptcData
 
 /*!
   @brief Stateless parser class for IPTC data. Images use this class to
           decode and encode binary IPTC data.
   */
 class EXIV2API IptcParser {
-public:
+ public:
   /*!
     @brief Decode binary IPTC data in IPTC IIM4 format from a buffer \em pData
             of length \em size to the provided metadata container.
@@ -288,12 +302,12 @@ public:
     */
   static int decode(emscripten::val& iptcData, const byte* pData, uint32_t size);
 
-private:
+ private:
   // Constant data
-  static const byte marker_; // Dataset marker
+  static const byte marker_;  // Dataset marker
 
-}; // class IptcParser
+};  // class IptcParser
 
-} // namespace Exiv2
+}  // namespace Exiv2
 
-#endif // #ifndef IPTC_HPP_
+#endif  // #ifndef IPTC_HPP_

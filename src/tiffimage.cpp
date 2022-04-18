@@ -24,7 +24,7 @@
 #include "basicio.hpp"
 #include "config.h"
 #include "error.hpp"
-#include "i18n.h" // NLS support.
+#include "i18n.h"  // NLS support.
 #include "image.hpp"
 #include "image_int.hpp"
 #include "makernote_int.hpp"
@@ -59,16 +59,18 @@ namespace Exiv2 {
 
 using namespace Internal;
 
-TiffImage::TiffImage(BasicIo::UniquePtr io, bool /*create*/)
-  : Image(ImageType::tiff, mdExif | mdIptc | mdXmp, std::move(io)), pixelWidthPrimary_(0), pixelHeightPrimary_(0) {
-} // TiffImage::TiffImage
+TiffImage::TiffImage(BasicIo::UniquePtr io, bool /*create*/) :
+    Image(ImageType::tiff, mdExif | mdIptc | mdXmp, std::move(io)), pixelWidthPrimary_(0), pixelHeightPrimary_(0) {
+}  // TiffImage::TiffImage
 
 //! Structure for TIFF compression to MIME type mappings
 struct MimeTypeList {
   //! Comparison operator for compression
-  bool operator==(int compression) const { return compression_ == compression; }
-  int compression_; //!< TIFF compression
-  const char* mimeType_; //!< MIME type
+  bool operator==(int compression) const {
+    return compression_ == compression;
+  }
+  int compression_;       //!< TIFF compression
+  const char* mimeType_;  //!< MIME type
 };
 
 //! List of TIFF compression to MIME type mappings
@@ -96,10 +98,11 @@ std::string TiffImage::primaryGroup() const {
   if (!primaryGroup_.empty())
     return primaryGroup_;
 
-  static const char* keys[] = {"Exif.Image.NewSubfileType",     "Exif.SubImage1.NewSubfileType", "Exif.SubImage2.NewSubfileType",
-                               "Exif.SubImage3.NewSubfileType", "Exif.SubImage4.NewSubfileType", "Exif.SubImage5.NewSubfileType",
-                               "Exif.SubImage6.NewSubfileType", "Exif.SubImage7.NewSubfileType", "Exif.SubImage8.NewSubfileType",
-                               "Exif.SubImage9.NewSubfileType"};
+  static const char* keys[] = {"Exif.Image.NewSubfileType",     "Exif.SubImage1.NewSubfileType",
+                               "Exif.SubImage2.NewSubfileType", "Exif.SubImage3.NewSubfileType",
+                               "Exif.SubImage4.NewSubfileType", "Exif.SubImage5.NewSubfileType",
+                               "Exif.SubImage6.NewSubfileType", "Exif.SubImage7.NewSubfileType",
+                               "Exif.SubImage8.NewSubfileType", "Exif.SubImage9.NewSubfileType"};
   // Find the group of the primary image, default to "Image"
   primaryGroup_ = std::string("Image");
   for (auto i : keys) {
@@ -152,7 +155,6 @@ void TiffImage::readMetadata() {
     throw Error(kerNotAnImage, "TIFF");
   }
 
-
   ByteOrder bo = TiffParser::decode(exifData_, iptcData_, xmpData_, io_->mmap(), static_cast<uint32_t>(io_->size()));
   setByteOrder(bo);
 
@@ -168,7 +170,8 @@ void TiffImage::readMetadata() {
   }
 }
 
-ByteOrder TiffParser::decode(emscripten::val& exifData, emscripten::val& iptcData, emscripten::val& xmpData, const byte* pData, uint32_t size) {
+ByteOrder TiffParser::decode(emscripten::val& exifData, emscripten::val& iptcData, emscripten::val& xmpData,
+                             const byte* pData, uint32_t size) {
   uint32_t root = Tag::root;
 
   // #1402  Fujifilm RAF. Change root when parsing embedded tiff
@@ -180,7 +183,7 @@ ByteOrder TiffParser::decode(emscripten::val& exifData, emscripten::val& iptcDat
   }
 
   return TiffParserWorker::decode(exifData, iptcData, xmpData, pData, size, root, TiffMapping::findDecoder);
-} // TiffParser::decode
+}  // TiffParser::decode
 
 Image::UniquePtr newTiffInstance(BasicIo::UniquePtr io, bool create) {
   Image::UniquePtr image(new TiffImage(std::move(io), create));
@@ -203,6 +206,6 @@ bool isTiffType(BasicIo& iIo, bool advance) {
     iIo.seek(-len, BasicIo::cur);
   }
   return rc;
-} // Exiv2::isTiffType
+}  // Exiv2::isTiffType
 
-} // namespace Exiv2
+}  // namespace Exiv2

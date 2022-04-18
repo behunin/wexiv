@@ -49,7 +49,7 @@ namespace Internal {
           implementation is for the regular TIFF header.
 */
 class TiffHeaderBase {
-public:
+ public:
   //! @name Creators
   //@{
   //! Constructor taking \em tag, \em size and default \em byteOrder and \em offset.
@@ -118,14 +118,14 @@ public:
   virtual bool isImageTag(uint16_t tag, IfdId group, const PrimaryGroups* pPrimaryGroups) const;
   //@}
 
-private:
+ private:
   // DATA
-  const uint16_t tag_; //!< Tag to identify the buffer as TIFF data
-  const uint32_t size_; //!< Size of the header
-  ByteOrder byteOrder_; //!< Applicable byte order
-  uint32_t offset_; //!< Offset to the start of the root dir
+  const uint16_t tag_;   //!< Tag to identify the buffer as TIFF data
+  const uint32_t size_;  //!< Size of the header
+  ByteOrder byteOrder_;  //!< Applicable byte order
+  uint32_t offset_;      //!< Offset to the start of the root dir
 
-}; // class TiffHeaderBase
+};  // class TiffHeaderBase
 
 //! Convenience function to check if tag, group is in the list of TIFF image tags.
 bool isTiffImageTag(uint16_t tag, IfdId group);
@@ -134,7 +134,7 @@ bool isTiffImageTag(uint16_t tag, IfdId group);
   @brief Standard TIFF header structure.
 */
 class TiffHeader : public TiffHeaderBase {
-public:
+ public:
   //! @name Creators
   //@{
   //! Default constructor
@@ -147,10 +147,10 @@ public:
   bool isImageTag(uint16_t tag, IfdId group, const PrimaryGroups* pPrimaryGroups) const override;
   //@}
 
-private:
+ private:
   // DATA
-  bool hasImageTags_; //!< Indicates if image tags are supported
-}; // class TiffHeader
+  bool hasImageTags_;  //!< Indicates if image tags are supported
+};                     // class TiffHeader
 
 /*!
   @brief Data structure used to list image tags for TIFF and TIFF-like images.
@@ -159,18 +159,21 @@ struct TiffImgTagStruct {
   //! Search key for TIFF image tag structure.
   struct Key {
     //! Constructor
-    Key(uint16_t t, IfdId g) : t_(t), g_(g) {}
-    uint16_t t_; //!< %Tag
-    IfdId g_; //!< %Group
+    Key(uint16_t t, IfdId g) : t_(t), g_(g) {
+    }
+    uint16_t t_;  //!< %Tag
+    IfdId g_;     //!< %Group
   };
 
   //! Comparison operator to compare a TiffImgTagStruct with a TiffImgTagStruct::Key
-  bool operator==(const Key& key) const { return key.g_ == group_ && key.t_ == tag_; }
+  bool operator==(const Key& key) const {
+    return key.g_ == group_ && key.t_ == tag_;
+  }
 
   // DATA
-  uint16_t tag_; //!< Image tag
-  IfdId group_; //!< Group that contains the image tag
-}; // struct TiffImgTagStruct
+  uint16_t tag_;  //!< Image tag
+  IfdId group_;   //!< Group that contains the image tag
+};                // struct TiffImgTagStruct
 
 /*!
   @brief Data structure used as a row (element) of a table (array)
@@ -180,20 +183,25 @@ struct TiffGroupStruct {
   //! Search key for TIFF group structure.
   struct Key {
     //! Constructor
-    Key(uint32_t e, IfdId g) : e_(e), g_(g) {}
-    uint32_t e_; //!< Extended tag
-    IfdId g_; //!< %Group
+    Key(uint32_t e, IfdId g) : e_(e), g_(g) {
+    }
+    uint32_t e_;  //!< Extended tag
+    IfdId g_;     //!< %Group
   };
 
   //! Comparison operator to compare a TiffGroupStruct with a TiffGroupStruct::Key
-  bool operator==(const Key& key) const { return key.g_ == group_ && (Tag::all == extendedTag_ || key.e_ == extendedTag_); }
+  bool operator==(const Key& key) const {
+    return key.g_ == group_ && (Tag::all == extendedTag_ || key.e_ == extendedTag_);
+  }
   //! Return the tag corresponding to the extended tag
-  uint16_t tag() const { return static_cast<uint16_t>(extendedTag_ & 0xffff); }
+  uint16_t tag() const {
+    return static_cast<uint16_t>(extendedTag_ & 0xffff);
+  }
 
   // DATA
-  uint32_t extendedTag_; //!< Tag (32 bit so that it can contain special tags)
-  IfdId group_; //!< Group that contains the tag
-  NewTiffCompFct newTiffCompFct_; //!< Function to create the correct TIFF component
+  uint32_t extendedTag_;           //!< Tag (32 bit so that it can contain special tags)
+  IfdId group_;                    //!< Group that contains the tag
+  NewTiffCompFct newTiffCompFct_;  //!< Function to create the correct TIFF component
 };
 
 /*!
@@ -207,25 +215,26 @@ struct TiffTreeStruct {
   bool operator==(const Key& key) const;
 
   // DATA
-  uint32_t root_; //!< Tree root element, identifies a tree
-  IfdId group_; //!< Each group is a node in the tree
-  IfdId parentGroup_; //!< Parent group
-  uint32_t parentExtTag_; //!< Parent tag (32 bit so that it can contain special tags)
+  uint32_t root_;          //!< Tree root element, identifies a tree
+  IfdId group_;            //!< Each group is a node in the tree
+  IfdId parentGroup_;      //!< Parent group
+  uint32_t parentExtTag_;  //!< Parent tag (32 bit so that it can contain special tags)
 };
 
 //! Search key for TIFF tree structure.
 struct TiffTreeStruct::Key {
   //! Constructor
-  Key(uint32_t r, IfdId g) : r_(r), g_(g) {}
-  uint32_t r_; //!< Root
-  IfdId g_; //!< %Group
+  Key(uint32_t r, IfdId g) : r_(r), g_(g) {
+  }
+  uint32_t r_;  //!< Root
+  IfdId g_;     //!< %Group
 };
 
 /*!
   @brief TIFF component factory.
 */
 class TiffCreator {
-public:
+ public:
   /*!
     @brief Create the TiffComponent for TIFF entry \em extendedTag and
             \em group. The embedded lookup table is used to find the correct
@@ -240,21 +249,23 @@ public:
   */
   static void getPath(TiffPath& tiffPath, uint32_t extendedTag, IfdId group, uint32_t root);
 
-  static std::array<TiffTreeStruct, 125> TiffTree() { return tiffTreeStruct_; }
+  static std::array<TiffTreeStruct, 125> TiffTree() {
+    return tiffTreeStruct_;
+  }
 
-private:
+ private:
   static const std::array<TiffTreeStruct, 125> tiffTreeStruct_;
 
-  static const std::array<TiffGroupStruct, 400> tiffGroupStruct_; //<! TIFF group structure
+  static const std::array<TiffGroupStruct, 400> tiffGroupStruct_;  //<! TIFF group structure
 
-}; // class TiffCreator
+};  // class TiffCreator
 
 /*!
   @brief Stateless parser class for data in TIFF format. Images use this
           class to decode and encode TIFF-based data.
 */
 class TiffParserWorker {
-public:
+ public:
   /*!
     @brief Decode TIFF metadata from a data buffer \em pData of length
             \em size into the provided metadata containers.
@@ -277,16 +288,11 @@ public:
     @return Byte order in which the data is encoded, invalidByteOrder if
             decoding failed.
   */
-  static ByteOrder decode(emscripten::val& exifData,
-                          emscripten::val& iptcData,
-                          emscripten::val& xmpData,
-                          const byte* pData,
-                          uint32_t size,
-                          uint32_t root,
-                          FindDecoderFct findDecoderFct,
+  static ByteOrder decode(emscripten::val& exifData, emscripten::val& iptcData, emscripten::val& xmpData,
+                          const byte* pData, uint32_t size, uint32_t root, FindDecoderFct findDecoderFct,
                           TiffHeaderBase* pHeader = 0);
 
-private:
+ private:
   /*!
     @brief Parse TIFF metadata from a data buffer \em pData of length
             \em size into a TIFF composite structure.
@@ -310,7 +316,7 @@ private:
   */
   static void findPrimaryGroups(PrimaryGroups& primaryGroups, TiffComponent* pSourceDir);
 
-}; // class TiffParserWorker
+};  // class TiffParserWorker
 
 /*!
     @brief Table of TIFF decoding and encoding functions and find functions.
@@ -320,7 +326,7 @@ private:
             different decoder table.
 */
 class TiffMapping {
-public:
+ public:
   /*!
     @brief Find the decoder function for a key.
 
@@ -337,7 +343,7 @@ public:
 
   static const std::map<uint32_t, TiffMappingInfo> tiffMappingInfo_;
 
-}; // class TiffMapping
+};  // class TiffMapping
 
 /*!
     @brief Class to insert pointers or offsets to computed addresses at
@@ -346,10 +352,10 @@ public:
             written in a second pass, using the writeOffsets() method.
 */
 class OffsetWriter {
-public:
+ public:
   //! Identifiers for supported offsets
   enum OffsetId {
-    cr2RawIfdOffset //!< CR2 RAW IFD offset, a pointer in the CR2 header to the 4th IFD in a CR2 image
+    cr2RawIfdOffset  //!< CR2 RAW IFD offset, a pointer in the CR2 header to the 4th IFD in a CR2 image
   };
   //! @name Manipulators
   //@{
@@ -373,41 +379,46 @@ public:
   //! Write the offsets to the IO instance \em io.
   void writeOffsets(BasicIo& io) const;
   //@}
-private:
+ private:
   //! Data structure for the offset list.
   struct OffsetData {
     //! Default constructor
-    OffsetData() : origin_(0), target_(0), byteOrder_(littleEndian) {}
+    OffsetData() : origin_(0), target_(0), byteOrder_(littleEndian) {
+    }
     //! Constructor
-    OffsetData(uint32_t origin, ByteOrder byteOrder) : origin_(origin), target_(0), byteOrder_(byteOrder) {}
+    OffsetData(uint32_t origin, ByteOrder byteOrder) : origin_(origin), target_(0), byteOrder_(byteOrder) {
+    }
     // DATA
-    uint32_t origin_; //!< Origin address
-    uint32_t target_; //!< Target address
-    ByteOrder byteOrder_; //!< Byte order to use to encode target address
+    uint32_t origin_;      //!< Origin address
+    uint32_t target_;      //!< Target address
+    ByteOrder byteOrder_;  //!< Byte order to use to encode target address
   };
   //! Type of the list containing an identifier and an address pair.
   using OffsetList = std::map<OffsetId, OffsetData>;
 
   // DATA
-  OffsetList offsetList_; //!< List of the offsets to replace
+  OffsetList offsetList_;  //!< List of the offsets to replace
 
-}; // class OffsetWriter
+};  // class OffsetWriter
 
 // Todo: Move this class to metadatum_int.hpp or tags_int.hpp
 //! Unary predicate that matches an Exifdatum with a given IfdId.
 class FindExifdatum {
-public:
+ public:
   //! Constructor, initializes the object with the IfdId to look for.
-  explicit FindExifdatum(Exiv2::Internal::IfdId ifdId) : ifdId_(ifdId) {}
+  explicit FindExifdatum(Exiv2::Internal::IfdId ifdId) : ifdId_(ifdId) {
+  }
   //! Returns true if IFD id matches.
-  bool operator()(const Exiv2::Exifdatum& md) const { return ifdId_ == md.ifdId(); }
+  bool operator()(const Exiv2::Exifdatum& md) const {
+    return ifdId_ == md.ifdId();
+  }
 
-private:
+ private:
   Exiv2::Internal::IfdId ifdId_;
 
-}; // class FindExifdatum
+};  // class FindExifdatum
 
-} // namespace Internal
-} // namespace Exiv2
+}  // namespace Internal
+}  // namespace Exiv2
 
-#endif // #ifndef TIFFIMAGE_INT_HPP_
+#endif  // #ifndef TIFFIMAGE_INT_HPP_

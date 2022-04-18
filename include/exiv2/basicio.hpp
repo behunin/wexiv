@@ -47,7 +47,7 @@ namespace Exiv2 {
   interchanged.
   */
 class EXIV2API BasicIo {
-public:
+ public:
   //! BasicIo auto_ptr type
   typedef std::unique_ptr<BasicIo> UniquePtr;
 
@@ -201,11 +201,11 @@ public:
             -1 if failure;
     */
   virtual size_t size() const = 0;
-  //!Returns true if the IO source is open, otherwise false.
+  //! Returns true if the IO source is open, otherwise false.
   virtual bool isopen() const = 0;
-  //!Returns 0 if the IO source is in a valid state, otherwise nonzero.
+  //! Returns 0 if the IO source is in a valid state, otherwise nonzero.
   virtual int error() const = 0;
-  //!Returns true if the IO position has reached the end, otherwise false.
+  //! Returns true if the IO position has reached the end, otherwise false.
   virtual bool eof() const = 0;
   /*!
     @brief Return the path to the IO resource. Often used to form
@@ -221,7 +221,8 @@ public:
     @note This method should be only called after the concerned data (metadata)
           are all downloaded from the remote file to memory.
     */
-  virtual void populateFakeData() {}
+  virtual void populateFakeData() {
+  }
 
   /*!
     @brief this is allocated and populated by mmap()
@@ -229,7 +230,7 @@ public:
   byte* bigBlock_{};
 
   //@}
-}; // class BasicIo
+};  // class BasicIo
 
 /*!
   @brief Utility class that closes a BasicIo instance upon destruction.
@@ -238,13 +239,16 @@ public:
       errors from many locations.
   */
 class EXIV2API IoCloser {
-public:
+ public:
   //! @name Creators
   //@{
   //! Constructor, takes a BasicIo reference
-  explicit IoCloser(BasicIo& bio) : bio_(bio) {}
+  explicit IoCloser(BasicIo& bio) : bio_(bio) {
+  }
   //! Destructor, closes the BasicIo reference
-  virtual ~IoCloser() { close(); }
+  virtual ~IoCloser() {
+    close();
+  }
   //@}
 
   //! @name Manipulators
@@ -265,7 +269,7 @@ public:
   IoCloser(const IoCloser&) = delete;
   //! Assignment operator
   IoCloser& operator=(const IoCloser&) = delete;
-}; // class IoCloser
+};  // class IoCloser
 
 /*!
   @brief Provides binary IO on blocks of memory by implementing the BasicIo
@@ -280,7 +284,7 @@ public:
       have a readonly mode.
   */
 class EXIV2API MemIo : public BasicIo {
-public:
+ public:
   //! @name Creators
   //@{
   //! Default constructor that results in an empty object
@@ -423,11 +427,11 @@ public:
             -1 if failure;
     */
   size_t size() const override;
-  //!Always returns true
+  //! Always returns true
   bool isopen() const override;
-  //!Always returns 0
+  //! Always returns 0
   int error() const override;
-  //!Returns true if the IO position has reached the end, otherwise false.
+  //! Returns true if the IO position has reached the end, otherwise false.
   bool eof() const override;
   //! Returns a dummy path, indicating that memory access is used
   std::string path() const override;
@@ -449,12 +453,12 @@ public:
   //! Assignment operator
   MemIo& operator=(const MemIo& rhs) = delete;
 
-private:
+ private:
   // Pimpl idiom
   class Impl;
   std::unique_ptr<Impl> p_;
 
-}; // class MemIo
+};  // class MemIo
 
 // *****************************************************************************
 // template, inline and free functions
@@ -463,5 +467,5 @@ private:
       @return the subject after replacing.
      */
 EXIV2API std::string ReplaceStringInPlace(std::string subject, const std::string& search, const std::string& replace);
-} // namespace Exiv2
-#endif // #ifndef BASICIO_HPP_
+}  // namespace Exiv2
+#endif  // #ifndef BASICIO_HPP_

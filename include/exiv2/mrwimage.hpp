@@ -35,7 +35,7 @@ namespace Exiv2 {
 
 // Add MRW to the supported image formats
 namespace ImageType {
-const int mrw = 5; //!< MRW image type (see class MrwImage)
+const int mrw = 5;  //!< MRW image type (see class MrwImage)
 }
 
 /*!
@@ -43,7 +43,7 @@ const int mrw = 5; //!< MRW image type (see class MrwImage)
           directly, IPTC is read from the Exif data, if present.
   */
 class EXIV2API MrwImage : public Image {
-public:
+ public:
   //! @name NOT Implemented
   //@{
   //! Copy constructor
@@ -83,7 +83,7 @@ public:
   int pixelWidth() const override;
   int pixelHeight() const override;
   //@}
-}; // class MrwImage
+};  // class MrwImage
 
 // *****************************************************************************
 // template, inline and free functions
@@ -100,6 +100,6 @@ EXIV2API Image::UniquePtr newMrwInstance(BasicIo::UniquePtr io, bool create);
 //! Check if the file iIo is a MRW image.
 EXIV2API bool isMrwType(BasicIo& iIo, bool advance);
 
-} // namespace Exiv2
+}  // namespace Exiv2
 
-#endif // #ifndef MRWIMAGE_HPP_
+#endif  // #ifndef MRWIMAGE_HPP_

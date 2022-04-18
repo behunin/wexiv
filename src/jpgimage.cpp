@@ -43,25 +43,25 @@ constexpr byte JpegBase::app13_ = 0xed;
 constexpr byte JpegBase::com_ = 0xfe;
 
 // Start of Frame markers, nondifferential Huffman-coding frames
-constexpr byte JpegBase::sof0_ = 0xc0; // start of frame 0, baseline DCT
-constexpr byte JpegBase::sof1_ = 0xc1; // start of frame 1, extended sequential DCT, Huffman coding
-constexpr byte JpegBase::sof2_ = 0xc2; // start of frame 2, progressive DCT, Huffman coding
-constexpr byte JpegBase::sof3_ = 0xc3; // start of frame 3, lossless sequential, Huffman coding
+constexpr byte JpegBase::sof0_ = 0xc0;  // start of frame 0, baseline DCT
+constexpr byte JpegBase::sof1_ = 0xc1;  // start of frame 1, extended sequential DCT, Huffman coding
+constexpr byte JpegBase::sof2_ = 0xc2;  // start of frame 2, progressive DCT, Huffman coding
+constexpr byte JpegBase::sof3_ = 0xc3;  // start of frame 3, lossless sequential, Huffman coding
 
 // Start of Frame markers, differential Huffman-coding frames
-constexpr byte JpegBase::sof5_ = 0xc5; // start of frame 5, differential sequential DCT, Huffman coding
-constexpr byte JpegBase::sof6_ = 0xc6; // start of frame 6, differential progressive DCT, Huffman coding
-constexpr byte JpegBase::sof7_ = 0xc7; // start of frame 7, differential lossless, Huffman coding
+constexpr byte JpegBase::sof5_ = 0xc5;  // start of frame 5, differential sequential DCT, Huffman coding
+constexpr byte JpegBase::sof6_ = 0xc6;  // start of frame 6, differential progressive DCT, Huffman coding
+constexpr byte JpegBase::sof7_ = 0xc7;  // start of frame 7, differential lossless, Huffman coding
 
 // Start of Frame markers, nondifferential arithmetic-coding frames
-constexpr byte JpegBase::sof9_ = 0xc9; // start of frame 9, extended sequential DCT, arithmetic coding
-constexpr byte JpegBase::sof10_ = 0xca; // start of frame 10, progressive DCT, arithmetic coding
-constexpr byte JpegBase::sof11_ = 0xcb; // start of frame 11, lossless sequential, arithmetic coding
+constexpr byte JpegBase::sof9_ = 0xc9;   // start of frame 9, extended sequential DCT, arithmetic coding
+constexpr byte JpegBase::sof10_ = 0xca;  // start of frame 10, progressive DCT, arithmetic coding
+constexpr byte JpegBase::sof11_ = 0xcb;  // start of frame 11, lossless sequential, arithmetic coding
 
 // Start of Frame markers, differential arithmetic-coding frames
-constexpr byte JpegBase::sof13_ = 0xcd; // start of frame 13, differential sequential DCT, arithmetic coding
-constexpr byte JpegBase::sof14_ = 0xce; // start of frame 14, progressive DCT, arithmetic coding
-constexpr byte JpegBase::sof15_ = 0xcf; // start of frame 15, differential lossless, arithmetic coding
+constexpr byte JpegBase::sof13_ = 0xcd;  // start of frame 13, differential sequential DCT, arithmetic coding
+constexpr byte JpegBase::sof14_ = 0xce;  // start of frame 14, progressive DCT, arithmetic coding
+constexpr byte JpegBase::sof15_ = 0xcf;  // start of frame 15, differential lossless, arithmetic coding
 
 constexpr const char* JpegBase::exifId_ = "Exif\0\0";
 constexpr const char* JpegBase::jfifId_ = "JFIF\0";
@@ -70,7 +70,7 @@ constexpr const char* JpegBase::iccId_ = "ICC_PROFILE\0";
 
 constexpr const char* Photoshop::ps3Id_ = "Photoshop 3.0\0";
 constexpr std::array<const char*, 4> Photoshop::irbId_{"8BIM", "AgHg", "DCSR", "PHUT"};
-constexpr const char* Photoshop::bimId_ = "8BIM"; // deprecated
+constexpr const char* Photoshop::bimId_ = "8BIM";  // deprecated
 constexpr uint16_t Photoshop::iptc_ = 0x0404;
 constexpr uint16_t Photoshop::preview_ = 0x040c;
 
@@ -113,7 +113,8 @@ bool Photoshop::valid(const byte* pPsData, long sizePsData) {
   const byte* pCur = pPsData;
   const byte* pEnd = pPsData + sizePsData;
   int ret = 0;
-  while (pCur < pEnd && 0 == (ret = Photoshop::locateIptcIrb(pCur, static_cast<long>(pEnd - pCur), &record, &sizeHdr, &sizeIptc))) {
+  while (pCur < pEnd &&
+         0 == (ret = Photoshop::locateIptcIrb(pCur, static_cast<long>(pEnd - pCur), &record, &sizeHdr, &sizeIptc))) {
     pCur = record + sizeHdr + sizeIptc + (sizeIptc & 1);
   }
   return ret >= 0;
@@ -122,8 +123,8 @@ bool Photoshop::valid(const byte* pPsData, long sizePsData) {
 // Todo: Generalised from JpegBase::locateIptcData without really understanding
 //       the format (in particular the header). So it remains to be confirmed
 //       if this also makes sense for psTag != Photoshop::iptc
-int Photoshop::locateIrb(
-    const byte* pPsData, long sizePsData, uint16_t psTag, const byte** record, uint32_t* const sizeHdr, uint32_t* const sizeData) {
+int Photoshop::locateIrb(const byte* pPsData, long sizePsData, uint16_t psTag, const byte** record,
+                         uint32_t* const sizeHdr, uint32_t* const sizeData) {
   assert(record);
   assert(sizeHdr);
   assert(sizeData);
@@ -174,15 +175,15 @@ int Photoshop::locateIrb(
     return -2;
   }
   return 3;
-} // Photoshop::locateIrb
+}  // Photoshop::locateIrb
 
-int Photoshop::locateIptcIrb(
-    const byte* pPsData, long sizePsData, const byte** record, uint32_t* const sizeHdr, uint32_t* const sizeData) {
+int Photoshop::locateIptcIrb(const byte* pPsData, long sizePsData, const byte** record, uint32_t* const sizeHdr,
+                             uint32_t* const sizeData) {
   return locateIrb(pPsData, sizePsData, iptc_, record, sizeHdr, sizeData);
 }
 
-int Photoshop::locatePreviewIrb(
-    const byte* pPsData, long sizePsData, const byte** record, uint32_t* const sizeHdr, uint32_t* const sizeData) {
+int Photoshop::locatePreviewIrb(const byte* pPsData, long sizePsData, const byte** record, uint32_t* const sizeHdr,
+                                uint32_t* const sizeData) {
   return locateIrb(pPsData, sizePsData, preview_, record, sizeHdr, sizeData);
 }
 
@@ -205,7 +206,6 @@ DataBuf Photoshop::setIptcIrb(const byte* pPsData, long sizePsData, const IptcDa
   }
   // Write new iptc record if we have it
 
-
   // Write existing stuff after record,
   // skip the current and all remaining IPTC blocks
   long pos = sizeFront;
@@ -227,11 +227,11 @@ DataBuf Photoshop::setIptcIrb(const byte* pPsData, long sizePsData, const IptcDa
 
   return rc;
 
-} // Photoshop::setIptcIrb
+}  // Photoshop::setIptcIrb
 
 bool JpegBase::markerHasLength(byte marker) {
-  return (marker >= sof0_ && marker <= sof15_) || (marker >= app0_ && marker <= (app0_ | 0x0F)) || marker == dht_ || marker == dqt_ ||
-         marker == dri_ || marker == com_ || marker == sos_;
+  return (marker >= sof0_ && marker <= sof15_) || (marker >= app0_ && marker <= (app0_ | 0x0F)) || marker == dht_ ||
+         marker == dqt_ || marker == dri_ || marker == com_ || marker == sos_;
 }
 
 JpegBase::JpegBase(int type, BasicIo::UniquePtr io) : Image(type, mdExif | mdIptc | mdXmp | mdComment, std::move(io)) {
@@ -255,7 +255,7 @@ byte JpegBase::advanceToMarker(ErrorCode err) const {
 }
 
 void JpegBase::readMetadata() {
-  int rc = 0; // Todo: this should be the return value
+  int rc = 0;  // Todo: this should be the return value
 
   if (io_->open() != 0)
     throw Error(kerDataSourceOpenFailed, io_->path());
@@ -267,7 +267,7 @@ void JpegBase::readMetadata() {
     throw Error(kerNotAJpeg);
   }
 
-  int search = 6; // Exif, ICC, XMP, Comment, IPTC, SOF
+  int search = 6;  // Exif, ICC, XMP, Comment, IPTC, SOF
   Blob psBlob;
   bool foundCompletePsData = false;
   bool foundExifData = false;
@@ -296,7 +296,7 @@ void JpegBase::readMetadata() {
       memcpy(buf.pData_, sizebuf, 2);
     }
 
-    if (!foundExifData && marker == app1_ && size >= 8 // prevent out-of-bounds read in memcmp on next line
+    if (!foundExifData && marker == app1_ && size >= 8  // prevent out-of-bounds read in memcmp on next line
         && memcmp(buf.pData_ + 2, exifId_, 6) == 0) {
       ByteOrder bo = ExifParser::decode(exifData_, buf.pData_ + 8, size - 8);
       setByteOrder(bo);
@@ -307,7 +307,7 @@ void JpegBase::readMetadata() {
       }
       --search;
       foundExifData = true;
-    } else if (!foundXmpData && marker == app1_ && size >= 31 // prevent out-of-bounds read in memcmp on next line
+    } else if (!foundXmpData && marker == app1_ && size >= 31  // prevent out-of-bounds read in memcmp on next line
                && memcmp(buf.pData_ + 2, xmpId_, 29) == 0) {
       xmpPacket_.assign(reinterpret_cast<char*>(buf.pData_ + 31), size - 31);
       if (!xmpPacket_.empty() && XmpParser::decode(xmpData_, xmpPacket_)) {
@@ -317,7 +317,8 @@ void JpegBase::readMetadata() {
       }
       --search;
       foundXmpData = true;
-    } else if (!foundCompletePsData && marker == app13_ && size >= 16 // prevent out-of-bounds read in memcmp on next line
+    } else if (!foundCompletePsData && marker == app13_ &&
+               size >= 16  // prevent out-of-bounds read in memcmp on next line
                && memcmp(buf.pData_ + 2, Photoshop::ps3Id_, 14) == 0) {
       // Append to psBlob
       append(psBlob, buf.pData_ + 16, size - 16);
@@ -335,7 +336,7 @@ void JpegBase::readMetadata() {
         comment_.erase(comment_.length() - 1);
       }
       --search;
-    } else if (marker == app2_ && size >= 13 // prevent out-of-bounds read in memcmp on next line
+    } else if (marker == app2_ && size >= 13  // prevent out-of-bounds read in memcmp on next line
                && memcmp(buf.pData_ + 2, iccId_, 11) == 0) {
       if (size < 2 + 14 + 4) {
         rc = 8;
@@ -385,7 +386,7 @@ void JpegBase::readMetadata() {
       rc = 5;
       break;
     }
-  } // while there are segments to process
+  }  // while there are segments to process
 
   if (!psBlob.empty()) {
     // Find actual IPTC data within the psBlob
@@ -395,7 +396,8 @@ void JpegBase::readMetadata() {
     uint32_t sizeHdr = 0;
     const byte* pCur = &psBlob[0];
     const byte* pEnd = pCur + psBlob.size();
-    while (pCur < pEnd && 0 == Photoshop::locateIptcIrb(pCur, static_cast<long>(pEnd - pCur), &record, &sizeHdr, &sizeIptc)) {
+    while (pCur < pEnd &&
+           0 == Photoshop::locateIptcIrb(pCur, static_cast<long>(pEnd - pCur), &record, &sizeHdr, &sizeIptc)) {
       if (sizeIptc) {
         append(iptcBlob, record + sizeHdr, sizeIptc);
       }
@@ -406,16 +408,16 @@ void JpegBase::readMetadata() {
       EXV_WARNING << "Failed to decode IPTC metadata.\n";
 #endif
     }
-  } // psBlob.size() > 0
+  }  // psBlob.size() > 0
 
   if (rc != 0) {
 #ifndef SUPPRESS_WARNINGS
     EXV_WARNING << "JPEG format error, rc = " << rc << "\n";
 #endif
   }
-} // JpegBase::readMetadata
+}  // JpegBase::readMetadata
 
-#define REPORT_MARKER \
+#define REPORT_MARKER                                 \
   if ((option == kpsBasic || option == kpsRecursive)) \
   out << Internal::stringFormat("%8ld | 0xff%02x %-5s", io_->tell() - 2, marker, nm[marker].c_str())
 
@@ -455,4 +457,4 @@ bool isJpegType(BasicIo& iIo, bool advance) {
   return result;
 }
 
-} // namespace Exiv2
+}  // namespace Exiv2

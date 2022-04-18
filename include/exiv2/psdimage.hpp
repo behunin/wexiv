@@ -35,14 +35,14 @@ namespace Exiv2 {
 
 // Add PSD to the supported image formats
 namespace ImageType {
-const int psd = 12; //!< Photoshop (PSD) image type (see class PsdImage)
+const int psd = 12;  //!< Photoshop (PSD) image type (see class PsdImage)
 }
 
 /*!
   @brief Class to access raw Photoshop images.
   */
 class EXIV2API PsdImage : public Image {
-public:
+ public:
   //! @name NOT Implemented
   //@{
   //! Copy constructor
@@ -89,13 +89,13 @@ public:
   std::string mimeType() const override;
   //@}
 
-private:
+ private:
   //! @name Accessors
   //@{
   void readResourceBlock(uint16_t resourceId, uint32_t resourceSize);
   //@}
 
-}; // class PsdImage
+};  // class PsdImage
 
 // *****************************************************************************
 // template, inline and free functions
@@ -112,6 +112,6 @@ EXIV2API Image::UniquePtr newPsdInstance(BasicIo::UniquePtr io, bool create);
 //! Check if the file iIo is a Photoshop image.
 EXIV2API bool isPsdType(BasicIo& iIo, bool advance);
 
-} // namespace Exiv2
+}  // namespace Exiv2
 
-#endif // #ifndef PSDIMAGE_HPP_
+#endif  // #ifndef PSDIMAGE_HPP_

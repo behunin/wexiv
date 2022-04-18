@@ -33,7 +33,7 @@ namespace Internal {
 
 //! MakerNote for Sigma (Foveon) cameras
 class SigmaMakerNote {
-public:
+ public:
   //! Return read-only list of built-in Sigma tags
   static const TagInfo* tagList();
 
@@ -47,13 +47,13 @@ public:
   static std::ostream& print0x0009(std::ostream& os, const Value& value, const ExifData*);
   //@}
 
-private:
+ private:
   //! Tag information
   static const TagInfo tagInfo_[];
 
-}; // class SigmaMakerNote
+};  // class SigmaMakerNote
 
-} // namespace Internal
-} // namespace Exiv2
+}  // namespace Internal
+}  // namespace Exiv2
 
-#endif // #ifndef SIGMAMN_INT_HPP_
+#endif  // #ifndef SIGMAMN_INT_HPP_

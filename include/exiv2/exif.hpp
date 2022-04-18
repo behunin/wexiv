@@ -59,10 +59,10 @@ class ExifData;
         methods to manipulate these.
 */
 class EXIV2API Exifdatum : public Metadatum {
-  template<typename T>
+  template <typename T>
   friend Exifdatum& setValue(Exifdatum&, const T&);
 
-public:
+ public:
   //! @name Creators
   //@{
   /*!
@@ -215,12 +215,12 @@ public:
   DataBuf dataArea() const;
   //@}
 
-private:
+ private:
   // DATA
-  ExifKey::UniquePtr key_; //!< Key
-  Value::UniquePtr value_; //!< Value
+  ExifKey::UniquePtr key_;  //!< Key
+  Value::UniquePtr value_;  //!< Value
 
-}; // class Exifdatum
+};  // class Exifdatum
 
 //! Container type to hold all metadata
 typedef std::list<Exifdatum> ExifMetadata;
@@ -238,7 +238,7 @@ typedef std::list<Exifdatum> ExifMetadata;
   - extract and delete Exif thumbnail (JPEG and TIFF thumbnails)
 */
 class EXIV2API ExifData {
-public:
+ public:
   //! ExifMetadata iterator type
   typedef ExifMetadata::iterator iterator;
   //! ExifMetadata const iterator type
@@ -293,9 +293,13 @@ public:
   //! Sort metadata by tag
   void sortByTag();
   //! Begin of the metadata
-  iterator begin() { return exifMetadata_.begin(); }
+  iterator begin() {
+    return exifMetadata_.begin();
+  }
   //! End of the metadata
-  iterator end() { return exifMetadata_.end(); }
+  iterator end() {
+    return exifMetadata_.end();
+  }
   /*!
     @brief Find the first Exifdatum with the given \em key, return an
             iterator to it.
@@ -306,25 +310,33 @@ public:
   //! @name Accessors
   //@{
   //! Begin of the metadata
-  const_iterator begin() const { return exifMetadata_.begin(); }
+  const_iterator begin() const {
+    return exifMetadata_.begin();
+  }
   //! End of the metadata
-  const_iterator end() const { return exifMetadata_.end(); }
+  const_iterator end() const {
+    return exifMetadata_.end();
+  }
   /*!
     @brief Find the first Exifdatum with the given \em key, return a const
             iterator to it.
   */
   const_iterator findKey(const ExifKey& key) const;
   //! Return true if there is no Exif metadata
-  bool empty() const { return count() == 0; }
+  bool empty() const {
+    return count() == 0;
+  }
   //! Get the number of metadata entries
-  long count() const { return static_cast<long>(exifMetadata_.size()); }
+  long count() const {
+    return static_cast<long>(exifMetadata_.size());
+  }
   //@}
 
-private:
+ private:
   // DATA
   ExifMetadata exifMetadata_;
 
-}; // class ExifData
+};  // class ExifData
 
 /*!
   @brief Stateless parser class for Exif data. Images use this class to
@@ -333,7 +345,7 @@ private:
   @note  Encode is lossy and is not the inverse of decode.
 */
 class EXIV2API ExifParser {
-public:
+ public:
   /*!
     @brief Decode metadata from a buffer \em pData of length \em size
             with binary Exif data to the provided metadata container.
@@ -349,8 +361,8 @@ public:
   */
   static ByteOrder decode(emscripten::val& exifData, const byte* pData, uint32_t size);
 
-}; // class ExifParser
+};  // class ExifParser
 
-} // namespace Exiv2
+}  // namespace Exiv2
 
-#endif // #ifndef EXIF_HPP_
+#endif  // #ifndef EXIF_HPP_

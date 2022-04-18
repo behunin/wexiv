@@ -49,17 +49,17 @@ constexpr const char* image_length = "Exif.Image.ImageLength";
 
 //! Supported image formats
 namespace ImageType {
-const int none = 0; //!< Not an image
+const int none = 0;  //!< Not an image
 }
 
 //! Native preview information. This is meant to be used only by the PreviewManager.
 struct NativePreview {
-  long position_; //!< Position
-  uint32_t size_; //!< Size
-  uint32_t width_; //!< Width
-  uint32_t height_; //!< Height
-  std::string filter_; //!< Filter
-  std::string mimeType_; //!< MIME type
+  long position_;         //!< Position
+  uint32_t size_;         //!< Size
+  uint32_t width_;        //!< Width
+  uint32_t height_;       //!< Height
+  std::string filter_;    //!< Filter
+  std::string mimeType_;  //!< MIME type
 };
 
 //! List of native previews. This is meant to be used only by the PreviewManager.
@@ -81,7 +81,7 @@ typedef enum { kpsNone, kpsBasic, kpsXMP, kpsRecursive, kpsIccProfile, kpsIptcEr
   and save metadata.
   */
 class EXIV2API Image {
-public:
+ public:
   //! Image auto_ptr type
   typedef std::unique_ptr<Image> UniquePtr;
 
@@ -224,12 +224,16 @@ public:
     @brief Erase iccProfile. the profile is not removed from
         the actual image until the writeMetadata() method is called.
     */
-  virtual bool iccProfileDefined() { return iccProfile_.size_ != 0; }
+  virtual bool iccProfileDefined() {
+    return iccProfile_.size_ != 0;
+  }
 
   /*!
     @brief return iccProfile
     */
-  virtual DataBuf* iccProfile() { return &iccProfile_; }
+  virtual DataBuf* iccProfile() {
+    return &iccProfile_;
+  }
   /*!
     @brief Returns an ExifData instance containing currently buffered
         Exif data.
@@ -460,7 +464,9 @@ public:
   }
 
   //! set type support for this image format
-  int imageType() const { return imageType_; }
+  int imageType() const {
+    return imageType_;
+  }
 
   //! @name NOT implemented
   //@{
@@ -470,19 +476,19 @@ public:
   Image& operator=(const Image& rhs) = delete;
   //@}
 
-protected:
+ protected:
   // DATA
-  emscripten::val exifData_; //!< Exif data container
-  emscripten::val iptcData_; //!< IPTC data container
-  emscripten::val xmpData_; //!< XMP data container
-  emscripten::val headData_; //!< Image header data
-  BasicIo::UniquePtr io_; //!< Image data IO pointer
-  DataBuf iccProfile_; //!< ICC buffer (binary data)
-  std::string comment_; //!< User comment
-  std::string xmpPacket_; //!< XMP packet
-  int pixelWidth_; //!< image pixel width
-  int pixelHeight_; //!< image pixel height
-  NativePreviewList nativePreviews_; //!< list of native previews
+  emscripten::val exifData_;          //!< Exif data container
+  emscripten::val iptcData_;          //!< IPTC data container
+  emscripten::val xmpData_;           //!< XMP data container
+  emscripten::val headData_;          //!< Image header data
+  BasicIo::UniquePtr io_;             //!< Image data IO pointer
+  DataBuf iccProfile_;                //!< ICC buffer (binary data)
+  std::string comment_;               //!< User comment
+  std::string xmpPacket_;             //!< XMP packet
+  int pixelWidth_;                    //!< image pixel width
+  int pixelHeight_;                   //!< image pixel height
+  NativePreviewList nativePreviews_;  //!< list of native previews
 
   //! Return tag name for given tag id.
   const std::string& tagName(uint16_t tag);
@@ -490,17 +496,17 @@ protected:
   //! Return tag type for given tag id.
   static const char* typeName(uint16_t tag);
 
-private:
+ private:
   // DATA
-  int imageType_; //!< Image type
-  uint16_t supportedMetadata_; //!< Bitmap with all supported metadata types
-  bool writeXmpFromPacket_; //!< Determines the source when writing XMP
-  ByteOrder byteOrder_; //!< Byte order
+  int imageType_;               //!< Image type
+  uint16_t supportedMetadata_;  //!< Bitmap with all supported metadata types
+  bool writeXmpFromPacket_;     //!< Determines the source when writing XMP
+  ByteOrder byteOrder_;         //!< Byte order
 
-  std::map<int, std::string> tags_; //!< Map of tags
-  bool init_; //!< Flag marking if map of tags needs to be initialized
+  std::map<int, std::string> tags_;  //!< Map of tags
+  bool init_;                        //!< Flag marking if map of tags needs to be initialized
 
-}; // class Image
+};  // class Image
 
 //! Type for function pointer that creates new Image instances
 typedef Image::UniquePtr (*NewInstanceFct)(BasicIo::UniquePtr io, bool create);
@@ -515,7 +521,7 @@ typedef bool (*IsThisTypeFct)(BasicIo& iIo, bool advance);
 class EXIV2API ImageFactory {
   friend bool Image::good() const;
 
-public:
+ public:
   /*!
     @brief Create the appropriate class type implemented BasicIo based on the protocol of the input.
 
@@ -657,7 +663,7 @@ public:
   ImageFactory(const ImageFactory& rhs) = delete;
   //@}
 
-}; // class ImageFactory
+};  // class ImageFactory
 
 // *****************************************************************************
 // template, inline and free functions
@@ -665,6 +671,6 @@ public:
 //! Append \em len bytes pointed to by \em buf to \em blob.
 EXIV2API void append(Exiv2::Blob& blob, const byte* buf, uint32_t len);
 
-} // namespace Exiv2
+}  // namespace Exiv2
 
-#endif // #ifndef IMAGE_HPP_
+#endif  // #ifndef IMAGE_HPP_

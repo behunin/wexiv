@@ -21,13 +21,13 @@
   @file    nikonmn_int.hpp
   @brief   Nikon makernote tags.<BR>References:<BR>
   [1] <a href="http://www.tawbaware.com/990exif.htm">MakerNote EXIF Tag of the Nikon 990</a> by Max Lyons<BR>
-  [2] <a href="http://park2.wakwak.com/%7Etsuruzoh/Computer/Digicams/exif-e.html">Exif file format</a> by TsuruZoh Tachibanaya<BR>
-  [3] "EXIFutils Field Reference Guide"<BR>
-  [3] <a href="http://www.ozhiker.com/electronics/pjmt/jpeg_info/nikon_mn.html#Nikon_Type_3_Tags">Nikon Type 3 Makernote Tags Definition</a> of the PHP JPEG Metadata Toolkit by Evan Hunter<BR>
-  [4] <a href="http://www.sno.phy.queensu.ca/~phil/exiftool/">ExifTool</a> by Phil Harvey<BR>
-  [5] Email communication with <a href="http://www.rottmerhusen.com">Robert Rottmerhusen</a><BR>
-  [6] Email communication with Roger Larsson<BR>
-  [7] <a href="http://www.cybercom.net/~dcoffin/dcraw/">Decoding raw digital photos in Linux</a> by Dave Coffin<br>
+  [2] <a href="http://park2.wakwak.com/%7Etsuruzoh/Computer/Digicams/exif-e.html">Exif file format</a> by TsuruZoh
+  Tachibanaya<BR> [3] "EXIFutils Field Reference Guide"<BR> [3] <a
+  href="http://www.ozhiker.com/electronics/pjmt/jpeg_info/nikon_mn.html#Nikon_Type_3_Tags">Nikon Type 3 Makernote Tags
+  Definition</a> of the PHP JPEG Metadata Toolkit by Evan Hunter<BR> [4] <a
+  href="http://www.sno.phy.queensu.ca/~phil/exiftool/">ExifTool</a> by Phil Harvey<BR> [5] Email communication with <a
+  href="http://www.rottmerhusen.com">Robert Rottmerhusen</a><BR> [6] Email communication with Roger Larsson<BR> [7] <a
+  href="http://www.cybercom.net/~dcoffin/dcraw/">Decoding raw digital photos in Linux</a> by Dave Coffin<br>
 */
 #ifndef NIKONMN_INT_HPP_
 #define NIKONMN_INT_HPP_
@@ -47,7 +47,7 @@ namespace Internal {
 
 //! A MakerNote format used by Nikon cameras, such as the E990 and D1.
 class Nikon1MakerNote {
-public:
+ public:
   //! Return read-only list of built-in Nikon1 tags
   static const TagInfo* tagList();
 
@@ -67,18 +67,18 @@ public:
   static std::ostream& printBarValue(std::ostream& os, const Value& value, const ExifData*);
   //@}
 
-private:
+ private:
   //! Tag information
   static const TagInfo tagInfo_[];
 
-}; // class Nikon1MakerNote
+};  // class Nikon1MakerNote
 
 /*!
   @brief A second MakerNote format used by Nikon cameras, including the
           E700, E800, E900, E900S, E910, E950
 */
 class Nikon2MakerNote {
-public:
+ public:
   //! Return read-only list of built-in Nikon2 tags
   static const TagInfo* tagList();
 
@@ -88,15 +88,15 @@ public:
   static std::ostream& print0x000a(std::ostream& os, const Value& value, const ExifData*);
   //@}
 
-private:
+ private:
   //! Tag information
   static const TagInfo tagInfo_[];
 
-}; // class Nikon2MakerNote
+};  // class Nikon2MakerNote
 
 //! A third MakerNote format used by Nikon cameras, e.g., E5400, SQ, D2H, D70
 class Nikon3MakerNote {
-public:
+ public:
   //! Return read-only list of built-in Nikon3 tags
   static const TagInfo* tagList();
   //! Return read-only list of built-in Vibration Reduction tags
@@ -179,7 +179,8 @@ public:
   //! Print AF Points In Focus
   static std::ostream& printAfPointsInFocus(std::ostream& os, const Value& value, const ExifData* metadata);
   //! Print lens name
-  static std::ostream& printLensId(std::ostream& os, const Value& value, const ExifData* metadata, const std::string& group);
+  static std::ostream& printLensId(std::ostream& os, const Value& value, const ExifData* metadata,
+                                   const std::string& group);
   static std::ostream& printLensId1(std::ostream& os, const Value& value, const ExifData* metadata);
   static std::ostream& printLensId2(std::ostream& os, const Value& value, const ExifData* metadata);
   static std::ostream& printLensId3(std::ostream& os, const Value& value, const ExifData* metadata);
@@ -218,7 +219,7 @@ public:
   static std::ostream& printPictureControl(std::ostream& os, const Value& value, const ExifData*);
   //@}
 
-private:
+ private:
   //! Tag information
   static const TagInfo tagInfo_[];
   //! Vibration Reduction tag information
@@ -278,9 +279,9 @@ private:
   //! Lens Data 4 tag information
   static const TagInfo tagInfoLd4_[];
 
-}; // class Nikon3MakerNote
+};  // class Nikon3MakerNote
 
-} // namespace Internal
-} // namespace Exiv2
+}  // namespace Internal
+}  // namespace Exiv2
 
-#endif // #ifndef NIKONMN_INT_HPP_
+#endif  // #ifndef NIKONMN_INT_HPP_
