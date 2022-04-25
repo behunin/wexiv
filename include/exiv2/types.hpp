@@ -27,10 +27,9 @@
 #include "slice.hpp"
 
 // + standard includes
-#include <cmath>
-#include <iomanip>
+#include <algorithm>
+#include <limits>
 #include <sstream>
-#include <string>
 #include <vector>
 
 /*!
@@ -145,7 +144,7 @@ class EXIV2API TypeInfo {
   //! Return the type id for a type name
   static TypeId typeId(const std::string& typeName);
   //! Return the size in bytes of one element of this type
-  static long typeSize(TypeId typeId);
+  static size_t typeSize(TypeId typeId);
 };
 
 /*!
@@ -171,64 +170,80 @@ struct EXIV2API DataBuf {
   //! @name Creators
   //@{
   //! Default constructor
-  DataBuf();
+  DataBuf() = default;
   //! Constructor with an initial buffer size
-  explicit DataBuf(long size);
+  explicit DataBuf(size_t size);
   //! Constructor, copies an existing buffer
-  DataBuf(const byte* pData, long size);
-  /*!
-    @brief Copy constructor. Transfers the buffer to the newly created
-            object similar to std::unique_ptr, i.e., the original object is
-            modified.
-    */
-  DataBuf(DataBuf& rhs);
-  //! Destructor, deletes the allocated buffer
-  ~DataBuf();
+  DataBuf(const byte* pData, size_t size);
   //@}
 
   //! @name Manipulators
   //@{
   /*!
-    @brief Assignment operator. Transfers the buffer and releases the
-            buffer at the original object similar to std::unique_ptr, i.e.,
-            the original object is modified.
-    */
-  DataBuf& operator=(DataBuf& rhs);
-  /*!
     @brief Allocate a data buffer of at least the given size. Note that if
             the requested \em size is less than the current buffer size, no
             new memory is allocated and the buffer size doesn't change.
     */
-  void alloc(long size);
+  void alloc(size_t size);
   /*!
-    @brief Release ownership of the buffer to the caller. Returns the
-            buffer as a data pointer and size pair, resets the internal
-            buffer.
-    */
-  EXV_WARN_UNUSED_RESULT std::pair<byte*, long> release();
+    @brief Resize the buffer. Existing data is preserved (like std::realloc()).
+   */
+  void resize(size_t size);
 
   //! Reset value
-  void reset(std::pair<byte*, long> = std::make_pair(nullptr, long(0)));
+  void reset();
   //@}
 
-  /*!
-    @name Conversions
+  using iterator = std::vector<byte>::iterator;
+  using const_iterator = std::vector<byte>::const_iterator;
 
-    Special conversions with auxiliary type to enable copies
-    and assignments, similar to those used for std::unique_ptr.
-    See http://www.josuttis.com/libbook/auto_ptr.html for a discussion.
-    */
-  //@{
-  DataBuf(const DataBufRef& rhs);
-  DataBuf& operator=(DataBufRef rhs);
-  operator DataBufRef();
-  //@}
+  inline iterator begin() noexcept {
+    return pData_.begin();
+  }
+  [[nodiscard]] inline const_iterator cbegin() const noexcept {
+    return pData_.cbegin();
+  }
+  inline iterator end() noexcept {
+    return pData_.end();
+  }
+  [[nodiscard]] inline const_iterator cend() const noexcept {
+    return pData_.end();
+  }
 
-  // DATA
-  //! Pointer to the buffer, 0 if none has been allocated
-  byte* pData_;
-  //! The current size of the buffer
-  long size_;
+  [[nodiscard]] size_t size() const {
+    return pData_.size();
+  }
+
+  [[nodiscard]] uint8_t read_uint8(size_t offset) const;
+  void write_uint8(size_t offset, uint8_t x);
+
+  [[nodiscard]] uint16_t read_uint16(size_t offset, ByteOrder byteOrder) const;
+  void write_uint16(size_t offset, uint16_t x, ByteOrder byteOrder);
+
+  [[nodiscard]] uint32_t read_uint32(size_t offset, ByteOrder byteOrder) const;
+  void write_uint32(size_t offset, uint32_t x, ByteOrder byteOrder);
+
+  [[nodiscard]] uint64_t read_uint64(size_t offset, ByteOrder byteOrder) const;
+  void write_uint64(size_t offset, uint64_t x, ByteOrder byteOrder);
+
+  //! Equivalent to: memcmp(&pData_[offset], buf, bufsize)
+  int cmpBytes(size_t offset, const void* buf, size_t bufsize) const;
+
+  //! Returns a data pointer.
+  byte* data(size_t offset = 0);
+
+  //! Returns a (read-only) data pointer.
+  [[nodiscard]] const byte* c_data(size_t offset = 0) const;
+
+  //! Returns a (read-only) C-style string pointer.
+  [[nodiscard]] const char* c_str(size_t offset = 0) const;
+
+  [[nodiscard]] bool empty() const {
+    return pData_.empty();
+  }
+
+ private:
+  std::vector<byte> pData_;
 };  // class DataBuf
 
 /*!
@@ -298,6 +313,11 @@ EXIV2API long us2Data(byte* buf, uint16_t s, ByteOrder byteOrder);
   */
 EXIV2API long ul2Data(byte* buf, uint32_t l, ByteOrder byteOrder);
 /*!
+  @brief Convert an uint64_t to data, write the data to the buffer,
+         return number of bytes written.
+ */
+EXIV2API long ull2Data(byte* buf, uint64_t l, ByteOrder byteOrder);
+/*!
   @brief Convert an unsigned rational to data, write the data to the buffer,
           return number of bytes written.
   */
@@ -362,18 +382,32 @@ EXIV2API std::wstring s2ws(const std::string& s);
 EXIV2API std::string ws2s(const std::wstring& s);
 #endif
 /*!
-  @brief Return a \em long set to the value represented by \em s.
+  @brief Return a \em int64_t set to the value represented by \em s.
 
-  Besides strings that represent \em long values, the function also
+  Besides strings that represent \em int64_t values, the function also
   handles \em float, \em Rational and boolean
   (see also: stringTo(const std::string& s, bool& ok)).
 
   @param  s  String to parse
   @param  ok Output variable indicating the success of the operation.
-  @return Returns the \em long value represented by \em s and sets \em ok
+  @return Returns the \em int64_t value represented by \em s and sets \em ok
           to \c true if the conversion was successful or \c false if not.
 */
-EXIV2API long parseLong(const std::string& s, bool& ok);
+EXIV2API int64_t parseInt64(const std::string& s, bool& ok);
+
+/*!
+  @brief Return a \em uint32_t set to the value represented by \em s.
+
+  Besides strings that represent \em uint32_t values, the function also
+  handles \em float, \em Rational and boolean
+  (see also: stringTo(const std::string& s, bool& ok)).
+
+  @param  s  String to parse
+  @param  ok Output variable indicating the success of the operation.
+  @return Returns the \em uint32_t value represented by \em s and sets \em ok
+          to \c true if the conversion was successful or \c false if not.
+*/
+EXIV2API uint32_t parseUint32(const std::string& s, bool& ok);
 
 /*!
   @brief Return a \em float set to the value represented by \em s.

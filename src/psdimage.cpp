@@ -1,23 +1,5 @@
-// ***************************************************************** -*- C++ -*-
-/*
- * Copyright (C) 2004-2021 Exiv2 authors
- * This program is part of the Exiv2 distribution.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, 5th Floor, Boston, MA 02110-1301 USA.
- */
-// *****************************************************************************
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 // included header files
 #include "psdimage.hpp"
 
@@ -27,10 +9,7 @@
 #include "error.hpp"
 #include "image.hpp"
 #include "jpgimage.hpp"
-#include "safe_op.hpp"
-// Todo: Consolidate with existing code in struct Photoshop (jpgimage.hpp):
-//       Extend this helper to a proper class with all required functionality,
-//       then move it here or into a separate file?
+#include "photoshop.hpp"
 
 //! @cond IGNORE
 struct PhotoshopResourceBlock {
@@ -180,7 +159,7 @@ void PsdImage::readMetadata() {
       throw Error(kerNotAnImage, "Photoshop");
     }
 
-    if (!Photoshop::isIrb(buf, 4)) {
+    if (!Photoshop::isIrb(buf)) {
       break;  // bad resource type
     }
     uint16_t resourceId = getUShort(buf + 4, bigEndian);
@@ -214,42 +193,36 @@ void PsdImage::readResourceBlock(uint16_t resourceId, uint32_t resourceSize) {
   switch (resourceId) {
     case kPhotoshopResourceID_IPTC_NAA: {
       DataBuf rawIPTC(resourceSize);
-      io_->read(rawIPTC.pData_, rawIPTC.size_);
+      io_->read(rawIPTC.data(), rawIPTC.size());
       if (io_->error() || io_->eof())
         throw Error(kerFailedToReadImageData);
-      if (IptcParser::decode(iptcData_, rawIPTC.pData_, rawIPTC.size_)) {
-#ifndef SUPPRESS_WARNINGS
-        EXV_WARNING << "Failed to decode IPTC metadata.\n";
-#endif
+      if (IptcParser::decode(iptcData_, rawIPTC.data(), rawIPTC.size())) {
+        EXV_WARNING << "Failed to decode IPTC metadata.";
       }
       break;
     }
 
     case kPhotoshopResourceID_ExifInfo: {
       DataBuf rawExif(resourceSize);
-      io_->read(rawExif.pData_, rawExif.size_);
+      io_->read(rawExif.data(), rawExif.size());
       if (io_->error() || io_->eof())
         throw Error(kerFailedToReadImageData);
-      ByteOrder bo = ExifParser::decode(exifData_, rawExif.pData_, rawExif.size_);
+      ByteOrder bo = ExifParser::decode(exifData_, rawExif.data(), rawExif.size());
       setByteOrder(bo);
-      if (rawExif.size_ > 0 && byteOrder() == invalidByteOrder) {
-#ifndef SUPPRESS_WARNINGS
-        EXV_WARNING << "Failed to decode Exif metadata.\n";
-#endif
+      if (rawExif.size() > 0 && byteOrder() == invalidByteOrder) {
+        EXV_WARNING << "Failed to decode Exif metadata.";
       }
       break;
     }
 
     case kPhotoshopResourceID_XMPPacket: {
       DataBuf xmpPacket(resourceSize);
-      io_->read(xmpPacket.pData_, xmpPacket.size_);
+      io_->read(xmpPacket.data(), xmpPacket.size());
       if (io_->error() || io_->eof())
         throw Error(kerFailedToReadImageData);
-      xmpPacket_.assign(reinterpret_cast<char*>(xmpPacket.pData_), xmpPacket.size_);
+      xmpPacket_.assign(xmpPacket.c_str(), xmpPacket.size());
       if (!xmpPacket_.empty() && XmpParser::decode(xmpData_, xmpPacket_)) {
-#ifndef SUPPRESS_WARNINGS
-        EXV_WARNING << "Failed to decode XMP metadata.\n";
-#endif
+        EXV_WARNING << "Failed to decode XMP metadata.";
       }
       break;
     }
@@ -308,7 +281,7 @@ void PsdImage::readResourceBlock(uint16_t resourceId, uint32_t resourceSize) {
 }  // PsdImage::readResourceBlock
 
 Image::UniquePtr newPsdInstance(BasicIo::UniquePtr io, bool /*create*/) {
-  Image::UniquePtr image(new PsdImage(std::move(io)));
+  auto image = std::make_unique<PsdImage>(std::move(io));
   if (!image->good()) {
     image.reset();
   }

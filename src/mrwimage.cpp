@@ -1,23 +1,5 @@
-// ***************************************************************** -*- C++ -*-
-/*
- * Copyright (C) 2004-2021 Exiv2 authors
- * This program is part of the Exiv2 distribution.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, 5th Floor, Boston, MA 02110-1301 USA.
- */
-// *****************************************************************************
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 #include "mrwimage.hpp"
 
 #include "basicio.hpp"
@@ -54,14 +36,14 @@ int MrwImage::pixelHeight() const {
 
 void MrwImage::readMetadata() {
   if (io_->open() != 0) {
-    throw Error(kerDataSourceOpenFailed, io_->path());
+    throw Error(ErrorCode::kerDataSourceOpenFailed, io_->path());
   }
   IoCloser closer(*io_);
   // Ensure that this is the correct image type
   if (!isMrwType(*io_, false)) {
     if (io_->error() || io_->eof())
-      throw Error(kerFailedToReadImageData);
-    throw Error(kerNotAnImage, "MRW");
+      throw Error(ErrorCode::kerFailedToReadImageData);
+    throw Error(ErrorCode::kerNotAnImage, "MRW");
   }
 
   // Find the TTW block and read it into a buffer
@@ -72,22 +54,22 @@ void MrwImage::readMetadata() {
   uint32_t const end = getULong(tmp + 4, bigEndian);
 
   pos += len;
-  enforce(pos <= end, kerFailedToReadImageData);
+  enforce(pos <= end, ErrorCode::kerFailedToReadImageData);
   io_->read(tmp, len);
   if (io_->error() || io_->eof())
-    throw Error(kerFailedToReadImageData);
+    throw Error(ErrorCode::kerFailedToReadImageData);
 
   while (memcmp(tmp + 1, "TTW", 3) != 0) {
     uint32_t const siz = getULong(tmp + 4, bigEndian);
-    enforce(siz <= end - pos, kerFailedToReadImageData);
+    enforce(siz <= end - pos, ErrorCode::kerFailedToReadImageData);
     pos += siz;
     io_->seek(siz, BasicIo::cur);
-    enforce(!io_->error() && !io_->eof(), kerFailedToReadImageData);
+    enforce(!io_->error() && !io_->eof(), ErrorCode::kerFailedToReadImageData);
 
-    enforce(len <= end - pos, kerFailedToReadImageData);
+    enforce(len <= end - pos, ErrorCode::kerFailedToReadImageData);
     pos += len;
     io_->read(tmp, len);
-    enforce(!io_->error() && !io_->eof(), kerFailedToReadImageData);
+    enforce(!io_->error() && !io_->eof(), ErrorCode::kerFailedToReadImageData);
   }
 
   const uint32_t siz = getULong(tmp + 4, bigEndian);
@@ -96,17 +78,17 @@ void MrwImage::readMetadata() {
   // greater than io_->size() then it is definitely invalid. But the
   // exact bounds checking is done by the call to io_->read, which
   // will fail if there are fewer than siz bytes left to read.
-  enforce(siz <= io_->size(), kerFailedToReadImageData);
+  enforce(siz <= io_->size(), ErrorCode::kerFailedToReadImageData);
   DataBuf buf(siz);
-  io_->read(buf.pData_, buf.size_);
-  enforce(!io_->error() && !io_->eof(), kerFailedToReadImageData);
+  io_->read(buf.data(), buf.size());
+  enforce(!io_->error() && !io_->eof(), ErrorCode::kerFailedToReadImageData);
 
-  ByteOrder bo = TiffParser::decode(exifData_, iptcData_, xmpData_, buf.pData_, buf.size_);
+  ByteOrder bo = TiffParser::decode(exifData_, iptcData_, xmpData_, buf.c_data(), buf.size());
   setByteOrder(bo);
 }  // MrwImage::readMetadata
 
 Image::UniquePtr newMrwInstance(BasicIo::UniquePtr io, bool create) {
-  Image::UniquePtr image(new MrwImage(std::move(io), create));
+  auto image = std::make_unique<MrwImage>(std::move(io), create);
   if (!image->good()) {
     image.reset();
   }

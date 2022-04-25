@@ -27,6 +27,7 @@
 #include "exiv2lib_export.h"
 
 // included header files
+#include "error.hpp"
 #include "types.hpp"
 
 // + standard includes
@@ -93,7 +94,7 @@ class EXIV2API BasicIo {
     @return Number of bytes written to IO source successfully;<BR>
         0 if failure;
     */
-  virtual long write(const byte* data, long wcount) = 0;
+  virtual size_t write(const byte* data, size_t wcount) = 0;
   /*!
     @brief Write data that is read from another BasicIo instance to
         the IO source. Current IO position is advanced by the number
@@ -103,7 +104,7 @@ class EXIV2API BasicIo {
     @return Number of bytes written to IO source successfully;<BR>
         0 if failure;
     */
-  virtual long write(BasicIo& src) = 0;
+  virtual size_t write(BasicIo& src) = 0;
   /*!
     @brief Write one byte to the IO source. Current IO position is
         advanced by one byte.
@@ -122,7 +123,7 @@ class EXIV2API BasicIo {
         DataBuf::size_ member to find the number of bytes read.
         DataBuf::size_ will be 0 on failure.
     */
-  virtual DataBuf read(long rcount) = 0;
+  virtual DataBuf read(size_t rcount) = 0;
   /*!
     @brief Read data from the IO source. Reading starts at the current
         IO position and the position is advanced by the number of bytes
@@ -135,7 +136,18 @@ class EXIV2API BasicIo {
     @return Number of bytes read from IO source successfully;<BR>
         0 if failure;
     */
-  virtual long read(byte* buf, long rcount) = 0;
+  virtual size_t read(byte* buf, size_t rcount) = 0;
+  /*!
+    @brief Safe version of `read()` that checks for errors and throws
+        an exception if the read was unsuccessful.
+    @param buf Pointer to a block of memory into which the read data
+        is stored. The memory block must be at least \em rcount bytes
+        long.
+    @param rcount Maximum number of bytes to read. Fewer bytes may be
+        read if \em rcount bytes are not available.
+    @param err Error code to use if an exception is thrown.
+   */
+  void readOrThrow(byte* buf, size_t rcount, ErrorCode err);
   /*!
     @brief Read one byte from the IO source. Current IO position is
         advanced by one byte.
@@ -165,7 +177,17 @@ class EXIV2API BasicIo {
     @return 0 if successful;<BR>
         Nonzero if failure;
     */
-  virtual int seek(long offset, Position pos) = 0;
+  virtual int seek(int64_t offset, Position pos) = 0;
+
+  /*!
+    @brief Safe version of `seek()` that checks for errors and throws
+        an exception if the seek was unsuccessful.
+    @param offset Number of bytes to move the position relative
+        to the starting position specified by \em pos
+    @param pos Position from which the seek should start
+    @param err Error code to use if an exception is thrown.
+   */
+  void seekOrThrow(int64_t offset, Position pos, ErrorCode err);
 
   /*!
     @brief Direct access to the IO data. For files, this is done by
@@ -194,25 +216,25 @@ class EXIV2API BasicIo {
     @return Offset from the start of IO if successful;<BR>
             -1 if failure;
     */
-  virtual long tell() const = 0;
+  [[nodiscard]] virtual long tell() const = 0;
   /*!
     @brief Get the current size of the IO source in bytes.
     @return Size of the IO source in bytes;<BR>
             -1 if failure;
     */
-  virtual size_t size() const = 0;
+  [[nodiscard]] virtual size_t size() const = 0;
   //! Returns true if the IO source is open, otherwise false.
-  virtual bool isopen() const = 0;
+  [[nodiscard]] virtual bool isopen() const = 0;
   //! Returns 0 if the IO source is in a valid state, otherwise nonzero.
-  virtual int error() const = 0;
+  [[nodiscard]] virtual int error() const = 0;
   //! Returns true if the IO position has reached the end, otherwise false.
-  virtual bool eof() const = 0;
+  [[nodiscard]] virtual bool eof() const = 0;
   /*!
     @brief Return the path to the IO resource. Often used to form
         comprehensive error messages where only a BasicIo instance is
         available.
     */
-  virtual std::string path() const = 0;
+  [[nodiscard]] virtual const std::string& path() const noexcept = 0;
 
   /*!
     @brief Mark all the bNone blocks to bKnow. This avoids allocating memory
@@ -297,7 +319,7 @@ class EXIV2API MemIo : public BasicIo {
         bytes long
     @param size Number of bytes to copy.
     */
-  MemIo(const byte* data, long size);
+  MemIo(const byte* data, size_t size);
   //! Destructor. Releases all managed memory
   ~MemIo() override;
   //@}
@@ -326,7 +348,7 @@ class EXIV2API MemIo : public BasicIo {
     @return Number of bytes written to the memory block successfully;<BR>
             0 if failure;
     */
-  long write(const byte* data, long wcount) override;
+  size_t write(const byte* data, size_t wcount) override;
   /*!
     @brief Write data that is read from another BasicIo instance to
         the memory block. If needed, the size of the internal memory
@@ -337,7 +359,7 @@ class EXIV2API MemIo : public BasicIo {
     @return Number of bytes written to the memory block successfully;<BR>
             0 if failure;
     */
-  long write(BasicIo& src) override;
+  size_t write(BasicIo& src) override;
   /*!
     @brief Write one byte to the memory block. The IO position is
         advanced by one byte.
@@ -356,7 +378,7 @@ class EXIV2API MemIo : public BasicIo {
           DataBuf::size_ member to find the number of bytes read.
           DataBuf::size_ will be 0 on failure.
     */
-  DataBuf read(long rcount) override;
+  DataBuf read(size_t rcount) override;
   /*!
     @brief Read data from the memory block. Reading starts at the current
         IO position and the position is advanced by the number of
@@ -369,7 +391,7 @@ class EXIV2API MemIo : public BasicIo {
     @return Number of bytes read from the memory block successfully;<BR>
             0 if failure;
     */
-  long read(byte* buf, long rcount) override;
+  size_t read(byte* buf, size_t rcount) override;
   /*!
     @brief Read one byte from the memory block. The IO position is
         advanced by one byte.
@@ -401,7 +423,7 @@ class EXIV2API MemIo : public BasicIo {
     @return 0 if successful;<BR>
             Nonzero if failure;
     */
-  int seek(long offset, Position pos) override;
+  int seek(int64_t offset, Position pos) override;
   /*!
     @brief Allow direct access to the underlying data buffer. The buffer
             is not protected against write access in any way, the argument
@@ -420,21 +442,21 @@ class EXIV2API MemIo : public BasicIo {
     @brief Get the current IO position.
     @return Offset from the start of the memory block
     */
-  long tell() const override;
+  [[nodiscard]] long tell() const override;
   /*!
     @brief Get the current memory buffer size in bytes.
     @return Size of the in memory data in bytes;<BR>
             -1 if failure;
     */
-  size_t size() const override;
+  [[nodiscard]] size_t size() const override;
   //! Always returns true
-  bool isopen() const override;
+  [[nodiscard]] bool isopen() const override;
   //! Always returns 0
-  int error() const override;
+  [[nodiscard]] int error() const override;
   //! Returns true if the IO position has reached the end, otherwise false.
-  bool eof() const override;
+  [[nodiscard]] bool eof() const override;
   //! Returns a dummy path, indicating that memory access is used
-  std::string path() const override;
+  [[nodiscard]] const std::string& path() const noexcept override;
 
   /*!
     @brief Mark all the bNone blocks to bKnow. This avoids allocating memory

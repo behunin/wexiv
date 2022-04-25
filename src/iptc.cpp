@@ -1,22 +1,5 @@
-// ***************************************************************** -*- C++ -*-
-/*
- * Copyright (C) 2004-2021 Exiv2 authors
- * This program is part of the Exiv2 distribution.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, 5th Floor, Boston, MA 02110-1301 USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 // *****************************************************************************
 #include "iptc.hpp"
 
@@ -24,9 +7,12 @@
 #include "enforce.hpp"
 #include "error.hpp"
 #include "image_int.hpp"
-#include "jpgimage.hpp"
 #include "types.hpp"
 #include "value.hpp"
+
+// + standard includes
+#include <algorithm>
+#include <iostream>
 
 // *****************************************************************************
 namespace {
@@ -127,15 +113,15 @@ const char* Iptcdatum::typeName() const {
   return TypeInfo::typeName(typeId());
 }
 
-long Iptcdatum::typeSize() const {
+size_t Iptcdatum::typeSize() const {
   return TypeInfo::typeSize(typeId());
 }
 
-long Iptcdatum::count() const {
+size_t Iptcdatum::count() const {
   return value_.get() == nullptr ? 0 : value_->count();
 }
 
-long Iptcdatum::size() const {
+size_t Iptcdatum::size() const {
   return value_.get() == nullptr ? 0 : value_->size();
 }
 
@@ -147,8 +133,8 @@ std::string Iptcdatum::toString(long n) const {
   return value_.get() == nullptr ? "" : value_->toString(n);
 }
 
-long Iptcdatum::toLong(long n) const {
-  return value_.get() == nullptr ? -1 : value_->toLong(n);
+int64_t Iptcdatum::toInt64(size_t n) const {
+  return value_ ? value_->toInt64(n) : -1;
 }
 
 float Iptcdatum::toFloat(long n) const {
@@ -346,7 +332,7 @@ const char* IptcData::detectCharset() const {
 
 const byte IptcParser::marker_ = 0x1C;  // Dataset marker
 
-int IptcParser::decode(emscripten::val& iptcData, const byte* pData, uint32_t size) {
+int IptcParser::decode(emscripten::val& iptcData, const byte* pData, size_t size) {
 #ifdef EXIV2_DEBUG_MESSAGES
   std::cerr << "IptcParser::decode, size = " << size << "\n";
 #endif
@@ -388,14 +374,12 @@ int IptcParser::decode(emscripten::val& iptcData, const byte* pData, uint32_t si
     if (sizeData <= static_cast<size_t>(pEnd - pRead)) {
       int rc = 0;
       if ((rc = readData(iptcData, dataSet, record, pRead, sizeData)) != 0) {
-#ifndef SUPPRESS_WARNINGS
-        EXV_WARNING << "Failed to read IPTC dataset " << IptcKey(dataSet, record) << " (rc = " << rc << "); skipped.\n";
-#endif
+        EXV_WARNING << "Failed to read IPTC dataset " << IptcKey(dataSet, record).key() << " (rc = " << rc
+                    << "); skipped.";
       }
     } else {
-#ifndef SUPPRESS_WARNINGS
-      EXV_WARNING << "IPTC dataset " << IptcKey(dataSet, record) << " has invalid size " << sizeData << "; skipped.\n";
-#endif
+      EXV_WARNING << "IPTC dataset " << IptcKey(dataSet, record).key() << " has invalid size " << sizeData
+                  << "; skipped.";
       return 7;
     }
     pRead += sizeData;
@@ -426,7 +410,7 @@ int readData(emscripten::val& iptcData, uint16_t dataSet, uint16_t record, const
   int rc = value->read(data, sizeData, Exiv2::bigEndian);
   if (0 == rc) {
     Exiv2::IptcKey key(dataSet, record);
-    iptcData.set(key, value->toString());
+    iptcData.set(key.key(), value->toString());
   } else if (1 == rc) {
     // If the first attempt failed, try with a string value
     value = Exiv2::Value::create(Exiv2::string);

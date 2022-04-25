@@ -35,14 +35,17 @@
 #include "version.hpp"
 
 // + standard includes
+#include <algorithm>
 #include <array>
+#include <climits>
+#include <cstring>
+#include <sstream>
 #include <string>
 
 // *****************************************************************************
 namespace {
 
 using namespace Exiv2;
-using namespace Util;
 using Exiv2::byte;
 
 // signature of DOS EPS
@@ -104,9 +107,7 @@ void writeTemp(BasicIo& tempIo, const byte* data, size_t size) {
   if (size == 0)
     return;
   if (tempIo.write(data, static_cast<long>(size)) != static_cast<long>(size)) {
-#ifndef SUPPRESS_WARNINGS
     EXV_WARNING << "Failed to write to temporary file.\n";
-#endif
     throw Error(kerImageWriteFailed);
   }
 }
@@ -120,10 +121,8 @@ void writeTemp(BasicIo& tempIo, const std::string& data) {
 uint32_t posTemp(BasicIo& tempIo) {
   const long pos = tempIo.tell();
   if (pos == -1) {
-#ifndef SUPPRESS_WARNINGS
     EXV_WARNING << "Internal error while determining current write position in temporary file.\n";
-#endif
-    throw Error(kerImageWriteFailed);
+    throw Error(ErrorCode::kerImageWriteFailed);
   }
   return static_cast<uint32_t>(pos);
 }
@@ -216,11 +215,9 @@ void findXmp(size_t& xmpPos, size_t& xmpSize, const byte* data, size_t startPos,
 #endif
 
           if (readOnly) {
-#ifndef SUPPRESS_WARNINGS
             EXV_WARNING << "Unable to handle read-only XMP metadata yet. Please provide your "
                            "sample EPS file to the Exiv2 project: http://dev.exiv2.org/projects/exiv2\n";
-#endif
-            throw Error(write ? kerImageWriteFailed : kerFailedToReadImageData);
+            throw Error(write ? ErrorCode::kerImageWriteFailed : ErrorCode::kerFailedToReadImageData);
           }
 
           // search for end of XMP trailer
@@ -231,16 +228,12 @@ void findXmp(size_t& xmpPos, size_t& xmpSize, const byte* data, size_t startPos,
               return;
             }
           }
-#ifndef SUPPRESS_WARNINGS
-          EXV_WARNING << "Found XMP header but incomplete XMP trailer.\n";
-#endif
-          throw Error(write ? kerImageWriteFailed : kerFailedToReadImageData);
+          EXV_WARNING << "Found XMP header but incomplete XMP trailer.";
+          throw Error(write ? ErrorCode::kerImageWriteFailed : ErrorCode::kerFailedToReadImageData);
         }
       }
-#ifndef SUPPRESS_WARNINGS
-      EXV_WARNING << "Found XMP header but no XMP trailer.\n";
-#endif
-      throw Error(write ? kerImageWriteFailed : kerFailedToReadImageData);
+      EXV_WARNING << "Found XMP header but no XMP trailer.";
+      throw Error(write ? ErrorCode::kerImageWriteFailed : ErrorCode::kerFailedToReadImageData);
     }
   }
 }
@@ -273,10 +266,8 @@ void readWriteEpsMetadata(BasicIo& io, std::string& xmpPacket, NativePreviewList
     EXV_DEBUG << "readWriteEpsMetadata: Found DOS EPS signature\n";
 #endif
     if (size < 30) {
-#ifndef SUPPRESS_WARNINGS
       EXV_WARNING << "Premature end of file after DOS EPS signature.\n";
-#endif
-      throw Error(write ? kerImageWriteFailed : kerFailedToReadImageData);
+      throw Error(write ? ErrorCode::kerImageWriteFailed : ErrorCode::kerFailedToReadImageData);
     }
     posEps = getULong(data + 4, littleEndian);
     posEndEps = getULong(data + 8, littleEndian) + posEps;
@@ -291,41 +282,31 @@ void readWriteEpsMetadata(BasicIo& io, std::string& xmpPacket, NativePreviewList
 #endif
     }
     if (!((posWmf == 0 && sizeWmf == 0) || (posTiff == 0 && sizeTiff == 0))) {
-#ifndef SUPPRESS_WARNINGS
-      EXV_WARNING << "DOS EPS file has both WMF and TIFF section. Only one of those is allowed.\n";
-#endif
+      EXV_WARNING << "DOS EPS file has both WMF and TIFF section. Only one of those is allowed.";
       if (write)
-        throw Error(kerImageWriteFailed);
+        throw Error(ErrorCode::kerImageWriteFailed);
     }
     if (sizeWmf == 0 && sizeTiff == 0) {
-#ifndef SUPPRESS_WARNINGS
-      EXV_WARNING << "DOS EPS file has neither WMF nor TIFF section. Exactly one of those is required.\n";
-#endif
+      EXV_WARNING << "DOS EPS file has neither WMF nor TIFF section. Exactly one of those is required.";
       if (write)
-        throw Error(kerImageWriteFailed);
+        throw Error(ErrorCode::kerImageWriteFailed);
     }
     if (posEps < 30 || posEndEps > size) {
-#ifndef SUPPRESS_WARNINGS
       EXV_WARNING << "DOS EPS file has invalid position (" << posEps << ") or size (" << (posEndEps - posEps)
                   << ") for EPS section.\n";
-#endif
-      throw Error(write ? kerImageWriteFailed : kerFailedToReadImageData);
+      throw Error(write ? ErrorCode::kerImageWriteFailed : ErrorCode::kerFailedToReadImageData);
     }
     if (sizeWmf != 0 && (posWmf < 30 || posWmf + sizeWmf > size)) {
-#ifndef SUPPRESS_WARNINGS
       EXV_WARNING << "DOS EPS file has invalid position (" << posWmf << ") or size (" << sizeWmf
                   << ") for WMF section.\n";
-#endif
       if (write)
-        throw Error(kerImageWriteFailed);
+        throw Error(ErrorCode::kerImageWriteFailed);
     }
     if (sizeTiff != 0 && (posTiff < 30 || posTiff + sizeTiff > size)) {
-#ifndef SUPPRESS_WARNINGS
       EXV_WARNING << "DOS EPS file has invalid position (" << posTiff << ") or size (" << sizeTiff
                   << ") for TIFF section.\n";
-#endif
       if (write)
-        throw Error(kerImageWriteFailed);
+        throw Error(ErrorCode::kerImageWriteFailed);
     }
   }
 
@@ -339,10 +320,8 @@ void readWriteEpsMetadata(BasicIo& io, std::string& xmpPacket, NativePreviewList
 
   // determine line ending style of the first line
   if (posSecondLine >= posEndEps) {
-#ifndef SUPPRESS_WARNINGS
     EXV_WARNING << "Premature end of file after first line.\n";
-#endif
-    throw Error(write ? kerImageWriteFailed : kerFailedToReadImageData);
+    throw Error(write ? ErrorCode::kerImageWriteFailed : ErrorCode::kerFailedToReadImageData);
   }
   const std::string lineEnding(reinterpret_cast<const char*>(data + posEps + firstLine.size()),
                                posSecondLine - (posEps + firstLine.size()));
@@ -384,25 +363,19 @@ void readWriteEpsMetadata(BasicIo& io, std::string& xmpPacket, NativePreviewList
 #endif
     // nested documents
     if (posPage == posEndEps && (startsWith(line, "%%IncludeDocument:") || startsWith(line, "%%BeginDocument:"))) {
-#ifndef SUPPRESS_WARNINGS
-      EXV_WARNING << "Nested document at invalid position: " << startPos << "\n";
-#endif
-      throw Error(write ? kerImageWriteFailed : kerFailedToReadImageData);
+      EXV_WARNING << "Nested document at invalid position: " << startPos;
+      throw Error(write ? ErrorCode::kerImageWriteFailed : ErrorCode::kerFailedToReadImageData);
     }
     if (startsWith(line, "%%BeginDocument:")) {
       if (depth == maxDepth) {
-#ifndef SUPPRESS_WARNINGS
-        EXV_WARNING << "Document too deeply nested at position: " << startPos << "\n";
-#endif
-        throw Error(write ? kerImageWriteFailed : kerFailedToReadImageData);
+        EXV_WARNING << "Document too deeply nested at position: " << startPos;
+        throw Error(write ? ErrorCode::kerImageWriteFailed : ErrorCode::kerFailedToReadImageData);
       }
       depth++;
     } else if (startsWith(line, "%%EndDocument")) {
       if (depth == 0) {
-#ifndef SUPPRESS_WARNINGS
-        EXV_WARNING << "Unmatched EndDocument at position: " << startPos << "\n";
-#endif
-        throw Error(write ? kerImageWriteFailed : kerFailedToReadImageData);
+        EXV_WARNING << "Unmatched EndDocument at position: " << startPos;
+        throw Error(write ? ErrorCode::kerImageWriteFailed : ErrorCode::kerFailedToReadImageData);
       }
       depth--;
     }
@@ -421,16 +394,11 @@ void readWriteEpsMetadata(BasicIo& io, std::string& xmpPacket, NativePreviewList
       posPage = startPos;
     } else if (posPage != posEndEps && startsWith(line, "%%Page:")) {
       if (implicitPage) {
-#ifndef SUPPRESS_WARNINGS
-        EXV_WARNING << "Page at position " << startPos << " conflicts with implicit page at position: " << posPage
-                    << "\n";
-#endif
-        throw Error(write ? kerImageWriteFailed : kerFailedToReadImageData);
+        EXV_WARNING << "Page at position " << startPos << " conflicts with implicit page at position: " << posPage;
+        throw Error(write ? ErrorCode::kerImageWriteFailed : ErrorCode::kerFailedToReadImageData);
       }
-#ifndef SUPPRESS_WARNINGS
-      EXV_WARNING << "Unable to handle multiple PostScript pages. Found second page at position: " << startPos << "\n";
-#endif
-      throw Error(write ? kerImageWriteFailed : kerFailedToReadImageData);
+      EXV_WARNING << "Unable to handle multiple PostScript pages. Found second page at position: " << startPos;
+      throw Error(write ? ErrorCode::kerImageWriteFailed : ErrorCode::kerFailedToReadImageData);
     } else if (line == "%%BeginPageSetup") {
       posBeginPageSetup = startPos;
     } else if (!inRemovableEmbedding && line == "%Exiv2BeginXMP: Before %%EndPageSetup") {
@@ -582,10 +550,8 @@ void readWriteEpsMetadata(BasicIo& io, std::string& xmpPacket, NativePreviewList
 
   // check for unfinished nested documents
   if (depth != 0) {
-#ifndef SUPPRESS_WARNINGS
-    EXV_WARNING << "Unmatched BeginDocument (" << depth << "x)\n";
-#endif
-    throw Error(write ? kerImageWriteFailed : kerFailedToReadImageData);
+    EXV_WARNING << "Unmatched BeginDocument (" << depth << "x)";
+    throw Error(write ? ErrorCode::kerImageWriteFailed : ErrorCode::kerFailedToReadImageData);
   }
 
   // look for the unmarked trailers of some removable XMP embeddings
@@ -604,9 +570,7 @@ void readWriteEpsMetadata(BasicIo& io, std::string& xmpPacket, NativePreviewList
                    "currentdict end /PUT pdfmark") {  // Photoshop style
       posXmpTrailer = posLine2;
     } else {
-#ifndef SUPPRESS_WARNINGS
-      EXV_WARNING << "Unable to find XMP embedding trailer ending at position: " << posXmpTrailerEnd << "\n";
-#endif
+      EXV_WARNING << "Unable to find XMP embedding trailer ending at position: " << posXmpTrailerEnd;
       if (write)
         throw Error(kerImageWriteFailed);
       break;
@@ -631,9 +595,7 @@ void readWriteEpsMetadata(BasicIo& io, std::string& xmpPacket, NativePreviewList
   } else if (line.empty() || line == "%ADO_ContainsXMP: NoMain" || line == "%ADO_ContainsXMP:NoMain") {
     containsXmp = false;
   } else {
-#ifndef SUPPRESS_WARNINGS
-    EXV_WARNING << "Invalid line \"" << line << "\" at position: " << posContainsXmp << "\n";
-#endif
+    EXV_WARNING << "Invalid line \"" << line << "\" at position: " << posContainsXmp;
     throw Error(write ? kerImageWriteFailed : kerFailedToReadImageData);
   }
 
@@ -646,17 +608,12 @@ void readWriteEpsMetadata(BasicIo& io, std::string& xmpPacket, NativePreviewList
     // search for XMP metadata
     findXmp(xmpPos, xmpSize, data, posEps, posEndEps, write);
     if (xmpPos == posEndEps) {
-#ifndef SUPPRESS_WARNINGS
-      EXV_WARNING << "Unable to find XMP metadata as announced at position: " << posContainsXmp << "\n";
-#endif
+      EXV_WARNING << "Unable to find XMP metadata as announced at position: " << posContainsXmp;
     }
     // check embedding of XMP metadata
     const size_t posLineAfterXmp = readLine(line, data, xmpPos + xmpSize, posEndEps);
     if (!line.empty()) {
-#ifndef SUPPRESS_WARNINGS
-      EXV_WARNING << "Unexpected " << line.size() << " bytes of data after XMP at position: " << (xmpPos + xmpSize)
-                  << "\n";
-#endif
+      EXV_WARNING << "Unexpected " << line.size() << " bytes of data after XMP at position: " << (xmpPos + xmpSize);
     } else if (!deleteXmp) {
       readLine(line, data, posLineAfterXmp, posEndEps);
       if (line == "% &&end XMP packet marker&&" || line == "%  &&end XMP packet marker&&") {
@@ -679,9 +636,7 @@ void readWriteEpsMetadata(BasicIo& io, std::string& xmpPacket, NativePreviewList
         xmpPos = posBeginXmlPacket;
       }
     } else if (posBeginPhotoshop != posEndEps) {
-#ifndef SUPPRESS_WARNINGS
-      EXV_WARNING << "Missing %begin_xml_packet in Photoshop EPS at position: " << xmpPos << "\n";
-#endif
+      EXV_WARNING << "Missing %begin_xml_packet in Photoshop EPS at position: " << xmpPos;
       if (write)
         throw Error(kerImageWriteFailed);
     }
@@ -702,9 +657,7 @@ void readWriteEpsMetadata(BasicIo& io, std::string& xmpPacket, NativePreviewList
         }
       }
       if (!isRemovableEmbedding) {
-#ifndef SUPPRESS_WARNINGS
-        EXV_WARNING << "XMP metadata block is not removable at position: " << posOtherXmp << "\n";
-#endif
+        EXV_WARNING << "XMP metadata block is not removable at position: " << posOtherXmp;
         if (write)
           throw Error(kerImageWriteFailed);
         break;
@@ -742,17 +695,11 @@ void readWriteEpsMetadata(BasicIo& io, std::string& xmpPacket, NativePreviewList
       nativePreview.filter_ = "hex-ai7thumbnail-pnm";
       nativePreview.mimeType_ = "image/x-portable-anymap";
       if (depthStr != "8") {
-#ifndef SUPPRESS_WARNINGS
-        EXV_WARNING << "Unable to handle Illustrator thumbnail depth: " << depthStr << "\n";
-#endif
+        EXV_WARNING << "Unable to handle Illustrator thumbnail depth: " << depthStr;
       } else if (beginData != "%%BeginData:") {
-#ifndef SUPPRESS_WARNINGS
-        EXV_WARNING << "Unable to handle Illustrator thumbnail data section: " << lineBeginData << "\n";
-#endif
+        EXV_WARNING << "Unable to handle Illustrator thumbnail data section: " << lineBeginData;
       } else if (type != "Hex") {
-#ifndef SUPPRESS_WARNINGS
-        EXV_WARNING << "Unable to handle Illustrator thumbnail data type: " << type << "\n";
-#endif
+        EXV_WARNING << "Unable to handle Illustrator thumbnail data type: " << type;
       } else {
         nativePreviews.push_back(nativePreview);
       }
@@ -790,9 +737,7 @@ void readWriteEpsMetadata(BasicIo& io, std::string& xmpPacket, NativePreviewList
   } else {
     // check for Adobe Illustrator 8.0 or older
     if (illustrator8) {
-#ifndef SUPPRESS_WARNINGS
-      EXV_WARNING << "Unable to write to EPS files created by Adobe Illustrator 8.0 or older.\n";
-#endif
+      EXV_WARNING << "Unable to write to EPS files created by Adobe Illustrator 8.0 or older.";
       throw Error(kerImageWriteFailed);
     }
 
@@ -800,9 +745,7 @@ void readWriteEpsMetadata(BasicIo& io, std::string& xmpPacket, NativePreviewList
     BasicIo::UniquePtr tempIo(new MemIo);
     assert(tempIo.get() != 0);
     if (!tempIo->isopen()) {
-#ifndef SUPPRESS_WARNINGS
-      EXV_WARNING << "Unable to create temporary file for writing.\n";
-#endif
+      EXV_WARNING << "Unable to create temporary file for writing.";
       throw Error(kerImageWriteFailed);
     }
 #ifdef DEBUG
@@ -847,11 +790,9 @@ void readWriteEpsMetadata(BasicIo& io, std::string& xmpPacket, NativePreviewList
       EXV_DEBUG << "readWriteEpsMetadata: Writing at " << pos << "\n";
 #endif
       if (pos < prevSkipPos) {
-#ifndef SUPPRESS_WARNINGS
         EXV_WARNING << "Internal error while assembling the result EPS document: "
                        "Unable to continue at position "
-                    << pos << " after skipping to position " << prevSkipPos << "\n";
-#endif
+                    << pos << " after skipping to position " << prevSkipPos;
         throw Error(kerImageWriteFailed);
       }
       writeTemp(*tempIo, data + prevSkipPos, pos - prevSkipPos);
@@ -1044,9 +985,7 @@ void readWriteEpsMetadata(BasicIo& io, std::string& xmpPacket, NativePreviewList
 #endif
       // write DOS EPS header
       if (tempIo->seek(0, BasicIo::beg) != 0) {
-#ifndef SUPPRESS_WARNINGS
-        EXV_WARNING << "Internal error while seeking in temporary file.\n";
-#endif
+        EXV_WARNING << "Internal error while seeking in temporary file.";
         throw Error(kerImageWriteFailed);
       }
       byte dosEpsHeader[30];
@@ -1082,9 +1021,7 @@ EpsImage::EpsImage(BasicIo::UniquePtr io, bool create) : Image(ImageType::eps, m
       IoCloser closer(*io_);
       if (io_->write(reinterpret_cast<const byte*>(epsBlank.data()), static_cast<long>(epsBlank.size())) !=
           static_cast<long>(epsBlank.size())) {
-#ifndef SUPPRESS_WARNINGS
-        EXV_WARNING << "Failed to write blank EPS image.\n";
-#endif
+        EXV_WARNING << "Failed to write blank EPS image.";
         throw Error(kerImageWriteFailed);
       }
     }
@@ -1101,15 +1038,13 @@ void EpsImage::readMetadata() {
 
   // decode XMP metadata
   if (!xmpPacket_.empty() && XmpParser::decode(xmpData_, xmpPacket_) > 1) {
-#ifndef SUPPRESS_WARNINGS
-    EXV_WARNING << "Failed to decode XMP metadata.\n";
-#endif
+    EXV_WARNING << "Failed to decode XMP metadata.";
     throw Error(kerFailedToReadImageData);
   }
 }
 
 Image::UniquePtr newEpsInstance(BasicIo::UniquePtr io, bool create) {
-  Image::UniquePtr image(new EpsImage(std::move(io), create));
+  auto image = std::make_unique<EpsImage>(std::move(io), create);
   if (!image->good()) {
     image.reset();
   }
@@ -1118,21 +1053,23 @@ Image::UniquePtr newEpsInstance(BasicIo::UniquePtr io, bool create) {
 
 bool isEpsType(BasicIo& iIo, bool advance) {
   // read as many bytes as needed for the longest (DOS) EPS signature
-  long bufSize = static_cast<long>(dosEpsSignature.size());
+  size_t bufSize = dosEpsSignature.size();
   for (auto&& i : epsFirstLine) {
-    if (bufSize < static_cast<long>(i.size())) {
-      bufSize = static_cast<long>(i.size());
+    if (bufSize < i.size()) {
+      bufSize = i.size();
     }
   }
+  const long restore = iIo.tell();  // save
   DataBuf buf = iIo.read(bufSize);
-  if (iIo.error() || buf.size_ != bufSize) {
+  if (iIo.error() || buf.size() != bufSize) {
+    iIo.seek(restore, BasicIo::beg);
     return false;
   }
   // check for all possible (DOS) EPS signatures
-  bool matched = (memcmp(buf.pData_, dosEpsSignature.data(), dosEpsSignature.size()) == 0);
+  bool matched = (buf.cmpBytes(0, dosEpsSignature.data(), dosEpsSignature.size()) == 0);
   if (!matched) {
     for (auto&& eps : epsFirstLine) {
-      if (memcmp(buf.pData_, eps.data(), eps.size()) == 0) {
+      if (buf.cmpBytes(0, eps.data(), eps.size()) == 0) {
         matched = true;
         break;
       }
@@ -1140,7 +1077,7 @@ bool isEpsType(BasicIo& iIo, bool advance) {
   }
   // seek back if possible and requested
   if (!advance || !matched) {
-    iIo.seek(-buf.size_, BasicIo::cur);
+    iIo.seek(restore, BasicIo::beg);
   }
   return matched;
 }

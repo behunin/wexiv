@@ -18,12 +18,6 @@
 // Define if you want BMFF support.
 #define EXV_ENABLE_BMFF
 
-// Define if you have the strerror_r function.
-#define EXV_HAVE_STRERROR_R
-
-// Define if the strerror_r function returns char*.
-#define EXV_STRERROR_R_CHAR_P
-
 // Define to enable the Windows unicode path support.
 /* #undef EXV_UNICODE_PATH */
 

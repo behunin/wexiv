@@ -24,16 +24,12 @@
 #include "basicio.hpp"
 #include "config.h"
 #include "error.hpp"
-#include "i18n.h"  // NLS support.
 #include "image.hpp"
-#include "image_int.hpp"
-#include "makernote_int.hpp"
-#include "nikonmn_int.hpp"
-#include "orfimage.hpp"
 #include "tiffcomposite_int.hpp"
 #include "tiffimage_int.hpp"
-#include "tiffvisitor_int.hpp"
 #include "types.hpp"
+
+#include <array>
 
 /* --------------------------------------------------------------------------
 
@@ -64,20 +60,12 @@ TiffImage::TiffImage(BasicIo::UniquePtr io, bool /*create*/) :
 }  // TiffImage::TiffImage
 
 //! Structure for TIFF compression to MIME type mappings
-struct MimeTypeList {
-  //! Comparison operator for compression
-  bool operator==(int compression) const {
-    return compression_ == compression;
-  }
-  int compression_;       //!< TIFF compression
-  const char* mimeType_;  //!< MIME type
-};
-
+using MimeTypeList = std::pair<int, const char*>;
 //! List of TIFF compression to MIME type mappings
-constexpr MimeTypeList mimeTypeList[] = {
-    {32770, "image/x-samsung-srw"},
-    {34713, "image/x-nikon-nef"},
-    {65535, "image/x-pentax-pef"},
+constexpr auto mimeTypeList = std::array{
+    MimeTypeList(32770, "image/x-samsung-srw"),
+    MimeTypeList(34713, "image/x-nikon-nef"),
+    MimeTypeList(65535, "image/x-pentax-pef"),
 };
 
 std::string TiffImage::mimeType() const {
@@ -87,9 +75,10 @@ std::string TiffImage::mimeType() const {
   mimeType_ = std::string("image/tiff");
   std::string key = "Exif." + primaryGroup() + ".Compression";
   if (exifData_.hasOwnProperty(key.c_str())) {
-    const MimeTypeList* i = find(mimeTypeList, exifData_[key.c_str()].as<int>());
-    if (i)
-      mimeType_ = std::string(i->mimeType_);
+    for (auto&& [comp, type] : mimeTypeList)
+      if (comp == exifData_[key.c_str()].as<int>()) {
+        mimeType_ = type;
+      }
   }
   return mimeType_;
 }
@@ -98,14 +87,15 @@ std::string TiffImage::primaryGroup() const {
   if (!primaryGroup_.empty())
     return primaryGroup_;
 
-  static const char* keys[] = {"Exif.Image.NewSubfileType",     "Exif.SubImage1.NewSubfileType",
-                               "Exif.SubImage2.NewSubfileType", "Exif.SubImage3.NewSubfileType",
-                               "Exif.SubImage4.NewSubfileType", "Exif.SubImage5.NewSubfileType",
-                               "Exif.SubImage6.NewSubfileType", "Exif.SubImage7.NewSubfileType",
-                               "Exif.SubImage8.NewSubfileType", "Exif.SubImage9.NewSubfileType"};
+  static constexpr auto keys = std::array{
+      "Exif.Image.NewSubfileType",     "Exif.SubImage1.NewSubfileType", "Exif.SubImage2.NewSubfileType",
+      "Exif.SubImage3.NewSubfileType", "Exif.SubImage4.NewSubfileType", "Exif.SubImage5.NewSubfileType",
+      "Exif.SubImage6.NewSubfileType", "Exif.SubImage7.NewSubfileType", "Exif.SubImage8.NewSubfileType",
+      "Exif.SubImage9.NewSubfileType",
+  };
   // Find the group of the primary image, default to "Image"
   primaryGroup_ = std::string("Image");
-  for (auto i : keys) {
+  for (auto&& i : keys) {
     // Is it the primary image?
     if (exifData_.hasOwnProperty(i)) {
       // Sometimes there is a JPEG primary image; that's not our first choice
@@ -144,29 +134,29 @@ int TiffImage::pixelHeight() const {
 
 void TiffImage::readMetadata() {
   if (io_->open() != 0) {
-    throw Error(kerDataSourceOpenFailed, io_->path());
+    throw Error(ErrorCode::kerDataSourceOpenFailed, io_->path());
   }
 
   IoCloser closer(*io_);
   // Ensure that this is the correct image type
   if (!isTiffType(*io_, false)) {
     if (io_->error() || io_->eof())
-      throw Error(kerFailedToReadImageData);
-    throw Error(kerNotAnImage, "TIFF");
+      throw Error(ErrorCode::kerFailedToReadImageData);
+    throw Error(ErrorCode::kerNotAnImage, "TIFF");
   }
 
-  ByteOrder bo = TiffParser::decode(exifData_, iptcData_, xmpData_, io_->mmap(), static_cast<uint32_t>(io_->size()));
+  ByteOrder bo = TiffParser::decode(exifData_, iptcData_, xmpData_, io_->mmap(), io_->size());
   setByteOrder(bo);
 
   // read profile from the metadata
   const char* key("Exif.Image.InterColorProfile");
   if (exifData_.hasOwnProperty(key)) {
-    long size = exifData_[key].as<long>();
+    size_t size = exifData_[key].as<size_t>();
     if (size == 0) {
-      throw Error(kerFailedToReadImageData);
+      throw Error(ErrorCode::kerFailedToReadImageData);
     }
     iccProfile_.alloc(size);
-    std::memcpy(iccProfile_.pData_, &bo, sizeof(bo));
+    std::memcpy(iccProfile_.data(), &bo, sizeof(bo));
   }
 }
 
@@ -186,7 +176,7 @@ ByteOrder TiffParser::decode(emscripten::val& exifData, emscripten::val& iptcDat
 }  // TiffParser::decode
 
 Image::UniquePtr newTiffInstance(BasicIo::UniquePtr io, bool create) {
-  Image::UniquePtr image(new TiffImage(std::move(io), create));
+  auto image = std::make_unique<TiffImage>(std::move(io), create);
   if (!image->good()) {
     image.reset();
   }

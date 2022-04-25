@@ -1,29 +1,15 @@
-// ***************************************************************** -*- C++ -*-
-/*
- * Copyright (C) 2004-2021 Exiv2 authors
- * This program is part of the Exiv2 distribution.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, 5th Floor, Boston, MA 02110-1301 USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 #ifndef IMAGE_INT_HPP_
 #define IMAGE_INT_HPP_
 
 // *****************************************************************************
-#include "types.hpp"
+// included header files
+#include "slice.hpp"  // for Slice
 
-// + standard includes
+#include <cstddef>  // for size_t
+#include <cstdint>  // for int32_t
+#include <ostream>  // for ostream, basic_ostream::put
 #include <string>
 
 #if (defined(__GNUG__) || defined(__GNUC__)) || defined(__clang__)
@@ -76,7 +62,7 @@ struct binaryToStringHelper {
   explicit binaryToStringHelper(const Slice<T> myBuf) throw() : buf_(myBuf) {
   }
 
-  friend std::ostream& operator<<<T>(std::ostream& stream, const binaryToStringHelper<T>& binToStr);
+  friend std::ostream& operator<< <T>(std::ostream& stream, const binaryToStringHelper<T>& binToStr);
 
   // the Slice is stored by value to avoid dangling references, in case we
   // invoke:
@@ -109,11 +95,6 @@ template <typename T>
 inline binaryToStringHelper<T> binaryToString(const Slice<T> sl) throw() {
   return binaryToStringHelper<T>(sl);
 }
-
-/*!
-  @brief format binary for display of raw data .
-*/
-std::string binaryToHex(const byte* data, size_t size);
 
 /*!
   @brief indent output for kpsRecursive in \em printStructure() \em .

@@ -1,34 +1,21 @@
-// ***************************************************************** -*- C++ -*-
-/*
- * Copyright (C) 2004-2021 Exiv2 authors
- * This program is part of the Exiv2 distribution.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, 5th Floor, Boston, MA 02110-1301 USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
   File:      Casiomn.cpp
   History:   30-Oct-13, ahu: created
   Credits:   See header file
  */
-// *****************************************************************************
+// included header files
 #include "casiomn_int.hpp"
-
 #include "i18n.h"  // NLS support.
 #include "tags_int.hpp"
 #include "types.hpp"
 #include "value.hpp"
+
+// + standard includes
+#include <cstring>
+#include <iomanip>
+#include <sstream>
+#include <vector>
 
 // *****************************************************************************
 namespace Exiv2 {
@@ -141,7 +128,7 @@ std::ostream& CasioMakerNote::print0x0006(std::ostream& os, const Value& value, 
   std::ios::fmtflags f(os.flags());
   std::ostringstream oss;
   oss.copyfmt(os);
-  os << std::fixed << std::setprecision(2) << value.toLong() / 1000.0 << _(" m");
+  os << std::fixed << std::setprecision(2) << value.toInt64() / 1000.0 << _(" m");
   os.copyfmt(oss);
   os.flags(f);
   return os;
@@ -151,7 +138,7 @@ std::ostream& CasioMakerNote::print0x0015(std::ostream& os, const Value& value, 
   // format is:  "YYMM#00#00DDHH#00#00MM#00#00#00#00" or  "YYMM#00#00DDHH#00#00MMSS#00#00#00"
   std::vector<char> numbers;
   for (long i = 0; i < value.size(); i++) {
-    long l = value.toLong(i);
+    const auto l = value.toInt64(i);
     if (l != 0) {
       numbers.push_back(static_cast<char>(l));
     };
@@ -385,11 +372,12 @@ std::ostream& Casio2MakerNote::print0x2001(std::ostream& os, const Value& value,
   // format is:  "YYMM#00#00DDHH#00#00MM#00#00#00#00"
   std::vector<char> numbers;
   for (long i = 0; i < value.size(); i++) {
-    long l = value.toLong(i);
+    const auto l = static_cast<char>(value.toInt64(i));
     if (l != 0) {
-      numbers.push_back(static_cast<char>(l));
-    };
-  };
+      numbers.push_back(l);
+    }
+  }
+
   if (numbers.size() >= 10) {
     // year
     long l = (numbers[0] - 48) * 10 + (numbers[1] - 48);
@@ -410,14 +398,14 @@ std::ostream& Casio2MakerNote::print0x2001(std::ostream& os, const Value& value,
 
 std::ostream& Casio2MakerNote::print0x2022(std::ostream& os, const Value& value, const ExifData*) {
   std::ios::fmtflags f(os.flags());
-  if (value.toLong() >= 0x20000000) {
+  if (value.toInt64() >= 0x20000000) {
     os << N_("Inf");
     os.flags(f);
     return os;
   };
   std::ostringstream oss;
   oss.copyfmt(os);
-  os << std::fixed << std::setprecision(2) << value.toLong() / 1000.0 << _(" m");
+  os << std::fixed << std::setprecision(2) << value.toInt64() / 1000.0 << _(" m");
   os.copyfmt(oss);
   os.flags(f);
   return os;

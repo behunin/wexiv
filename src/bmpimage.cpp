@@ -1,22 +1,4 @@
-// ***************************************************************** -*- C++ -*-
-/*
- * Copyright (C) 2004-2021 Exiv2 authors
- * This program is part of the Exiv2 distribution.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, 5th Floor, Boston, MA 02110-1301 USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
   File:      bmpimage.cpp
   Author(s): Marco Piovanelli, Ovolab (marco)
@@ -28,6 +10,12 @@
 #include "basicio.hpp"
 #include "config.h"
 #include "error.hpp"
+#include "image.hpp"
+
+// + standard includes
+#include <cstring>
+#include <iostream>
+#include <string>
 
 // *****************************************************************************
 namespace Exiv2 {
@@ -40,14 +28,14 @@ std::string BmpImage::mimeType() const {
 
 void BmpImage::readMetadata() {
   if (io_->open() != 0) {
-    throw Error(kerDataSourceOpenFailed, io_->path());
+    throw Error(ErrorCode::kerDataSourceOpenFailed, io_->path());
   }
   IoCloser closer(*io_);
   // Ensure that this is the correct image type
   if (!isBmpType(*io_, false)) {
     if (io_->error() || io_->eof())
-      throw Error(kerFailedToReadImageData);
-    throw Error(kerNotAnImage, "BMP");
+      throw Error(ErrorCode::kerFailedToReadImageData);
+    throw Error(ErrorCode::kerNotAnImage, "BMP");
   }
 
   /*
@@ -77,7 +65,7 @@ void BmpImage::readMetadata() {
 }
 
 Image::UniquePtr newBmpInstance(BasicIo::UniquePtr io, bool /*create*/) {
-  Image::UniquePtr image(new BmpImage(std::move(io)));
+  auto image = std::make_unique<BmpImage>(std::move(io));
   if (!image->good()) {
     image.reset();
   }

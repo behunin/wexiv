@@ -1,23 +1,4 @@
-// ***************************************************************** -*- C++ -*-
-/*
- * Copyright (C) 2004-2021 Exiv2 authors
- * This program is part of the Exiv2 distribution.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, 5th Floor, Boston, MA 02110-1301 USA.
- */
-// *****************************************************************************
+// SPDX-License-Identifier: GPL-2.0-or-later
 
 // included header files
 #include "tags_int.hpp"
@@ -39,6 +20,7 @@
 #include "sigmamn_int.hpp"
 #include "sonymn_int.hpp"
 
+#include <algorithm>
 #include <string>
 
 // *****************************************************************************
@@ -2455,7 +2437,7 @@ std::ostream& printBitmask(std::ostream& os, const Value& value, const ExifData*
     uint16_t bit = 0;
     uint16_t comma = 0;
     for (long i = 0; i < value.count(); i++) {  // for each element in value array
-      auto bits = static_cast<uint16_t>(value.toLong(i));
+      auto bits = static_cast<uint16_t>(value.toInt64(i));
       for (uint16_t b = 0; b < 16; ++b) {  // for every bit
         if (bits & (1 << b)) {
           if (comma++) {
@@ -2561,21 +2543,21 @@ std::ostream& printUcs2(std::ostream& os, const Value& value, const ExifData*) {
   bool cnv = false;
   if (value.typeId() == unsignedByte && value.size() > 0) {
     DataBuf buf(value.size());
-    value.copy(buf.pData_, invalidByteOrder);
+    value.copy(buf.data(), invalidByteOrder);
     // Strip trailing odd byte due to failing UCS-2 conversion
-    if (buf.size_ % 2 == 1)
-      buf.size_ -= 1;
+    if (buf.size() % 2 == 1)
+      buf.resize(buf.size() - 1);
 
     // Strip trailing UCS-2 0-characters
-    while (buf.size_ >= 2) {
-      if (buf.pData_[buf.size_ - 1] == 0 && buf.pData_[buf.size_ - 2] == 0) {
-        buf.size_ -= 2;
+    while (buf.size() >= 2) {
+      if (buf.read_uint8(buf.size() - 1) == 0 && buf.read_uint8(buf.size() - 2) == 0) {
+        buf.resize(buf.size() - 2);
       } else {
         break;
       }
     }
 
-    std::string str(reinterpret_cast<const char*>(buf.pData_), buf.size_);
+    std::string str(buf.c_str(), buf.size());
     cnv = convertStringCharset(str, "UCS-2LE", "UTF-8");
     if (cnv)
       os << str;
@@ -2595,10 +2577,10 @@ std::ostream& print0x0000(std::ostream& os, const Value& value, const ExifData*)
   }
 
   for (int i = 0; i < 3; i++) {
-    os << value.toLong(i);
+    os << value.toInt64(i);
     os << ".";
   }
-  os << value.toLong(3);
+  os << value.toInt64(3);
 
   return os;
 }
@@ -2751,12 +2733,12 @@ std::ostream& print0x8822(std::ostream& os, const Value& value, const ExifData* 
 }
 
 std::ostream& print0x8827(std::ostream& os, const Value& value, const ExifData*) {
-  return os << value.toLong();
+  return os << value.toInt64();
 }
 
 std::ostream& print0x9101(std::ostream& os, const Value& value, const ExifData*) {
   for (long i = 0; i < value.count(); ++i) {
-    long l = value.toLong(i);
+    long l = value.toInt64(i);
     switch (l) {
       case 0:
         break;
@@ -2958,7 +2940,7 @@ std::ostream& print0xa404(std::ostream& os, const Value& value, const ExifData*)
 }
 
 std::ostream& print0xa405(std::ostream& os, const Value& value, const ExifData*) {
-  long length = value.toLong();
+  long length = value.toInt64();
   if (length == 0) {
     os << _("Unknown");
   } else {
@@ -3029,7 +3011,7 @@ std::ostream& printExifVersion(std::ostream& os, const Value& value, const ExifD
 
   char s[5];
   for (int i = 0; i < 4; ++i) {
-    s[i] = static_cast<char>(value.toLong(i));
+    s[i] = static_cast<char>(value.toInt64(i));
   }
   s[4] = '\0';
 

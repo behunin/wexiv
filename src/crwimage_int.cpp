@@ -24,8 +24,8 @@
 #include "enforce.hpp"
 #include "error.hpp"
 #include "i18n.h"  // NLS support.
-#include "timegm.h"
-#include "unused.h"
+
+#include <ctime>
 
 // *****************************************************************************
 namespace {
@@ -151,16 +151,6 @@ const CrwSubDir CrwMap::crwSubDir_[] = {
 
 const char CiffHeader::signature_[] = "HEAPCCDR";
 
-CiffHeader::~CiffHeader() {
-  delete pRootDir_;
-  delete[] pPadding_;
-}
-
-CiffComponent::~CiffComponent() {
-  if (isAllocated_)
-    delete[] pData_;
-}
-
 CiffDirectory::~CiffDirectory() {
   for (auto&& component : components_) {
     delete component;
@@ -197,12 +187,12 @@ void CiffHeader::read(const byte* pData, uint32_t size) {
     throw Error(kerNotACrwImage);
   }
 
-  delete[] pPadding_;
-  pPadding_ = new byte[offset_ - 14];
+  pPadding_.clear();
+  pPadding_.resize(offset_ - 14);
   padded_ = offset_ - 14;
-  std::memcpy(pPadding_, pData + 14, padded_);
+  std::copy_n(pData + 14, padded_, pPadding_.begin());
 
-  pRootDir_ = new CiffDirectory;
+  pRootDir_ = std::make_unique<CiffDirectory>();
   pRootDir_->readDirectory(pData + offset_, size - offset_, byteOrder_);
 }  // CiffHeader::read
 
@@ -332,9 +322,8 @@ void CiffHeader::write(Blob& blob) const {
   append(blob, reinterpret_cast<const byte*>(signature_), 8);
   o += 8;
   // Pad as needed
-  if (pPadding_) {
-    assert(padded_ == offset_ - o);
-    append(blob, pPadding_, padded_);
+  if (!pPadding_.empty()) {
+    append(blob, pPadding_.data(), padded_);
   } else {
     for (uint32_t i = o; i < offset_; ++i) {
       blob.push_back(0);
@@ -485,15 +474,9 @@ void CiffDirectory::doPrint(std::ostream& os, ByteOrder byteOrder, const std::st
 }  // CiffDirectory::doPrint
 
 void CiffComponent::setValue(DataBuf buf) {
-  if (isAllocated_) {
-    delete[] pData_;
-    pData_ = nullptr;
-    size_ = 0;
-  }
-  isAllocated_ = true;
-  std::pair<byte*, long> p = buf.release();
-  pData_ = p.first;
-  size_ = p.second;
+  storage_ = std::move(buf);
+  pData_ = storage_.c_data();
+  size_ = storage_.size();
   if (size_ > 8 && dataLocation() == directoryData) {
     tag_ &= 0x3fff;
   }
@@ -571,16 +554,14 @@ CiffComponent* CiffDirectory::doFindComponent(uint16_t crwTagId, uint16_t crwDir
 void CiffHeader::add(uint16_t crwTagId, uint16_t crwDir, DataBuf buf) {
   CrwDirs crwDirs;
   CrwMap::loadStack(crwDirs, crwDir);
-  uint16_t rootDirectory = crwDirs.top().crwDir_;
-  UNUSED(rootDirectory);
-  assert(rootDirectory == 0x0000);
+  [[maybe_unused]] auto [rootDirectory, _] = crwDirs.top();
   crwDirs.pop();
   if (!pRootDir_) {
-    pRootDir_ = new CiffDirectory;
+    pRootDir_ = std::make_unique<CiffDirectory>();
   }
   CiffComponent* child = pRootDir_->add(crwDirs, crwTagId);
   if (child) {
-    child->setValue(buf);
+    child->setValue(std::move(buf));
   }
 }  // CiffHeader::add
 
@@ -645,9 +626,6 @@ void CiffHeader::remove(uint16_t crwTagId, uint16_t crwDir) {
   if (pRootDir_) {
     CrwDirs crwDirs;
     CrwMap::loadStack(crwDirs, crwDir);
-    uint16_t rootDirectory = crwDirs.top().crwDir_;
-    UNUSED(rootDirectory);
-    assert(rootDirectory == 0x0000);
     crwDirs.pop();
     pRootDir_->remove(crwDirs, crwTagId);
   }
@@ -791,11 +769,11 @@ void CrwMap::decodeArray(const CiffComponent& ciffComponent, const CrwMapping* p
     if (ifdId == canonCsId && c == 23 && component_size >= 52)
       n = 3;
     value.read(ciffComponent.pData() + c * 2, n * 2, byteOrder);
-    image.exifData().set(key.key(), value.toLong());
+    image.exifData().set(key.key(), value.toInt64());
     if (ifdId == canonSiId && c == 21)
-      aperture = value.toLong();
+      aperture = value.toInt64();
     if (ifdId == canonSiId && c == 22)
-      shutterSpeed = value.toLong();
+      shutterSpeed = value.toInt64();
     c += n;
   }
 
@@ -806,13 +784,13 @@ void CrwMap::decodeArray(const CiffComponent& ciffComponent, const CrwMapping* p
     URational ur(r.first, r.second);
     URationalValue fn;
     fn.value_.push_back(ur);
-    image.exifData().set("Exif.Photo.FNumber", fn.toLong());
+    image.exifData().set("Exif.Photo.FNumber", fn.toInt64());
 
     // Exif.Photo.ExposureTime
     ur = exposureTime(canonEv(shutterSpeed));
     URationalValue et;
     et.value_.push_back(ur);
-    image.exifData().set("Exif.Photo.ExposureTime", et.toLong());
+    image.exifData().set("Exif.Photo.ExposureTime", et.toInt64());
   }
 }  // CrwMap::decodeArray
 
@@ -844,15 +822,14 @@ void CrwMap::decode0x1810(const CiffComponent& ciffComponent, const CrwMapping* 
     return decodeBasic(ciffComponent, pCrwMapping, image, byteOrder);
   }
 
-  ExifKey key1("Exif.Photo.PixelXDimension");
   ULongValue value1;
   value1.read(ciffComponent.pData(), 4, byteOrder);
-  image.exifData().set("Exif.Photo.PixelXDimension", value1.toLong());
+  image.exifData().set("Exif.Photo.PixelXDimension", value1.toUint32());
 
   ExifKey key2("Exif.Photo.PixelYDimension");
   ULongValue value2;
   value2.read(ciffComponent.pData() + 4, 4, byteOrder);
-  image.exifData().set("Exif.Photo.PixelYDimension", value2.toLong());
+  image.exifData().set("Exif.Photo.PixelYDimension", value2.toUint32());
 
   int32_t r = getLong(ciffComponent.pData() + 12, byteOrder);
   uint16_t o = RotationMap::orientation(r);
@@ -908,7 +885,6 @@ void CrwMap::loadStack(CrwDirs& crwDirs, uint16_t crwDir) {
 DataBuf packIfdId(const ExifData& exifData, IfdId ifdId, ByteOrder byteOrder) {
   const uint16_t size = 1024;
   DataBuf buf(size);
-  std::memset(buf.pData_, 0x0, buf.size_);
 
   uint16_t len = 0;
 
@@ -919,13 +895,13 @@ DataBuf packIfdId(const ExifData& exifData, IfdId ifdId, ByteOrder byteOrder) {
     if (s <= size) {
       if (len < s)
         len = s;
-      exif.copy(buf.pData_ + exif.tag() * 2, byteOrder);
+      exif.copy(buf.data(exif.tag() * 2), byteOrder);
     } else {
       EXV_ERROR << "packIfdId out-of-bounds error: s = " << std::dec << s << "\n";
     }
   }
   // Round the size to make it even.
-  buf.size_ = len + len % 2;
+  buf.resize(len + len % 2);
   return buf;
 }
 

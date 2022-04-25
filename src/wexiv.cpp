@@ -57,7 +57,7 @@ int EMSCRIPTEN_KEEPALIVE getmeta(unsigned char* arr, long length, const char* na
 
   } catch (Exiv2::Error& e) {
     std::string str{e.what()};
-    emscripten_log(EM_LOG_ERROR, "%s", &str);
+    emscripten_log(EM_LOG_ERROR, "getmeta: %s", &str);
     return e.code();
   }
 

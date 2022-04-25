@@ -36,10 +36,6 @@ if ( MINGW OR UNIX OR MSYS ) # MINGW, Linux, APPLE, CYGWIN
             if (NOT APPLE) # Don't know why this isn't working correctly on Apple with M1 processor
             check_cxx_compiler_flag(-fstack-clash-protection HAS_FSTACK_CLASH_PROTECTION)
             endif()
-            check_cxx_compiler_flag(-fcf-protection HAS_FCF_PROTECTION)
-            if(HAS_FCF_PROTECTION)
-                add_compile_options(-fcf-protection)
-            endif()
         endif()
 
         add_compile_options(-Wp,-D_GLIBCXX_ASSERTIONS)

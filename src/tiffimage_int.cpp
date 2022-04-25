@@ -1,22 +1,4 @@
-// ***************************************************************** -*- C++ -*-
-/*
- * Copyright (C) 2004-2021 Exiv2 authors
- * This program is part of the Exiv2 distribution.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, 5th Floor, Boston, MA 02110-1301 USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "tiffimage_int.hpp"
 
@@ -27,10 +9,12 @@
 #include "tags_int.hpp"
 #include "tiffvisitor_int.hpp"
 
+#include <array>
+
 // Shortcuts for the newTiffBinaryArray templates.
-#define EXV_BINARY_ARRAY(arrayCfg, arrayDef) (newTiffBinaryArray0<&arrayCfg, EXV_COUNTOF(arrayDef), arrayDef>)
-#define EXV_SIMPLE_BINARY_ARRAY(arrayCfg) (newTiffBinaryArray1<&arrayCfg>)
-#define EXV_COMPLEX_BINARY_ARRAY(arraySet, cfgSelFct) (newTiffBinaryArray2<arraySet, EXV_COUNTOF(arraySet), cfgSelFct>)
+#define EXV_BINARY_ARRAY(arrayCfg, arrayDef) (newTiffBinaryArray0<&(arrayCfg), std::size(arrayDef), arrayDef>)
+#define EXV_SIMPLE_BINARY_ARRAY(arrayCfg) (newTiffBinaryArray1<&(arrayCfg)>)
+#define EXV_COMPLEX_BINARY_ARRAY(arraySet, cfgSelFct) (newTiffBinaryArray2<arraySet, std::size(arraySet), cfgSelFct>)
 
 namespace Exiv2 {
 namespace Internal {
@@ -1036,16 +1020,17 @@ void TiffParserWorker::findPrimaryGroups(PrimaryGroups& primaryGroups, TiffCompo
   if (nullptr == pSourceDir)
     return;
 
-  const IfdId imageGroups[] = {ifd0Id,      ifd1Id,      ifd2Id,      ifd3Id,      subImage1Id,
-                               subImage2Id, subImage3Id, subImage4Id, subImage5Id, subImage6Id,
-                               subImage7Id, subImage8Id, subImage9Id};
+  static constexpr auto imageGroups = std::array{
+      ifd0Id,      ifd1Id,      ifd2Id,      ifd3Id,      subImage1Id, subImage2Id, subImage3Id,
+      subImage4Id, subImage5Id, subImage6Id, subImage7Id, subImage8Id, subImage9Id,
+  };
 
   for (auto&& imageGroup : imageGroups) {
     TiffFinder finder(0x00fe, imageGroup);
     pSourceDir->accept(finder);
     auto te = dynamic_cast<TiffEntryBase*>(finder.result());
     const Value* pV = te != nullptr ? te->pValue() : nullptr;
-    if (pV && pV->typeId() == unsignedLong && pV->count() == 1 && (pV->toLong() & 1) == 0) {
+    if (pV && pV->typeId() == unsignedLong && pV->count() == 1 && (pV->toInt64() & 1) == 0) {
       primaryGroups.push_back(te->group());
     }
   }
@@ -1078,18 +1063,17 @@ DataBuf TiffHeaderBase::write() const {
   DataBuf buf(8);
   switch (byteOrder_) {
     case littleEndian:
-      buf.pData_[0] = 'I';
+      buf.write_uint8(0, 'I');
       break;
     case bigEndian:
-      buf.pData_[0] = 'M';
+      buf.write_uint8(0, 'M');
       break;
     case invalidByteOrder:
-      assert(false);
       break;
   }
-  buf.pData_[1] = buf.pData_[0];
-  us2Data(buf.pData_ + 2, tag_, byteOrder_);
-  ul2Data(buf.pData_ + 4, 0x00000008, byteOrder_);
+  buf.write_uint8(1, buf.read_uint8(0));
+  buf.write_uint16(2, tag_, byteOrder_);
+  buf.write_uint32(4, 0x00000008, byteOrder_);
   return buf;
 }
 
@@ -1591,7 +1575,7 @@ const std::array<TiffGroupStruct, 400> TiffCreator::tiffGroupStruct_ = {{
     {0x0098, nikon3Id, EXV_COMPLEX_BINARY_ARRAY(nikonLdSet, nikonSelector)},
     {0x00a8, nikon3Id, EXV_COMPLEX_BINARY_ARRAY(nikonFlSet, nikonSelector)},
     {0x00b0, nikon3Id, EXV_BINARY_ARRAY(nikonMeCfg, nikonMeDef)},
-    {0x00b7, nikon3Id, EXV_COMPLEX_BINARY_ARRAY(nikonAf2Set, nikonAf2Selector)},
+    {0x00b7, nikon3Id, EXV_COMPLEX_BINARY_ARRAY(nikonAf2Set, nikonSelector)},
     {0x00b8, nikon3Id, EXV_BINARY_ARRAY(nikonFiCfg, nikonFiDef)},
     {0x00b9, nikon3Id, EXV_BINARY_ARRAY(nikonAFTCfg, nikonAFTDef)},
     {Tag::all, nikon3Id, newTiffEntry},

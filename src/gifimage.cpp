@@ -1,30 +1,11 @@
-// ***************************************************************** -*- C++ -*-
-/*
- * Copyright (C) 2004-2021 Exiv2 authors
- * This program is part of the Exiv2 distribution.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, 5th Floor, Boston, MA 02110-1301 USA.
- */
-// *****************************************************************************
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 // included header files
 #include "gifimage.hpp"
 
 #include "basicio.hpp"
 #include "config.h"
 #include "error.hpp"
-#include "image.hpp"
 
 // *****************************************************************************
 // class member definitions
@@ -39,14 +20,14 @@ std::string GifImage::mimeType() const {
 
 void GifImage::readMetadata() {
   if (io_->open() != 0) {
-    throw Error(kerDataSourceOpenFailed, io_->path());
+    throw Error(ErrorCode::kerDataSourceOpenFailed, io_->path(), strError());
   }
   IoCloser closer(*io_);
   // Ensure that this is the correct image type
   if (!isGifType(*io_, true)) {
     if (io_->error() || io_->eof())
-      throw Error(kerFailedToReadImageData);
-    throw Error(kerNotAnImage, "GIF");
+      throw Error(ErrorCode::kerFailedToReadImageData);
+    throw Error(ErrorCode::kerNotAnImage, "GIF");
   }
 
   byte buf[4];
@@ -57,7 +38,7 @@ void GifImage::readMetadata() {
 }  // GifImage::readMetadata
 
 Image::UniquePtr newGifInstance(BasicIo::UniquePtr io, bool /*create*/) {
-  Image::UniquePtr image(new GifImage(std::move(io)));
+  auto image = std::make_unique<GifImage>(std::move(io));
   if (!image->good()) {
     image.reset();
   }

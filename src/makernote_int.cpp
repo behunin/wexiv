@@ -1,33 +1,15 @@
-// ***************************************************************** -*- C++ -*-
-/*
- * Copyright (C) 2004-2021 Exiv2 authors
- * This program is part of the Exiv2 distribution.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, 5th Floor, Boston, MA 02110-1301 USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 /*
   File:      makernote.cpp
   Author(s): Andreas Huggel (ahu) <ahuggel@gmx.net>
   History:   11-Apr-06, ahu: created
  */
-// *****************************************************************************
+// included header files
 #include "makernote_int.hpp"
 
 #include "config.h"
 #include "tiffcomposite_int.hpp"
-#include "tiffimage.hpp"
 #include "tiffimage_int.hpp"
 #include "tiffvisitor_int.hpp"
 #include "utils.hpp"
@@ -49,29 +31,24 @@ void ncrypt(Exiv2::byte* pData, uint32_t size, uint32_t count, uint32_t serial);
 namespace Exiv2 {
 namespace Internal {
 
-TiffComponent* TiffMnCreator::create(uint16_t tag, IfdId group, const std::string& make, const byte* pData,
-                                     uint32_t size, ByteOrder byteOrder) {
-  TiffComponent* tc = nullptr;
-  auto tmr = std::find(registry_.begin(), registry_.end(), make);
-  if (tmr != registry_.end()) {
-    assert(tmr->newMnFct_);
-    tc = tmr->newMnFct_(tag, group, tmr->mnGroup_, pData, size, byteOrder);
+TiffComponent* TiffMnCreator::create(uint16_t tag, IfdId group, const std::string& make, const byte* pData, size_t size,
+                                     ByteOrder byteOrder) {
+  auto tmr = std::find(std::begin(registry_), std::end(registry_), make);
+  if (tmr != std::end(registry_)) {
+    return tmr->newMnFct_(tag, group, tmr->mnGroup_, pData, size, byteOrder);
   }
-  return tc;
+  return nullptr;
 }  // TiffMnCreator::create
 
 TiffComponent* TiffMnCreator::create(uint16_t tag, IfdId group, IfdId mnGroup) {
-  TiffComponent* tc = nullptr;
-  auto tmr = std::find(registry_.begin(), registry_.end(), mnGroup);
-  if (tmr != registry_.end()) {
-    if (tmr->newMnFct2_ == nullptr) {
-      // std::cout << "mnGroup = " << mnGroup << "\n";
+  auto tmr = std::find(std::begin(registry_), std::end(registry_), mnGroup);
+  if (tmr != std::end(registry_)) {
+    if (tmr->newMnFct2_) {
+      return tmr->newMnFct2_(tag, group, mnGroup);
     }
-
-    assert(tmr->newMnFct2_);
-    tc = tmr->newMnFct2_(tag, group, mnGroup);
+    EXV_WARNING << "mnGroup = " << mnGroup << "\n";
   }
-  return tc;
+  return nullptr;
 }  // TiffMnCreator::create
 
 const std::array<TiffMnRegistry, 25> TiffMnCreator::registry_ = {{
@@ -131,7 +108,7 @@ uint32_t MnHeader::baseOffset(uint32_t /*mnOffset*/) const {
 
 const byte OlympusMnHeader::signature_[] = {'O', 'L', 'Y', 'M', 'P', 0x00, 0x01, 0x00};
 
-uint32_t OlympusMnHeader::sizeOfSignature() {
+size_t OlympusMnHeader::sizeOfSignature() {
   return sizeof(signature_);
 }
 
@@ -139,25 +116,25 @@ OlympusMnHeader::OlympusMnHeader() {
   read(signature_, sizeOfSignature(), invalidByteOrder);
 }
 
-uint32_t OlympusMnHeader::size() const {
-  return header_.size_;
+size_t OlympusMnHeader::size() const {
+  return header_.size();
 }
 
 uint32_t OlympusMnHeader::ifdOffset() const {
   return sizeOfSignature();
 }
 
-bool OlympusMnHeader::read(const byte* pData, uint32_t size, ByteOrder /*byteOrder*/) {
+bool OlympusMnHeader::read(const byte* pData, size_t size, ByteOrder /*byteOrder*/) {
   if (!pData || size < sizeOfSignature())
     return false;
   header_.alloc(sizeOfSignature());
-  std::memcpy(header_.pData_, pData, header_.size_);
-  return !(static_cast<uint32_t>(header_.size_) < sizeOfSignature() || 0 != memcmp(header_.pData_, signature_, 6));
+  std::copy_n(pData, header_.size(), header_.data());
+  return !(header_.size() < sizeOfSignature() || 0 != header_.cmpBytes(0, signature_, 10));
 }  // OlympusMnHeader::read
 
 const byte Olympus2MnHeader::signature_[] = {'O', 'L', 'Y', 'M', 'P', 'U', 'S', 0x00, 'I', 'I', 0x03, 0x00};
 
-uint32_t Olympus2MnHeader::sizeOfSignature() {
+size_t Olympus2MnHeader::sizeOfSignature() {
   return sizeof(signature_);
 }
 
@@ -165,8 +142,8 @@ Olympus2MnHeader::Olympus2MnHeader() {
   read(signature_, sizeOfSignature(), invalidByteOrder);
 }
 
-uint32_t Olympus2MnHeader::size() const {
-  return header_.size_;
+size_t Olympus2MnHeader::size() const {
+  return header_.size();
 }
 
 uint32_t Olympus2MnHeader::ifdOffset() const {
@@ -177,18 +154,18 @@ uint32_t Olympus2MnHeader::baseOffset(uint32_t mnOffset) const {
   return mnOffset;
 }
 
-bool Olympus2MnHeader::read(const byte* pData, uint32_t size, ByteOrder /*byteOrder*/) {
+bool Olympus2MnHeader::read(const byte* pData, size_t size, ByteOrder /*byteOrder*/) {
   if (!pData || size < sizeOfSignature())
     return false;
   header_.alloc(sizeOfSignature());
-  std::memcpy(header_.pData_, pData, header_.size_);
-  return !(static_cast<uint32_t>(header_.size_) < sizeOfSignature() || 0 != memcmp(header_.pData_, signature_, 10));
+  std::copy_n(pData, header_.size(), header_.data());
+  return !(header_.size() < sizeOfSignature() || 0 != header_.cmpBytes(0, signature_, sizeOfSignature() - 2));
 }  // Olympus2MnHeader::read
 
 const byte FujiMnHeader::signature_[] = {'F', 'U', 'J', 'I', 'F', 'I', 'L', 'M', 0x0c, 0x00, 0x00, 0x00};
 const ByteOrder FujiMnHeader::byteOrder_ = littleEndian;
 
-uint32_t FujiMnHeader::sizeOfSignature() {
+size_t FujiMnHeader::sizeOfSignature() {
   return sizeof(signature_);
 }
 
@@ -196,8 +173,8 @@ FujiMnHeader::FujiMnHeader() : start_(0) {
   read(signature_, sizeOfSignature(), byteOrder_);
 }
 
-uint32_t FujiMnHeader::size() const {
-  return header_.size_;
+size_t FujiMnHeader::size() const {
+  return header_.size();
 }
 
 uint32_t FujiMnHeader::ifdOffset() const {
@@ -212,20 +189,20 @@ uint32_t FujiMnHeader::baseOffset(uint32_t mnOffset) const {
   return mnOffset;
 }
 
-bool FujiMnHeader::read(const byte* pData, uint32_t size, ByteOrder /*byteOrder*/) {
+bool FujiMnHeader::read(const byte* pData, size_t size, ByteOrder /*byteOrder*/) {
   if (!pData || size < sizeOfSignature())
     return false;
   header_.alloc(sizeOfSignature());
-  std::memcpy(header_.pData_, pData, header_.size_);
+  std::copy_n(pData, header_.size(), header_.data());
   // Read offset to the IFD relative to the start of the makernote
   // from the header. Note that we ignore the byteOrder argument
-  start_ = getULong(header_.pData_ + 8, byteOrder_);
-  return !(static_cast<uint32_t>(header_.size_) < sizeOfSignature() || 0 != memcmp(header_.pData_, signature_, 8));
+  start_ = header_.read_uint32(8, byteOrder_);
+  return !(header_.size() < sizeOfSignature() || 0 != header_.cmpBytes(0, signature_, 8));
 }  // FujiMnHeader::read
 
 const byte Nikon2MnHeader::signature_[] = {'N', 'i', 'k', 'o', 'n', '\0', 0x01, 0x00};
 
-uint32_t Nikon2MnHeader::sizeOfSignature() {
+size_t Nikon2MnHeader::sizeOfSignature() {
   return sizeof(signature_);
 }
 
@@ -233,7 +210,7 @@ Nikon2MnHeader::Nikon2MnHeader() : start_(0) {
   read(signature_, sizeOfSignature(), invalidByteOrder);
 }
 
-uint32_t Nikon2MnHeader::size() const {
+size_t Nikon2MnHeader::size() const {
   return sizeOfSignature();
 }
 
@@ -241,13 +218,13 @@ uint32_t Nikon2MnHeader::ifdOffset() const {
   return start_;
 }
 
-bool Nikon2MnHeader::read(const byte* pData, uint32_t size, ByteOrder /*byteOrder*/) {
+bool Nikon2MnHeader::read(const byte* pData, size_t size, ByteOrder /*byteOrder*/) {
   if (!pData || size < sizeOfSignature())
     return false;
   if (0 != memcmp(pData, signature_, 6))
     return false;
   buf_.alloc(sizeOfSignature());
-  std::memcpy(buf_.pData_, pData, buf_.size_);
+  std::copy_n(pData, buf_.size(), buf_.data());
   start_ = sizeOfSignature();
   return true;
 }  // Nikon2MnHeader::read
@@ -255,16 +232,16 @@ bool Nikon2MnHeader::read(const byte* pData, uint32_t size, ByteOrder /*byteOrde
 const byte Nikon3MnHeader::signature_[] = {'N',  'i',  'k',  'o',  'n',  '\0', 0x02, 0x10, 0x00,
                                            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-uint32_t Nikon3MnHeader::sizeOfSignature() {
+size_t Nikon3MnHeader::sizeOfSignature() {
   return sizeof(signature_);
 }
 
 Nikon3MnHeader::Nikon3MnHeader() : byteOrder_(invalidByteOrder), start_(sizeOfSignature()) {
   buf_.alloc(sizeOfSignature());
-  std::memcpy(buf_.pData_, signature_, buf_.size_);
+  std::copy_n(signature_, buf_.size(), buf_.data());
 }
 
-uint32_t Nikon3MnHeader::size() const {
+size_t Nikon3MnHeader::size() const {
   return sizeOfSignature();
 }
 
@@ -280,15 +257,15 @@ uint32_t Nikon3MnHeader::baseOffset(uint32_t mnOffset) const {
   return mnOffset + 10;
 }
 
-bool Nikon3MnHeader::read(const byte* pData, uint32_t size, ByteOrder /*byteOrder*/) {
+bool Nikon3MnHeader::read(const byte* pData, size_t size, ByteOrder /*byteOrder*/) {
   if (!pData || size < sizeOfSignature())
     return false;
   if (0 != memcmp(pData, signature_, 6))
     return false;
   buf_.alloc(sizeOfSignature());
-  std::memcpy(buf_.pData_, pData, buf_.size_);
+  std::copy_n(pData, buf_.size(), buf_.data());
   TiffHeader th;
-  if (!th.read(buf_.pData_ + 10, 8))
+  if (!th.read(buf_.data(10), 8))
     return false;
   byteOrder_ = th.byteOrder();
   start_ = 10 + th.offset();
@@ -301,7 +278,7 @@ void Nikon3MnHeader::setByteOrder(ByteOrder byteOrder) {
 
 const byte PanasonicMnHeader::signature_[] = {'P', 'a', 'n', 'a', 's', 'o', 'n', 'i', 'c', 0x00, 0x00, 0x00};
 
-uint32_t PanasonicMnHeader::sizeOfSignature() {
+size_t PanasonicMnHeader::sizeOfSignature() {
   return sizeof(signature_);
 }
 
@@ -309,7 +286,7 @@ PanasonicMnHeader::PanasonicMnHeader() : start_(0) {
   read(signature_, sizeOfSignature(), invalidByteOrder);
 }
 
-uint32_t PanasonicMnHeader::size() const {
+size_t PanasonicMnHeader::size() const {
   return sizeOfSignature();
 }
 
@@ -317,20 +294,20 @@ uint32_t PanasonicMnHeader::ifdOffset() const {
   return start_;
 }
 
-bool PanasonicMnHeader::read(const byte* pData, uint32_t size, ByteOrder /*byteOrder*/) {
+bool PanasonicMnHeader::read(const byte* pData, size_t size, ByteOrder /*byteOrder*/) {
   if (!pData || size < sizeOfSignature())
     return false;
   if (0 != memcmp(pData, signature_, 9))
     return false;
   buf_.alloc(sizeOfSignature());
-  std::memcpy(buf_.pData_, pData, buf_.size_);
+  std::copy_n(pData, buf_.size(), buf_.data());
   start_ = sizeOfSignature();
   return true;
 }  // PanasonicMnHeader::read
 
 const byte PentaxDngMnHeader::signature_[] = {'P', 'E', 'N', 'T', 'A', 'X', ' ', 0x00, 'M', 'M'};
 
-uint32_t PentaxDngMnHeader::sizeOfSignature() {
+size_t PentaxDngMnHeader::sizeOfSignature() {
   return sizeof(signature_);
 }
 
@@ -338,8 +315,8 @@ PentaxDngMnHeader::PentaxDngMnHeader() {
   read(signature_, sizeOfSignature(), invalidByteOrder);
 }
 
-uint32_t PentaxDngMnHeader::size() const {
-  return header_.size_;
+size_t PentaxDngMnHeader::size() const {
+  return header_.size();
 }
 
 uint32_t PentaxDngMnHeader::baseOffset(uint32_t mnOffset) const {
@@ -350,17 +327,17 @@ uint32_t PentaxDngMnHeader::ifdOffset() const {
   return sizeOfSignature();
 }
 
-bool PentaxDngMnHeader::read(const byte* pData, uint32_t size, ByteOrder /*byteOrder*/) {
+bool PentaxDngMnHeader::read(const byte* pData, size_t size, ByteOrder /*byteOrder*/) {
   if (!pData || size < sizeOfSignature())
     return false;
   header_.alloc(sizeOfSignature());
-  std::memcpy(header_.pData_, pData, header_.size_);
-  return !(static_cast<uint32_t>(header_.size_) < sizeOfSignature() || 0 != memcmp(header_.pData_, signature_, 7));
+  std::copy_n(pData, header_.size(), header_.data());
+  return !(header_.size() < sizeOfSignature() || 0 != header_.cmpBytes(0, signature_, 7));
 }  // PentaxDngMnHeader::read
 
 const byte PentaxMnHeader::signature_[] = {'A', 'O', 'C', 0x00, 'M', 'M'};
 
-uint32_t PentaxMnHeader::sizeOfSignature() {
+size_t PentaxMnHeader::sizeOfSignature() {
   return sizeof(signature_);
 }
 
@@ -368,27 +345,27 @@ PentaxMnHeader::PentaxMnHeader() {
   read(signature_, sizeOfSignature(), invalidByteOrder);
 }
 
-uint32_t PentaxMnHeader::size() const {
-  return header_.size_;
+size_t PentaxMnHeader::size() const {
+  return header_.size();
 }
 
 uint32_t PentaxMnHeader::ifdOffset() const {
   return sizeOfSignature();
 }
 
-bool PentaxMnHeader::read(const byte* pData, uint32_t size, ByteOrder /*byteOrder*/) {
+bool PentaxMnHeader::read(const byte* pData, size_t size, ByteOrder /*byteOrder*/) {
   if (!pData || size < sizeOfSignature())
     return false;
   header_.alloc(sizeOfSignature());
-  std::memcpy(header_.pData_, pData, header_.size_);
-  return !(static_cast<uint32_t>(header_.size_) < sizeOfSignature() || 0 != memcmp(header_.pData_, signature_, 3));
+  std::copy_n(pData, header_.size(), header_.data());
+  return !(header_.size() < sizeOfSignature() || 0 != header_.cmpBytes(0, signature_, 3));
 }  // PentaxMnHeader::read
 
 SamsungMnHeader::SamsungMnHeader() {
   read(nullptr, 0, invalidByteOrder);
 }
 
-uint32_t SamsungMnHeader::size() const {
+size_t SamsungMnHeader::size() const {
   return 0;
 }
 
@@ -396,15 +373,14 @@ uint32_t SamsungMnHeader::baseOffset(uint32_t mnOffset) const {
   return mnOffset;
 }
 
-bool SamsungMnHeader::read(const byte* /*pData*/, uint32_t /*size*/, ByteOrder /*byteOrder*/) {
+bool SamsungMnHeader::read(const byte* /*pData*/, size_t /*size*/, ByteOrder /*byteOrder*/) {
   return true;
 }  // SamsungMnHeader::read
 
 const byte SigmaMnHeader::signature1_[] = {'S', 'I', 'G', 'M', 'A', '\0', '\0', '\0', 0x01, 0x00};
 const byte SigmaMnHeader::signature2_[] = {'F', 'O', 'V', 'E', 'O', 'N', '\0', '\0', 0x01, 0x00};
 
-uint32_t SigmaMnHeader::sizeOfSignature() {
-  assert(sizeof(signature1_) == sizeof(signature2_));
+size_t SigmaMnHeader::sizeOfSignature() {
   return sizeof(signature1_);
 }
 
@@ -412,7 +388,7 @@ SigmaMnHeader::SigmaMnHeader() : start_(0) {
   read(signature1_, sizeOfSignature(), invalidByteOrder);
 }
 
-uint32_t SigmaMnHeader::size() const {
+size_t SigmaMnHeader::size() const {
   return sizeOfSignature();
 }
 
@@ -420,20 +396,20 @@ uint32_t SigmaMnHeader::ifdOffset() const {
   return start_;
 }
 
-bool SigmaMnHeader::read(const byte* pData, uint32_t size, ByteOrder /*byteOrder*/) {
+bool SigmaMnHeader::read(const byte* pData, size_t size, ByteOrder /*byteOrder*/) {
   if (!pData || size < sizeOfSignature())
     return false;
   if (0 != memcmp(pData, signature1_, 8) && 0 != memcmp(pData, signature2_, 8))
     return false;
   buf_.alloc(sizeOfSignature());
-  std::memcpy(buf_.pData_, pData, buf_.size_);
+  std::copy_n(pData, buf_.size(), buf_.data());
   start_ = sizeOfSignature();
   return true;
 }  // SigmaMnHeader::read
 
 const byte SonyMnHeader::signature_[] = {'S', 'O', 'N', 'Y', ' ', 'D', 'S', 'C', ' ', '\0', '\0', '\0'};
 
-uint32_t SonyMnHeader::sizeOfSignature() {
+size_t SonyMnHeader::sizeOfSignature() {
   return sizeof(signature_);
 }
 
@@ -441,7 +417,7 @@ SonyMnHeader::SonyMnHeader() : start_(0) {
   read(signature_, sizeOfSignature(), invalidByteOrder);
 }
 
-uint32_t SonyMnHeader::size() const {
+size_t SonyMnHeader::size() const {
   return sizeOfSignature();
 }
 
@@ -449,13 +425,13 @@ uint32_t SonyMnHeader::ifdOffset() const {
   return start_;
 }
 
-bool SonyMnHeader::read(const byte* pData, uint32_t size, ByteOrder /*byteOrder*/) {
+bool SonyMnHeader::read(const byte* pData, size_t size, ByteOrder /*byteOrder*/) {
   if (!pData || size < sizeOfSignature())
     return false;
   if (0 != memcmp(pData, signature_, sizeOfSignature()))
     return false;
   buf_.alloc(sizeOfSignature());
-  std::memcpy(buf_.pData_, pData, buf_.size_);
+  std::copy_n(pData, buf_.size(), buf_.data());
   start_ = sizeOfSignature();
   return true;
 }  // SonyMnHeader::read
@@ -463,7 +439,7 @@ bool SonyMnHeader::read(const byte* pData, uint32_t size, ByteOrder /*byteOrder*
 const byte Casio2MnHeader::signature_[] = {'Q', 'V', 'C', '\0', '\0', '\0'};
 const ByteOrder Casio2MnHeader::byteOrder_ = bigEndian;
 
-uint32_t Casio2MnHeader::sizeOfSignature() {
+size_t Casio2MnHeader::sizeOfSignature() {
   return sizeof(signature_);
 }
 
@@ -471,7 +447,7 @@ Casio2MnHeader::Casio2MnHeader() : start_(0) {
   read(signature_, sizeOfSignature(), invalidByteOrder);
 }
 
-uint32_t Casio2MnHeader::size() const {
+size_t Casio2MnHeader::size() const {
   return sizeOfSignature();
 }
 
@@ -483,13 +459,13 @@ ByteOrder Casio2MnHeader::byteOrder() const {
   return byteOrder_;
 }
 
-bool Casio2MnHeader::read(const byte* pData, uint32_t size, ByteOrder /*byteOrder*/) {
+bool Casio2MnHeader::read(const byte* pData, size_t size, ByteOrder /*byteOrder*/) {
   if (!pData || size < sizeOfSignature())
     return false;
   if (0 != memcmp(pData, signature_, sizeOfSignature()))
     return false;
   buf_.alloc(sizeOfSignature());
-  std::memcpy(buf_.pData_, pData, buf_.size_);
+  std::copy_n(pData, buf_.size(), buf_.data());
   start_ = sizeOfSignature();
   return true;
 }  // Casio2MnHeader::read
@@ -522,63 +498,55 @@ struct NikonArrayIdx {
 #define NA ((uint32_t)-1)
 
 //! Nikon binary array version lookup table
-constexpr NikonArrayIdx nikonArrayIdx[] = {
+constexpr auto nikonArrayIdx = std::array{
     // NikonSi
-    {0x0091, "0208", 0, 0, 4},     // D80
-    {0x0091, "0209", 0, 1, 4},     // D40
-    {0x0091, "0210", 5291, 2, 4},  // D300
-    {0x0091, "0210", 5303, 3, 4},  // D300, firmware version 1.10
-    {0x0091, "02", 0, 4, 4},       // Other v2.* (encrypted)
-    {0x0091, "01", 0, 5, NA},      // Other v1.* (not encrypted)
+    NikonArrayIdx{0x0091, "0208", 0, 0, 4},     // D80
+    NikonArrayIdx{0x0091, "0209", 0, 1, 4},     // D40
+    NikonArrayIdx{0x0091, "0210", 5291, 2, 4},  // D300
+    NikonArrayIdx{0x0091, "0210", 5303, 3, 4},  // D300, firmware version 1.10
+    NikonArrayIdx{0x0091, "02", 0, 4, 4},       // Other v2.* (encrypted)
+    NikonArrayIdx{0x0091, "01", 0, 5, NA},      // Other v1.* (not encrypted)
     // NikonCb
-    {0x0097, "0100", 0, 0, NA},
-    {0x0097, "0102", 0, 1, NA},
-    {0x0097, "0103", 0, 4, NA},
-    {0x0097, "0204", 0, 3, 284},
-    {0x0097, "0205", 0, 2, 4},
-    {0x0097, "0206", 0, 3, 284},
-    {0x0097, "0207", 0, 3, 284},
-    {0x0097, "0208", 0, 3, 284},
-    {0x0097, "0209", 0, 5, 284},
-    {0x0097, "02", 0, 3, 284},
+    NikonArrayIdx{0x0097, "0100", 0, 0, NA}, NikonArrayIdx{0x0097, "0102", 0, 1, NA},
+    NikonArrayIdx{0x0097, "0103", 0, 4, NA}, NikonArrayIdx{0x0097, "0205", 0, 2, 4},
+    NikonArrayIdx{0x0097, "0209", 0, 5, 284}, NikonArrayIdx{0x0097, "0212", 0, 5, 284},
+    NikonArrayIdx{0x0097, "0214", 0, 5, 284}, NikonArrayIdx{0x0097, "02", 0, 3, 284},
     // NikonLd
-    {0x0098, "0100", 0, 0, NA},
-    {0x0098, "0101", 0, 1, NA},
-    {0x0098, "0201", 0, 1, 4},
-    {0x0098, "0202", 0, 1, 4},
-    {0x0098, "0203", 0, 1, 4},
-    {0x0098, "0204", 0, 2, 4},
-    {0x0098, "0800", 0, 3, 4},  // for e.g. Z6/7
-    {0x0098, "0801", 0, 3, 4},  // for e.g. Z6/7
+    NikonArrayIdx{0x0098, "0100", 0, 0, NA}, NikonArrayIdx{0x0098, "0101", 0, 1, NA},
+    NikonArrayIdx{0x0098, "0201", 0, 1, 4}, NikonArrayIdx{0x0098, "0202", 0, 1, 4},
+    NikonArrayIdx{0x0098, "0203", 0, 1, 4}, NikonArrayIdx{0x0098, "0204", 0, 2, 4},
+    NikonArrayIdx{0x0098, "0800", 0, 3, 4},  // for e.g. Z6/7
+    NikonArrayIdx{0x0098, "0801", 0, 3, 4},  // for e.g. Z6/7
     // NikonFl
-    {0x00a8, "0100", 0, 0, NA},
-    {0x00a8, "0101", 0, 0, NA},
-    {0x00a8, "0102", 0, 1, NA},
-    {0x00a8, "0103", 0, 2, NA},
+    NikonArrayIdx{0x00a8, "0100", 0, 0, NA}, NikonArrayIdx{0x00a8, "0101", 0, 0, NA},
+    NikonArrayIdx{0x00a8, "0102", 0, 1, NA}, NikonArrayIdx{0x00a8, "0103", 0, 2, NA},
+    NikonArrayIdx{0x00a8, "0104", 0, 2, NA}, NikonArrayIdx{0x00a8, "0105", 0, 2, NA},
+    NikonArrayIdx{0x00a8, "0107", 0, 3, NA}, NikonArrayIdx{0x00a8, "0108", 0, 3, NA},
+    // NikonAf
+    NikonArrayIdx{0x00b7, "0100", 30, 0, NA},  // These sizes have been found in tiff headers of MN
+    NikonArrayIdx{0x00b7, "0101", 84, 1, NA},  // tag 0xb7 in sample image metadata for each version
 };
 
-int nikonSelector(uint16_t tag, const byte* pData, uint32_t size, TiffComponent* const /*pRoot*/) {
+int nikonSelector(uint16_t tag, const byte* pData, size_t size, TiffComponent* const /*pRoot*/) {
   if (size < 4)
     return -1;
-  const NikonArrayIdx* aix = find(nikonArrayIdx, NikonArrayIdx::Key(tag, reinterpret_cast<const char*>(pData), size));
-  return aix == nullptr ? -1 : aix->idx_;
+
+  auto ix = NikonArrayIdx::Key(tag, reinterpret_cast<const char*>(pData), size);
+  auto it = std::find_if(nikonArrayIdx.begin(), nikonArrayIdx.end(), [ix](auto&& aix) { return aix == ix; });
+  if (it == nikonArrayIdx.end())
+    return -1;
+
+  return it->idx_;
 }
 
-int nikonAf2Selector(uint16_t tag, const byte* /*pData*/, uint32_t size, TiffComponent* const /*pRoot*/) {
-  int result = tag == 0x00b7 ? 0 : -1;
-  if (result > -1 && size == 84) {
-    result = 1;
-  }
-  return result;
-}
-
-DataBuf nikonCrypt(uint16_t tag, const byte* pData, uint32_t size, TiffComponent* const pRoot) {
+DataBuf nikonCrypt(uint16_t tag, const byte* pData, size_t size, TiffComponent* const pRoot) {
   DataBuf buf;
 
   if (size < 4)
     return buf;
-  const NikonArrayIdx* nci = find(nikonArrayIdx, NikonArrayIdx::Key(tag, reinterpret_cast<const char*>(pData), size));
-  if (nci == nullptr || nci->start_ == NA || size <= nci->start_)
+  auto nci = std::find(nikonArrayIdx.begin(), nikonArrayIdx.end(),
+                       NikonArrayIdx::Key(tag, reinterpret_cast<const char*>(pData), size));
+  if (nci == nikonArrayIdx.end() || nci->start_ == NA || size <= nci->start_)
     return buf;
 
   // Find Exif.Nikon3.ShutterCount
@@ -587,7 +555,7 @@ DataBuf nikonCrypt(uint16_t tag, const byte* pData, uint32_t size, TiffComponent
   auto te = dynamic_cast<TiffEntryBase*>(finder.result());
   if (!te || !te->pValue() || te->pValue()->count() == 0)
     return buf;
-  auto count = static_cast<uint32_t>(te->pValue()->toLong());
+  auto count = te->pValue()->toUint32();
 
   // Find Exif.Nikon3.SerialNumber
   finder.init(0x001d, nikon3Id);
@@ -608,12 +576,12 @@ DataBuf nikonCrypt(uint16_t tag, const byte* pData, uint32_t size, TiffComponent
     }
   }
   buf.alloc(size);
-  memcpy(buf.pData_, pData, buf.size_);
-  ncrypt(buf.pData_ + nci->start_, buf.size_ - nci->start_, count, serial);
+  std::copy_n(pData, buf.size(), buf.data());
+  ncrypt(buf.data(nci->start_), static_cast<uint32_t>(buf.size()) - nci->start_, count, serial);
   return buf;
 }
 
-int sonyCsSelector(uint16_t /*tag*/, const byte* /*pData*/, uint32_t /*size*/, TiffComponent* const pRoot) {
+int sonyCsSelector(uint16_t /*tag*/, const byte* /*pData*/, size_t /*size*/, TiffComponent* const pRoot) {
   std::string model = getExifModel(pRoot);
   if (model.empty())
     return -1;
@@ -623,7 +591,7 @@ int sonyCsSelector(uint16_t /*tag*/, const byte* /*pData*/, uint32_t /*size*/, T
   }
   return idx;
 }
-int sony2010eSelector(uint16_t /*tag*/, const byte* /*pData*/, uint32_t /*size*/, TiffComponent* const pRoot) {
+int sony2010eSelector(uint16_t /*tag*/, const byte* /*pData*/, size_t /*size*/, TiffComponent* const pRoot) {
   static constexpr const char* models[] = {
       "SLT-A58",   "SLT-A99",  "ILCE-3000", "ILCE-3500", "NEX-3N",    "NEX-5R",   "NEX-5T",
       "NEX-6",     "VG30E",    "VG900",     "DSC-RX100", "DSC-RX1",   "DSC-RX1R", "DSC-HX300",
@@ -631,47 +599,44 @@ int sony2010eSelector(uint16_t /*tag*/, const byte* /*pData*/, uint32_t /*size*/
   };
   return std::find(std::begin(models), std::end(models), getExifModel(pRoot)) != std::end(models) ? 0 : -1;
 }
-int sony2FpSelector(uint16_t /*tag*/, const byte* /*pData*/, uint32_t /*size*/, TiffComponent* const pRoot) {
+int sony2FpSelector(uint16_t /*tag*/, const byte* /*pData*/, size_t /*size*/, TiffComponent* const pRoot) {
   // Not valid for models beginning
   std::string model = getExifModel(pRoot);
-  for (auto& m : {"SLT-", "HV", "ILCA-"}) {
-    if (Util::startsWith(model, m))
-      return -1;
-  }
-  return 0;
+  const std::array strs{"SLT-", "HV", "ILCA-"};
+  return std::any_of(strs.begin(), strs.end(), [&model](auto& m) { return startsWith(model, m); }) ? -1 : 0;
 }
-int sonyMisc2bSelector(uint16_t /*tag*/, const byte* /*pData*/, uint32_t /*size*/, TiffComponent* const pRoot) {
+int sonyMisc2bSelector(uint16_t /*tag*/, const byte* /*pData*/, size_t /*size*/, TiffComponent* const pRoot) {
   // From Exiftool: https://github.com/exiftool/exiftool/blob/master/lib/Image/ExifTool/Sony.pm
   // >  First byte must be 9 or 12 or 13 or 15 or 16 and 4th byte must be 2 (deciphered)
   const auto value = getExifValue(pRoot, 0x9404, Exiv2::Internal::sony1Id);
   if (!value || value->count() < 4)
     return -1;
 
-  switch (value->toLong(0)) {                 // Using encrypted values
-    case 231:                                 // 231 == 9
-    case 234:                                 // 234 == 12
-    case 205:                                 // 205 == 13
-    case 138:                                 // 138 == 15
-    case 112:                                 // 112 == 16
-      return value->toLong(3) == 8 ? 0 : -1;  // 8   == 2
+  switch (value->toInt64(0)) {                 // Using encrypted values
+    case 231:                                  // 231 == 9
+    case 234:                                  // 234 == 12
+    case 205:                                  // 205 == 13
+    case 138:                                  // 138 == 15
+    case 112:                                  // 112 == 16
+      return value->toInt64(3) == 8 ? 0 : -1;  // 8   == 2
     default:
       break;
   }
   return -1;
 }
-int sonyMisc3cSelector(uint16_t /*tag*/, const byte* /*pData*/, uint32_t /*size*/, TiffComponent* const pRoot) {
+int sonyMisc3cSelector(uint16_t /*tag*/, const byte* /*pData*/, size_t /*size*/, TiffComponent* const pRoot) {
   // From Exiftool (Tag 9400c): https://github.com/exiftool/exiftool/blob/master/lib/Image/ExifTool/Sony.pm
   // >  first byte decoded: 62, 48, 215, 28, 106 respectively
   const auto value = getExifValue(pRoot, 0x9400, Exiv2::Internal::sony1Id);
   if (!value || value->count() < 1)
     return -1;
 
-  switch (value->toLong()) {  // Using encrypted values
-    case 35:                  // 35  == 62
-    case 36:                  // 36  == 48
-    case 38:                  // 38  == 215
-    case 40:                  // 40  == 28
-    case 49:                  // 112 == 106
+  switch (value->toInt64()) {  // Using encrypted values
+    case 35:                   // 35  == 62
+    case 36:                   // 36  == 48
+    case 38:                   // 38  == 215
+    case 40:                   // 40  == 28
+    case 49:                   // 112 == 106
       return 0;
     default:
       break;
@@ -679,7 +644,7 @@ int sonyMisc3cSelector(uint16_t /*tag*/, const byte* /*pData*/, uint32_t /*size*
   return -1;
 }
 
-TiffComponent* newIfdMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* /*pData*/, uint32_t size,
+TiffComponent* newIfdMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* /*pData*/, size_t size,
                         ByteOrder /*byteOrder*/) {
   // Require at least an IFD with 1 entry, but not necessarily a next pointer
   if (size < 14)
@@ -691,7 +656,7 @@ TiffComponent* newIfdMn2(uint16_t tag, IfdId group, IfdId mnGroup) {
   return new TiffIfdMakernote(tag, group, mnGroup, nullptr);
 }
 
-TiffComponent* newOlympusMn(uint16_t tag, IfdId group, IfdId /*mnGroup*/, const byte* pData, uint32_t size,
+TiffComponent* newOlympusMn(uint16_t tag, IfdId group, IfdId /*mnGroup*/, const byte* pData, size_t size,
                             ByteOrder /*byteOrder*/) {
   if (size < 10 || std::string(reinterpret_cast<const char*>(pData), 10) != std::string("OLYMPUS\0II", 10)) {
     // Require at least the header and an IFD with 1 entry
@@ -713,7 +678,7 @@ TiffComponent* newOlympus2Mn2(uint16_t tag, IfdId group, IfdId mnGroup) {
   return new TiffIfdMakernote(tag, group, mnGroup, new Olympus2MnHeader);
 }
 
-TiffComponent* newFujiMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* /*pData*/, uint32_t size,
+TiffComponent* newFujiMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* /*pData*/, size_t size,
                          ByteOrder /*byteOrder*/) {
   // Require at least the header and an IFD with 1 entry
   if (size < FujiMnHeader::sizeOfSignature() + 18)
@@ -725,7 +690,7 @@ TiffComponent* newFujiMn2(uint16_t tag, IfdId group, IfdId mnGroup) {
   return new TiffIfdMakernote(tag, group, mnGroup, new FujiMnHeader);
 }
 
-TiffComponent* newNikonMn(uint16_t tag, IfdId group, IfdId /*mnGroup*/, const byte* pData, uint32_t size,
+TiffComponent* newNikonMn(uint16_t tag, IfdId group, IfdId /*mnGroup*/, const byte* pData, size_t size,
                           ByteOrder /*byteOrder*/) {
   // If there is no "Nikon" string it must be Nikon1 format
   if (size < 6 || std::string(reinterpret_cast<const char*>(pData), 6) != std::string("Nikon\0", 6)) {
@@ -758,7 +723,7 @@ TiffComponent* newNikon3Mn2(uint16_t tag, IfdId group, IfdId mnGroup) {
   return new TiffIfdMakernote(tag, group, mnGroup, new Nikon3MnHeader);
 }
 
-TiffComponent* newPanasonicMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* /*pData*/, uint32_t size,
+TiffComponent* newPanasonicMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* /*pData*/, size_t size,
                               ByteOrder /*byteOrder*/) {
   // Require at least the header and an IFD with 1 entry, but without a next pointer
   if (size < PanasonicMnHeader::sizeOfSignature() + 14)
@@ -770,7 +735,7 @@ TiffComponent* newPanasonicMn2(uint16_t tag, IfdId group, IfdId mnGroup) {
   return new TiffIfdMakernote(tag, group, mnGroup, new PanasonicMnHeader, false);
 }
 
-TiffComponent* newPentaxMn(uint16_t tag, IfdId group, IfdId /*mnGroup*/, const byte* pData, uint32_t size,
+TiffComponent* newPentaxMn(uint16_t tag, IfdId group, IfdId /*mnGroup*/, const byte* pData, size_t size,
                            ByteOrder /*byteOrder*/) {
   if (size > 8 && std::string(reinterpret_cast<const char*>(pData), 8) == std::string("PENTAX \0", 8)) {
     // Require at least the header and an IFD with 1 entry
@@ -795,7 +760,7 @@ TiffComponent* newPentaxDngMn2(uint16_t tag, IfdId group, IfdId mnGroup) {
   return new TiffIfdMakernote(tag, group, mnGroup, new PentaxDngMnHeader);
 }
 
-TiffComponent* newSamsungMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size,
+TiffComponent* newSamsungMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, size_t size,
                             ByteOrder /*byteOrder*/) {
   if (size > 4 && std::string(reinterpret_cast<const char*>(pData), 4) == std::string("AOC\0", 4)) {
     // Samsung branded Pentax camera:
@@ -815,7 +780,7 @@ TiffComponent* newSamsungMn2(uint16_t tag, IfdId group, IfdId mnGroup) {
   return new TiffIfdMakernote(tag, group, mnGroup, new SamsungMnHeader);
 }
 
-TiffComponent* newSigmaMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* /*pData*/, uint32_t size,
+TiffComponent* newSigmaMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* /*pData*/, size_t size,
                           ByteOrder /*byteOrder*/) {
   // Require at least the header and an IFD with 1 entry
   if (size < SigmaMnHeader::sizeOfSignature() + 18)
@@ -827,7 +792,7 @@ TiffComponent* newSigmaMn2(uint16_t tag, IfdId group, IfdId mnGroup) {
   return new TiffIfdMakernote(tag, group, mnGroup, new SigmaMnHeader);
 }
 
-TiffComponent* newSonyMn(uint16_t tag, IfdId group, IfdId /*mnGroup*/, const byte* pData, uint32_t size,
+TiffComponent* newSonyMn(uint16_t tag, IfdId group, IfdId /*mnGroup*/, const byte* pData, size_t size,
                          ByteOrder /*byteOrder*/) {
   // If there is no "SONY DSC " string we assume it's a simple IFD Makernote
   if (size < 12 || std::string(reinterpret_cast<const char*>(pData), 12) != std::string("SONY DSC \0\0\0", 12)) {
@@ -850,7 +815,7 @@ TiffComponent* newSony2Mn2(uint16_t tag, IfdId group, IfdId mnGroup) {
   return new TiffIfdMakernote(tag, group, mnGroup, nullptr, true);
 }
 
-TiffComponent* newCasioMn(uint16_t tag, IfdId group, IfdId /* mnGroup*/, const byte* pData, uint32_t size,
+TiffComponent* newCasioMn(uint16_t tag, IfdId group, IfdId /* mnGroup*/, const byte* pData, size_t size,
                           ByteOrder /* byteOrder */) {
   if (size > 6 && std::string(reinterpret_cast<const char*>(pData), 6) == std::string("QVC\0\0\0", 6)) {
     return newCasio2Mn2(tag, group, casio2Id);

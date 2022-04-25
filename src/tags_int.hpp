@@ -1,34 +1,11 @@
-// ***************************************************************** -*- C++ -*-
-/*
- * Copyright (C) 2004-2021 Exiv2 authors
- * This program is part of the Exiv2 distribution.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, 5th Floor, Boston, MA 02110-1301 USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 #ifndef TAGS_INT_HPP_
 #define TAGS_INT_HPP_
 
 // *****************************************************************************
 // included header files
 #include "tags.hpp"
-#include "types.hpp"
-#include "value.hpp"
-
-// + standard includes
-#include <math.h>
-#include <string>
 
 namespace Exiv2 {
 class ExifData;
@@ -212,6 +189,9 @@ enum SectionId {
 
 //! The details of a section.
 struct SectionInfo {
+  constexpr SectionInfo(SectionId sectionId, const char* name, const char* desc) :
+      sectionId_(sectionId), name_(name), desc_(desc) {
+  }
   SectionId sectionId_;  //!< Section id
   const char* name_;     //!< Section name (one word)
   const char* desc_;     //!< Section description
@@ -263,14 +243,23 @@ struct TagVocabulary {
           by looking up a reference table.
 */
 template <int N, const TagDetails (&array)[N]>
-std::ostream& printTag(std::ostream& os, const Value& value, const ExifData*) {
-  const TagDetails* td = find(array, value.toLong());
+std::ostream& printTag(std::ostream& os, const int64_t value, const ExifData*) {
+  const TagDetails* td = find(array, value);
   if (td) {
     os << exvGettext(td->label_);
   } else {
     os << "(" << value << ")";
   }
   return os;
+}
+
+/*!
+  @brief Generic pretty-print function to translate the first long value in Value, to a description
+         by looking up a reference table.
+ */
+template <int N, const TagDetails (&array)[N]>
+std::ostream& printTag(std::ostream& os, const Value& value, const ExifData* data) {
+  return printTag<N, array>(os, value.toInt64(), data);
 }
 
 //! Shortcut for the printTag template which requires typing the array name only once.
@@ -282,7 +271,7 @@ std::ostream& printTag(std::ostream& os, const Value& value, const ExifData*) {
 */
 template <int N, const TagDetailsBitmask (&array)[N]>
 std::ostream& printTagBitmask(std::ostream& os, const Value& value, const ExifData*) {
-  const auto val = static_cast<uint32_t>(value.toLong());
+  const auto val = value.toUint32();
   if (val == 0 && N > 0) {
     const TagDetailsBitmask* td = *(&array);
     if (td->mask_ == 0)

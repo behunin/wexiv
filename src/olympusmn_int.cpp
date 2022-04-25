@@ -1,33 +1,16 @@
-// ***************************************************************** -*- C++ -*-
-/*
- * Copyright (C) 2004-2021 Exiv2 authors
- * This program is part of the Exiv2 distribution.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, 5th Floor, Boston, MA 02110-1301 USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
 
 // *****************************************************************************
 // included header files
 #include "olympusmn_int.hpp"
 
+#include "exif.hpp"
 #include "i18n.h"  // NLS support.
-#include "image.hpp"
 #include "makernote_int.hpp"
 #include "tags_int.hpp"
-#include "types.hpp"
 #include "value.hpp"
+
+#include <array>
 
 // *****************************************************************************
 // class member definitions
@@ -988,17 +971,17 @@ std::ostream& OlympusMakerNote::print0x050f(std::ostream& os, const Value& value
     return os << value;
   }
 
-  if (value.toLong(0) == -1 && value.toLong(1) == -1 && value.toLong(2) == 1)
+  if (value.toInt64(0) == -1 && value.toInt64(1) == -1 && value.toInt64(2) == 1)
     os << _("Low Key");
-  else if (value.toLong(0) == 0 && value.toLong(1) == -1 && value.toLong(2) == 1)
+  else if (value.toInt64(0) == 0 && value.toInt64(1) == -1 && value.toInt64(2) == 1)
     os << _("Normal");
-  else if (value.toLong(0) == 1 && value.toLong(1) == -1 && value.toLong(2) == 1)
+  else if (value.toInt64(0) == 1 && value.toInt64(1) == -1 && value.toInt64(2) == 1)
     os << _("High Key");
   else
-    os << value.toLong(0) << " " << value.toLong(1) << " " << value.toLong(2);
+    os << value.toInt64(0) << " " << value.toInt64(1) << " " << value.toInt64(2);
 
   if (value.count() == 4) {
-    switch (value.toLong(3)) {
+    switch (value.toInt64(3)) {
       case 0:
         os << ", " << _("User-Selected");
         break;
@@ -1006,7 +989,7 @@ std::ostream& OlympusMakerNote::print0x050f(std::ostream& os, const Value& value
         os << ", " << _("Auto-Override");
         break;
       default:
-        os << value.toLong(3);
+        os << value.toInt64(3);
         break;
     }
   }
@@ -1015,11 +998,11 @@ std::ostream& OlympusMakerNote::print0x050f(std::ostream& os, const Value& value
 
 // Olympus CameraSettings tag 0x0527 NoiseFilter
 std::ostream& OlympusMakerNote::print0x0527(std::ostream& os, const Value& value, const ExifData*) {
-  if (value.count() != 3 || value.typeId() != signedShort || value.toLong(1) != -2 || value.toLong(2) != 1) {
+  if (value.count() != 3 || value.typeId() != signedShort || value.toInt64(1) != -2 || value.toInt64(2) != 1) {
     return os << value;
   }
 
-  switch (value.toLong(0)) {
+  switch (value.toInt64(0)) {
     case -2:
       os << _("Off");
       break;
@@ -1033,7 +1016,7 @@ std::ostream& OlympusMakerNote::print0x0527(std::ostream& os, const Value& value
       os << _("High");
       break;
     default:
-      os << value.toLong(0);
+      os << value.toInt64(0);
       break;
   }
 
@@ -1044,7 +1027,7 @@ std::ostream& OlympusMakerNote::print0x0200(std::ostream& os, const Value& value
   if (value.count() != 3 || value.typeId() != unsignedLong) {
     return os << value;
   }
-  long l0 = value.toLong(0);
+  const auto l0 = value.toInt64(0);
   switch (l0) {
     case 0:
       os << _("Normal");
@@ -1061,12 +1044,12 @@ std::ostream& OlympusMakerNote::print0x0200(std::ostream& os, const Value& value
   }
   if (l0 != 0) {
     os << ", ";
-    long l1 = value.toLong(1);
+    const auto l1 = value.toInt64(1);
     os << _("Sequence number") << " " << l1;
   }
   if (l0 != 0 && l0 != 2) {
     os << ", ";
-    long l2 = value.toLong(2);
+    const auto l2 = value.toInt64(2);
     switch (l2) {
       case 1:
         os << _("Left to right");
@@ -1109,15 +1092,15 @@ std::ostream& OlympusMakerNote::print0x1015(std::ostream& os, const Value& value
     return os << value;
   }
   if (value.count() == 1) {
-    auto l0 = static_cast<short>(value.toLong(0));
+    auto l0 = value.toInt64(0);
     if (l0 == 1) {
       os << _("Auto");
     } else {
       return os << value;
     }
   } else if (value.count() == 2) {
-    auto l0 = static_cast<short>(value.toLong(0));
-    auto l1 = static_cast<short>(value.toLong(1));
+    auto l0 = value.toInt64(0);
+    auto l1 = value.toInt64(1);
     if (l0 == 1) {
       switch (l1) {
         case 0:
@@ -1304,9 +1287,9 @@ std::ostream& OlympusMakerNote::print0x0201(std::ostream& os, const Value& value
     return os << value;
   }
 
-  byte v0 = static_cast<byte>(value.toLong(0));
-  byte v2 = static_cast<byte>(value.toLong(2));
-  byte v3 = static_cast<byte>(value.toLong(3));
+  byte v0 = static_cast<byte>(value.toInt64(0));
+  byte v2 = static_cast<byte>(value.toInt64(2));
+  byte v3 = static_cast<byte>(value.toInt64(3));
 
   for (auto&& type : lensTypes) {
     if (type.val[0] == v0 && type.val[1] == v2 && type.val[2] == v3) {
@@ -1324,7 +1307,7 @@ std::ostream& OlympusMakerNote::print0x0209(std::ostream& os, const Value& value
 
   char ch;
   int size = value.size();
-  for (int i = 0; i < size && ((ch = static_cast<char>(value.toLong(i))) != '\0'); i++) {
+  for (int i = 0; i < size && ((ch = static_cast<char>(value.toInt64(i))) != '\0'); i++) {
     os << ch;
   }
   return os;
@@ -1348,8 +1331,8 @@ std::ostream& OlympusMakerNote::printEq0x0301(std::ostream& os, const Value& val
     return os << value;
   }
 
-  byte v0 = static_cast<byte>(value.toLong(0));
-  byte v2 = static_cast<byte>(value.toLong(2));
+  byte v0 = static_cast<byte>(value.toInt64(0));
+  byte v2 = static_cast<byte>(value.toInt64(2));
 
   for (auto&& model : extenderModels) {
     if (model.val[0] == v0 && model.val[1] == v2) {
@@ -1381,13 +1364,13 @@ std::ostream& OlympusMakerNote::printCs0x0301(std::ostream& os, const Value& val
   if (value.count() < 1 || value.typeId() != unsignedShort) {
     return os << "(" << value << ")";
   }
-  auto v = static_cast<uint16_t>(value.toLong(0));
+  auto v = static_cast<uint16_t>(value.toInt64(0));
 
   // If value 2 is present, it is used instead of value 1.
   if (value.count() > 1) {
     std::string p;  // Used to enable ',' separation
 
-    v = static_cast<uint16_t>(value.toLong(1));
+    v = static_cast<uint16_t>(value.toInt64(1));
     for (auto&& mode : focusModes1) {
       if ((v & mode.val) != 0) {
         if (!p.empty()) {
@@ -1460,8 +1443,8 @@ std::ostream& OlympusMakerNote::print0x0529(std::ostream& os, const Value& value
     return os << value;
   }
 
-  auto v0 = static_cast<uint16_t>(value.toLong(0));
-  auto v1 = static_cast<uint16_t>(value.toLong(1));
+  auto v0 = static_cast<uint16_t>(value.toInt64(0));
+  auto v1 = static_cast<uint16_t>(value.toInt64(1));
 
   for (auto&& filter : artFilters) {
     if (filter.val[0] == v0 && filter.val[1] == v1) {
@@ -1477,7 +1460,7 @@ std::ostream& OlympusMakerNote::print0x1209(std::ostream& os, const Value& value
     return os << value;
   }
 
-  switch (value.toLong(0)) {
+  switch (value.toInt64(0)) {
     case 0:
       os << _("Off");
       break;
@@ -1485,11 +1468,11 @@ std::ostream& OlympusMakerNote::print0x1209(std::ostream& os, const Value& value
       os << _("On");
       break;
     default:
-      os << value.toLong(0);
+      os << value.toInt64(0);
       break;
   }
   os << " ";
-  os << value.toLong(1);
+  os << value.toInt64(1);
 
   return os;
 }  // OlympusMakerNote::print0x1209
@@ -1571,7 +1554,7 @@ std::ostream& OlympusMakerNote::print0x0308(std::ostream& os, const Value& value
     }
   }
 
-  auto v = static_cast<uint16_t>(value.toLong(0));
+  auto v = static_cast<uint16_t>(value.toInt64(0));
 
   if (!E3_E30model) {
     for (auto&& point : afPoints) {

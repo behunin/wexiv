@@ -1,23 +1,11 @@
-/*
- * Copyright (C) 2004-2021 Exiv2 authors
- * This program is part of the Exiv2 distribution.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, 5th Floor, Boston, MA 02110-1301 USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "image_int.hpp"
+
+#include <cstdarg>
+#include <cstddef>
+#include <cstring>
+#include <vector>
 
 namespace Exiv2 {
 namespace Internal {
@@ -48,51 +36,6 @@ std::string stringFormat(const char* format, ...) {
   return result;
 }
 
-std::string binaryToHex(const byte* data, size_t size) {
-  std::stringstream hexOutput;
-
-  auto tl = size_t(size / 16) * 16;
-  auto tl_offset = size_t(size) - tl;
-
-  for (size_t loop = 0; loop < size; loop++) {
-    if (data[loop] < 16) {
-      hexOutput << "0";
-    }
-    hexOutput << std::hex << static_cast<int>(data[loop]);
-    if ((loop % 8) == 7) {
-      hexOutput << "  ";
-    }
-    if ((loop % 16) == 15 || loop == (tl + tl_offset - 1)) {
-      int max = 15;
-      if (loop >= tl) {
-        max = int(tl_offset) - 1;
-        for (int offset = 0; offset < int(16 - tl_offset); offset++) {
-          if ((offset % 8) == 7) {
-            hexOutput << "  ";
-          }
-          hexOutput << "   ";
-        }
-      }
-      hexOutput << " ";
-      for (int offset = max; offset >= 0; offset--) {
-        if (offset == (max - 8)) {
-          hexOutput << "  ";
-        }
-        byte c = '.';
-        if (data[loop - offset] >= 0x20 && data[loop - offset] <= 0x7E) {
-          c = data[loop - offset];
-        }
-        hexOutput << static_cast<char>(c);
-      }
-      hexOutput << std::endl;
-    }
-  }
-
-  hexOutput << std::endl << std::endl << std::endl;
-
-  return hexOutput.str();
-}
-
 std::string indent(int32_t d) {
   std::string result;
   if (d > 0)
@@ -102,5 +45,4 @@ std::string indent(int32_t d) {
 }
 
 }  // namespace Internal
-
 }  // namespace Exiv2

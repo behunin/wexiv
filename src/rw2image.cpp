@@ -1,32 +1,18 @@
-// ***************************************************************** -*- C++ -*-
-/*
- * Copyright (C) 2004-2021 Exiv2 authors
- * This program is part of the Exiv2 distribution.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, 5th Floor, Boston, MA 02110-1301 USA.
- */
-// *****************************************************************************
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 // included header files
 #include "rw2image.hpp"
 
 #include "config.h"
 #include "error.hpp"
 #include "image.hpp"
+#include "preview.hpp"
 #include "rw2image_int.hpp"
 #include "tiffcomposite_int.hpp"
 #include "tiffimage_int.hpp"
+
+// + standard includes
+#include <array>
 
 namespace Exiv2 {
 
@@ -58,14 +44,14 @@ int Rw2Image::pixelHeight() const {
 
 void Rw2Image::readMetadata() {
   if (io_->open() != 0) {
-    throw Error(kerDataSourceOpenFailed, io_->path());
+    throw Error(ErrorCode::kerDataSourceOpenFailed, io_->path());
   }
   IoCloser closer(*io_);
   // Ensure that this is the correct image type
   if (!isRw2Type(*io_, false)) {
     if (io_->error() || io_->eof())
-      throw Error(kerFailedToReadImageData);
-    throw Error(kerNotAnImage, "RW2");
+      throw Error(ErrorCode::kerFailedToReadImageData);
+    throw Error(ErrorCode::kerNotAnImage, "RW2");
   }
 
   ByteOrder bo = Rw2Parser::decode(exifData_, iptcData_, xmpData_, io_->mmap(), static_cast<uint32_t>(io_->size()));
@@ -73,6 +59,61 @@ void Rw2Image::readMetadata() {
 
   // A lot more metadata is hidden in the embedded preview image
   // Todo: This should go into the Rw2Parser, but for that it needs the Image
+  PreviewManager loader(*this);
+  PreviewPropertiesList list = loader.getPreviewProperties();
+  // Todo: What if there are more preview images?
+  if (list.size() > 1) {
+    EXV_WARNING << "RW2 image contains more than one preview. None used.\n";
+  }
+  if (list.size() != 1)
+    return;
+  ExifData exifData;
+  PreviewImage preview = loader.getPreviewImage(*list.begin());
+  auto image = ImageFactory::open(preview.pData(), preview.size());
+  if (!image) {
+    EXV_WARNING << "Failed to open RW2 preview image.\n";
+    return;
+  }
+  image->readMetadata();
+  const auto prevData = image->exifData();
+
+  // Remove tags not applicable for raw images
+  static constexpr auto filteredTags = std::array{
+      "Exif.Photo.ComponentsConfiguration",
+      "Exif.Photo.CompressedBitsPerPixel",
+      "Exif.Panasonic.ColorEffect",
+      "Exif.Panasonic.Contrast",
+      "Exif.Panasonic.NoiseReduction",
+      "Exif.Panasonic.ColorMode",
+      "Exif.Panasonic.OpticalZoomMode",
+      "Exif.Panasonic.Contrast",
+      "Exif.Panasonic.Saturation",
+      "Exif.Panasonic.Sharpness",
+      "Exif.Panasonic.FilmMode",
+      "Exif.Panasonic.SceneMode",
+      "Exif.Panasonic.WBRedLevel",
+      "Exif.Panasonic.WBGreenLevel",
+      "Exif.Panasonic.WBBlueLevel",
+      "Exif.Photo.ColorSpace",
+      "Exif.Photo.PixelXDimension",
+      "Exif.Photo.PixelYDimension",
+      "Exif.Photo.SceneType",
+      "Exif.Photo.CustomRendered",
+      "Exif.Photo.DigitalZoomRatio",
+      "Exif.Photo.SceneCaptureType",
+      "Exif.Photo.GainControl",
+      "Exif.Photo.Contrast",
+      "Exif.Photo.Saturation",
+      "Exif.Photo.Sharpness",
+      "Exif.Image.PrintImageMatching",
+      "Exif.Image.YCbCrPositioning",
+  };
+  for (auto&& filteredTag : filteredTags) {
+    auto pos = prevData.hasOwnProperty(filteredTag);
+    if (prevData.hasOwnProperty(filteredTag)) {
+      prevData.delete_(filteredTag);
+    }
+  }
 
 }  // Rw2Image::readMetadata
 
@@ -84,7 +125,7 @@ ByteOrder Rw2Parser::decode(emscripten::val& exifData, emscripten::val& iptcData
 }
 
 Image::UniquePtr newRw2Instance(BasicIo::UniquePtr io, bool /*create*/) {
-  Image::UniquePtr image(new Rw2Image(std::move(io)));
+  auto image = std::make_unique<Rw2Image>(std::move(io));
   if (!image->good()) {
     image.reset();
   }

@@ -1,23 +1,5 @@
-// ***************************************************************** -*- C++ -*-
-/*
- * Copyright (C) 2004-2021 Exiv2 authors
- * This program is part of the Exiv2 distribution.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, 5th Floor, Boston, MA 02110-1301 USA.
- */
-// *****************************************************************************
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 // included header files
 #include "rafimage.hpp"
 
@@ -56,13 +38,13 @@ int RafImage::pixelHeight() const {
 
 void RafImage::readMetadata() {
   if (io_->open() != 0)
-    throw Error(kerDataSourceOpenFailed, io_->path());
+    throw Error(ErrorCode::kerDataSourceOpenFailed, io_->path());
   IoCloser closer(*io_);
   // Ensure that this is the correct image type
   if (!isRafType(*io_, false)) {
     if (io_->error() || io_->eof())
-      throw Error(kerFailedToReadImageData);
-    throw Error(kerNotAnImage, "RAF");
+      throw Error(ErrorCode::kerFailedToReadImageData);
+    throw Error(ErrorCode::kerNotAnImage, "RAF");
   }
 
   if (io_->seek(84, BasicIo::beg) != 0)
@@ -76,7 +58,7 @@ void RafImage::readMetadata() {
   uint32_t jpg_img_off_u32 = Exiv2::getULong(jpg_img_offset, bigEndian);
   uint32_t jpg_img_len_u32 = Exiv2::getULong(jpg_img_length, bigEndian);
 
-  enforce(Safe::add(jpg_img_off_u32, jpg_img_len_u32) <= io_->size(), kerCorruptedMetadata);
+  enforce(Safe::add(jpg_img_off_u32, jpg_img_len_u32) <= io_->size(), ErrorCode::kerCorruptedMetadata);
 
 #if LONG_MAX < UINT_MAX
   enforce(jpg_img_off_u32 <= static_cast<uint32_t>(std::numeric_limits<long>::max()), kerCorruptedMetadata);
@@ -86,18 +68,18 @@ void RafImage::readMetadata() {
   long jpg_img_off = static_cast<long>(jpg_img_off_u32);
   long jpg_img_len = static_cast<long>(jpg_img_len_u32);
 
-  enforce(jpg_img_len >= 12, kerCorruptedMetadata);
+  enforce(jpg_img_len >= 12, ErrorCode::kerCorruptedMetadata);
 
   DataBuf buf(jpg_img_len - 12);
   if (io_->seek(jpg_img_off + 12, BasicIo::beg) != 0)
-    throw Error(kerFailedToReadImageData);
-  io_->read(buf.pData_, buf.size_);
+    throw Error(ErrorCode::kerFailedToReadImageData);
+  io_->read(buf.data(), buf.size());
   if (io_->error() || io_->eof())
-    throw Error(kerFailedToReadImageData);
+    throw Error(ErrorCode::kerFailedToReadImageData);
 
   io_->seek(0, BasicIo::beg);  // rewind
 
-  ByteOrder bo = TiffParser::decode(exifData_, iptcData_, xmpData_, buf.pData_, buf.size_);
+  ByteOrder bo = TiffParser::decode(exifData_, iptcData_, xmpData_, buf.c_data(), buf.size());
 
   exifData_.set("Exif.Image2.JPEGInterchangeFormat", getULong(jpg_img_offset, bigEndian));
   exifData_.set("Exif.Image2.JPEGInterchangeFormatLength", getULong(jpg_img_length, bigEndian));
@@ -122,15 +104,15 @@ void RafImage::readMetadata() {
   DataBuf tiff(tiffLength);
   if (io_->seek(tiffOffset, BasicIo::beg) != 0)
     throw Error(kerFailedToReadImageData);
-  io_->read(tiff.pData_, tiff.size_);
+  io_->read(tiff.data(), tiff.size());
 
   if (!io_->error() && !io_->eof()) {
-    TiffParser::decode(exifData_, iptcData_, xmpData_, tiff.pData_, tiff.size_);
+    TiffParser::decode(exifData_, iptcData_, xmpData_, tiff.c_data(), tiff.size());
   }
 }  // RafImage::readMetadata
 
 Image::UniquePtr newRafInstance(BasicIo::UniquePtr io, bool create) {
-  Image::UniquePtr image(new RafImage(std::move(io), create));
+  auto image = std::make_unique<RafImage>(std::move(io), create);
   if (!image->good()) {
     image.reset();
   }

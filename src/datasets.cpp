@@ -30,7 +30,10 @@
 #include "i18n.h"  // NLS support.
 #include "metadatum.hpp"
 #include "types.hpp"
-#include "value.hpp"
+
+#include <array>
+#include <regex>
+#include <sstream>
 
 // *****************************************************************************
 namespace Exiv2 {

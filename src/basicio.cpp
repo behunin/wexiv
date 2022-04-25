@@ -1,63 +1,68 @@
-// ***************************************************************** -*- C++ -*-
-/*
- * Copyright (C) 2004-2021 Exiv2 authors
- * This program is part of the Exiv2 distribution.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, 5th Floor, Boston, MA 02110-1301 USA.
- */
-/*
-  File:      basicio.cpp
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
 // *****************************************************************************
 // included header files
 #include "basicio.hpp"
 
 #include "config.h"
 #include "datasets.hpp"
+#include "enforce.hpp"
 #include "error.hpp"
 #include "image_int.hpp"
 #include "types.hpp"
 
+// + standard includes
+#include <cstdlib>  // for alloc, realloc, free
+#include <cstring>  // std::memcpy
+
 #define mode_t unsigned short
 
 // *****************************************************************************
-// class member definitions
+namespace {
+/// @brief replace each substring of the subject that matches the given search string with the given replacement.
+void ReplaceStringInPlace(std::string& subject, std::string_view search, std::string_view replace) {
+  auto pos = subject.find(search);
+  while (pos != std::string::npos) {
+    subject.replace(pos, search.length(), replace);
+    pos += subject.find(search, pos + replace.length());
+  }
+}
+}  // namespace
+
 namespace Exiv2 {
+void BasicIo::readOrThrow(byte* buf, size_t rcount, ErrorCode err) {
+  const size_t nread = read(buf, rcount);
+  enforce(nread == rcount, err);
+  enforce(!error(), err);
+}
+
+void BasicIo::seekOrThrow(int64_t offset, Position pos, ErrorCode err) {
+  const int r = seek(offset, pos);
+  enforce(r == 0, err);
+}
 //! Internal Pimpl structure of class MemIo.
 class MemIo::Impl final {
  public:
-  Impl() = default;                   //!< Default constructor
-  Impl(const byte* data, long size);  //!< Constructor 2
+  Impl() = default;                     //!< Default constructor
+  Impl(const byte* data, size_t size);  //!< Constructor 2
+  ~Impl() = default;
 
   // DATA
   byte* data_{nullptr};     //!< Pointer to the start of the memory area
-  long idx_{0};             //!< Index into the memory area
-  long size_{0};            //!< Size of the memory area
-  long sizeAlloced_{0};     //!< Size of the allocated buffer
+  size_t idx_{0};           //!< Index into the memory area
+  size_t size_{0};          //!< Size of the memory area
+  size_t sizeAlloced_{0};   //!< Size of the allocated buffer
   bool isMalloced_{false};  //!< Was the buffer allocated?
   bool eof_{false};         //!< EOF indicator
 
   // METHODS
-  void reserve(long wcount);  //!< Reserve memory
+  void reserve(size_t wcount);  //!< Reserve memory
 
   // NOT IMPLEMENTED
   Impl(const Impl& rhs) = delete;             //!< Copy constructor
   Impl& operator=(const Impl& rhs) = delete;  //!< Assignment
 };                                            // class MemIo::Impl
 
-MemIo::Impl::Impl(const byte* data, long size) : data_(const_cast<byte*>(data)), size_(size) {
+MemIo::Impl::Impl(const byte* data, size_t size) : data_(const_cast<byte*>(data)), size_(size) {
 }
 
 /*!
@@ -122,14 +127,14 @@ class EXIV2API BlockMap {
   size_t size_{0};
 };  // class BlockMap
 
-void MemIo::Impl::reserve(long wcount) {
-  const long need = wcount + idx_;
-  long blockSize = 32 * 1024;  // 32768           `
-  const long maxBlockSize = 4 * 1024 * 1024;
+void MemIo::Impl::reserve(size_t wcount) {
+  const size_t need = wcount + idx_;
+  size_t blockSize = 32 * 1024;  // 32768           `
+  const size_t maxBlockSize = 4 * 1024 * 1024;
 
   if (!isMalloced_) {
     // Minimum size for 1st block
-    long size = std::max(blockSize * (1 + need / blockSize), size_);
+    size_t size = std::max(blockSize * (1 + need / blockSize), size_);
     auto data = static_cast<byte*>(std::malloc(size));
     if (data == nullptr) {
       throw Error(kerMallocFailed);
@@ -148,7 +153,7 @@ void MemIo::Impl::reserve(long wcount) {
       if (blockSize > maxBlockSize)
         blockSize = maxBlockSize;
       // Allocate in blocks
-      long want = blockSize * (1 + need / blockSize);
+      size_t want = blockSize * (1 + need / blockSize);
       data_ = static_cast<byte*>(std::realloc(data_, want));
       if (data_ == nullptr) {
         throw Error(kerMallocFailed);
@@ -159,10 +164,10 @@ void MemIo::Impl::reserve(long wcount) {
   }
 }
 
-MemIo::MemIo() : p_(new Impl()) {
+MemIo::MemIo() : p_(std::make_unique<Impl>()) {
 }
 
-MemIo::MemIo(const byte* data, long size) : p_(new Impl(data, size)) {
+MemIo::MemIo(const byte* data, size_t size) : p_(std::make_unique<Impl>(data, size)) {
 }
 
 MemIo::~MemIo() {
@@ -171,7 +176,7 @@ MemIo::~MemIo() {
   }
 }
 
-long MemIo::write(const byte* data, long wcount) {
+size_t MemIo::write(const byte* data, size_t wcount) {
   p_->reserve(wcount);
   assert(p_->isMalloced_);
   if (data != nullptr) {
@@ -209,15 +214,15 @@ void MemIo::transfer(BasicIo& src) {
     throw Error(kerMemoryTransferFailed);
 }
 
-long MemIo::write(BasicIo& src) {
+size_t MemIo::write(BasicIo& src) {
   if (static_cast<BasicIo*>(this) == &src)
     return 0;
   if (!src.isopen())
     return 0;
 
   byte buf[4096];
-  long readCount = 0;
-  long writeTotal = 0;
+  size_t readCount = 0;
+  size_t writeTotal = 0;
   while ((readCount = src.read(buf, sizeof(buf)))) {
     write(buf, readCount);
     writeTotal += readCount;
@@ -228,13 +233,12 @@ long MemIo::write(BasicIo& src) {
 
 int MemIo::putb(byte data) {
   p_->reserve(1);
-  assert(p_->isMalloced_);
   p_->data_[p_->idx_++] = data;
   return data;
 }
 
-int MemIo::seek(long offset, Position pos) {
-  long newIdx = 0;
+int MemIo::seek(int64_t offset, Position pos) {
+  int64_t newIdx = 0;
 
   switch (pos) {
     case BasicIo::cur:
@@ -251,12 +255,12 @@ int MemIo::seek(long offset, Position pos) {
   if (newIdx < 0)
     return 1;
 
-  if (newIdx > p_->size_) {
+  if (newIdx > static_cast<int64_t>(p_->size_)) {
     p_->eof_ = true;
     return 1;
   }
 
-  p_->idx_ = newIdx;
+  p_->idx_ = static_cast<size_t>(newIdx);
   p_->eof_ = false;
   return 0;
 }
@@ -291,20 +295,23 @@ int MemIo::close() {
   return 0;
 }
 
-DataBuf MemIo::read(long rcount) {
+DataBuf MemIo::read(size_t rcount) {
   DataBuf buf(rcount);
-  long readCount = read(buf.pData_, buf.size_);
-  buf.size_ = readCount;
+  size_t readCount = read(buf.data(), buf.size());
+  buf.resize(readCount);
   return buf;
 }
 
-long MemIo::read(byte* buf, long rcount) {
-  long avail = std::max(p_->size_ - p_->idx_, 0L);
-  long allow = std::min(rcount, avail);
-  std::memcpy(buf, &p_->data_[p_->idx_], allow);
+size_t MemIo::read(byte* buf, size_t rcount) {
+  size_t avail = std::max(p_->size_ - p_->idx_, static_cast<size_t>(0));
+  size_t allow = std::min(rcount, avail);
+  if (allow > 0) {
+    std::memcpy(buf, &p_->data_[p_->idx_], allow);
+  }
   p_->idx_ += allow;
-  if (rcount > avail)
+  if (rcount > avail) {
     p_->eof_ = true;
+  }
   return allow;
 }
 
@@ -324,21 +331,11 @@ bool MemIo::eof() const {
   return p_->eof_;
 }
 
-std::string MemIo::path() const {
-  return "MemIo";
+const std::string& MemIo::path() const noexcept {
+  static std::string _path{"MemIo"};
+  return _path;
 }
 
 void MemIo::populateFakeData() {
-}
-
-// *************************************************************************
-// free functions
-std::string ReplaceStringInPlace(std::string subject, const std::string& search, const std::string& replace) {
-  size_t pos = 0;
-  while ((pos = subject.find(search, pos)) != std::string::npos) {
-    subject.replace(pos, search.length(), replace);
-    pos += replace.length();
-  }
-  return subject;
 }
 }  // namespace Exiv2

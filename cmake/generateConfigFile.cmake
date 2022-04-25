@@ -31,7 +31,7 @@ check_cxx_source_compiles( "
 #include <string.h>
 int main() {
     char buff[100];
-    const char* c = strerror_r(0,buff,100);
+    int c = strerror_r(0,buff,100);
     (void)c;  // ignore unuse-variable
     return 0;
 }" EXV_STRERROR_R_CHAR_P )

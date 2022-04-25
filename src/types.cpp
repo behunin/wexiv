@@ -1,30 +1,21 @@
-// ***************************************************************** -*- C++ -*-
-/*
- * Copyright (C) 2004-2021 Exiv2 authors
- * This program is part of the Exiv2 distribution.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, 5th Floor, Boston, MA 02110-1301 USA.
- */
-// *****************************************************************************
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 // included header files
 #include "types.hpp"
 
 #include "enforce.hpp"
 #include "i18n.h"  // for _exvGettext
 #include "safe_op.hpp"
-#include "unused.h"
+
+// + standard includes
+#include <array>
+#include <cctype>
+#include <climits>
+#include <cmath>
+#include <cstring>
+#include <iomanip>
+#include <sstream>
+#include <utility>
 
 // *****************************************************************************
 namespace {
@@ -33,7 +24,7 @@ namespace {
 struct TypeInfoTable {
   Exiv2::TypeId typeId_;  //!< Type id
   const char* name_;      //!< Name of the type
-  long size_;             //!< Bytes per data entry
+  size_t size_;           //!< Bytes per data entry
   //! Comparison operator for \em typeId
   bool operator==(Exiv2::TypeId typeId) const {
     return typeId_ == typeId;
@@ -45,121 +36,164 @@ struct TypeInfoTable {
 };  // struct TypeInfoTable
 
 //! Lookup list with information of Exiv2 types
-const TypeInfoTable typeInfoTable[] = {{Exiv2::invalidTypeId, "Invalid", 0},
-                                       {Exiv2::unsignedByte, "Byte", 1},
-                                       {Exiv2::asciiString, "Ascii", 1},
-                                       {Exiv2::unsignedShort, "Short", 2},
-                                       {Exiv2::unsignedLong, "Long", 4},
-                                       {Exiv2::unsignedRational, "Rational", 8},
-                                       {Exiv2::signedByte, "SByte", 1},
-                                       {Exiv2::undefined, "Undefined", 1},
-                                       {Exiv2::signedShort, "SShort", 2},
-                                       {Exiv2::signedLong, "SLong", 4},
-                                       {Exiv2::signedRational, "SRational", 8},
-                                       {Exiv2::tiffFloat, "Float", 4},
-                                       {Exiv2::tiffDouble, "Double", 8},
-                                       {Exiv2::tiffIfd, "Ifd", 4},
-                                       {Exiv2::string, "String", 1},
-                                       {Exiv2::date, "Date", 8},
-                                       {Exiv2::time, "Time", 11},
-                                       {Exiv2::comment, "Comment", 1},
-                                       {Exiv2::directory, "Directory", 1},
-                                       {Exiv2::xmpText, "XmpText", 1},
-                                       {Exiv2::xmpAlt, "XmpAlt", 1},
-                                       {Exiv2::xmpBag, "XmpBag", 1},
-                                       {Exiv2::xmpSeq, "XmpSeq", 1},
-                                       {Exiv2::langAlt, "LangAlt", 1}};
+constexpr auto typeInfoTable = std::array{
+    TypeInfoTable{Exiv2::invalidTypeId, "Invalid", 0},
+    TypeInfoTable{Exiv2::unsignedByte, "Byte", 1},
+    TypeInfoTable{Exiv2::asciiString, "Ascii", 1},
+    TypeInfoTable{Exiv2::unsignedShort, "Short", 2},
+    TypeInfoTable{Exiv2::unsignedLong, "Long", 4},
+    TypeInfoTable{Exiv2::unsignedRational, "Rational", 8},
+    TypeInfoTable{Exiv2::signedByte, "SByte", 1},
+    TypeInfoTable{Exiv2::undefined, "Undefined", 1},
+    TypeInfoTable{Exiv2::signedShort, "SShort", 2},
+    TypeInfoTable{Exiv2::signedLong, "SLong", 4},
+    TypeInfoTable{Exiv2::signedRational, "SRational", 8},
+    TypeInfoTable{Exiv2::tiffFloat, "Float", 4},
+    TypeInfoTable{Exiv2::tiffDouble, "Double", 8},
+    TypeInfoTable{Exiv2::tiffIfd, "Ifd", 4},
+    TypeInfoTable{Exiv2::string, "String", 1},
+    TypeInfoTable{Exiv2::date, "Date", 8},
+    TypeInfoTable{Exiv2::time, "Time", 11},
+    TypeInfoTable{Exiv2::comment, "Comment", 1},
+    TypeInfoTable{Exiv2::directory, "Directory", 1},
+    TypeInfoTable{Exiv2::xmpText, "XmpText", 1},
+    TypeInfoTable{Exiv2::xmpAlt, "XmpAlt", 1},
+    TypeInfoTable{Exiv2::xmpBag, "XmpBag", 1},
+    TypeInfoTable{Exiv2::xmpSeq, "XmpSeq", 1},
+    TypeInfoTable{Exiv2::langAlt, "LangAlt", 1},
+};
 
 }  // namespace
 
 namespace Exiv2 {
 
 const char* TypeInfo::typeName(TypeId typeId) {
-  const TypeInfoTable* tit = find(typeInfoTable, typeId);
-  if (!tit)
+  auto tit = std::find(typeInfoTable.begin(), typeInfoTable.end(), typeId);
+  if (tit == typeInfoTable.end())
     return nullptr;
   return tit->name_;
 }
 
 TypeId TypeInfo::typeId(const std::string& typeName) {
-  const TypeInfoTable* tit = find(typeInfoTable, typeName);
-  if (!tit)
+  auto tit = std::find(typeInfoTable.begin(), typeInfoTable.end(), typeName);
+  if (tit == typeInfoTable.end())
     return invalidTypeId;
   return tit->typeId_;
 }
 
-long TypeInfo::typeSize(TypeId typeId) {
-  const TypeInfoTable* tit = find(typeInfoTable, typeId);
-  if (!tit)
+size_t TypeInfo::typeSize(TypeId typeId) {
+  auto tit = std::find(typeInfoTable.begin(), typeInfoTable.end(), typeId);
+  if (tit == typeInfoTable.end())
     return 0;
   return tit->size_;
 }
 
-DataBuf::DataBuf(DataBuf& rhs) : pData_(rhs.pData_), size_(rhs.size_) {
-  std::pair<byte*, long> ret = rhs.release();
-  UNUSED(ret);
+DataBuf::DataBuf(size_t size) : pData_(size) {
 }
 
-DataBuf::~DataBuf() {
-  delete[] pData_;
+DataBuf::DataBuf(const byte* pData, size_t size) : pData_(size) {
+  std::copy_n(pData, size, pData_.begin());
 }
 
-DataBuf::DataBuf() : pData_(nullptr), size_(0) {
+void DataBuf::alloc(size_t size) {
+  pData_.resize(size);
 }
 
-DataBuf::DataBuf(long size) : pData_(new byte[size]()), size_(size) {
+void DataBuf::resize(size_t size) {
+  pData_.resize(size);
 }
 
-DataBuf::DataBuf(const byte* pData, long size) : pData_(nullptr), size_(0) {
-  if (size > 0) {
-    pData_ = new byte[size];
-    std::memcpy(pData_, pData, size);
-    size_ = size;
+void DataBuf::reset() {
+  pData_.clear();
+}
+
+uint8_t Exiv2::DataBuf::read_uint8(size_t offset) const {
+  if (offset >= pData_.size()) {
+    throw std::overflow_error("Overflow in Exiv2::DataBuf::read_uint8");
   }
+  return pData_[offset];
 }
 
-DataBuf& DataBuf::operator=(DataBuf& rhs) {
-  if (this == &rhs)
-    return *this;
-  reset(rhs.release());
-  return *this;
-}
-
-void DataBuf::alloc(long size) {
-  if (size > size_) {
-    delete[] pData_;
-    pData_ = nullptr;
-    size_ = 0;
-    pData_ = new byte[size];
-    size_ = size;
+void Exiv2::DataBuf::write_uint8(size_t offset, uint8_t x) {
+  if (offset >= pData_.size()) {
+    throw std::overflow_error("Overflow in Exiv2::DataBuf::write_uint8");
   }
+  pData_[offset] = x;
 }
 
-EXV_WARN_UNUSED_RESULT std::pair<byte*, long> DataBuf::release() {
-  std::pair<byte*, long> p = std::make_pair(pData_, size_);
-  pData_ = nullptr;
-  size_ = 0;
-  return p;
-}
-
-void DataBuf::reset(std::pair<byte*, long> p) {
-  if (pData_ != p.first) {
-    delete[] pData_;
-    pData_ = p.first;
+uint16_t Exiv2::DataBuf::read_uint16(size_t offset, ByteOrder byteOrder) const {
+  if (pData_.size() < 2 || offset > (pData_.size() - 2)) {
+    throw std::overflow_error("Overflow in Exiv2::DataBuf::read_uint16");
   }
-  size_ = p.second;
+  return getUShort(&pData_[offset], byteOrder);
 }
 
-DataBuf::DataBuf(const DataBufRef& rhs) : pData_(rhs.p.first), size_(rhs.p.second) {
+void Exiv2::DataBuf::write_uint16(size_t offset, uint16_t x, ByteOrder byteOrder) {
+  if (pData_.size() < 2 || offset > (pData_.size() - 2)) {
+    throw std::overflow_error("Overflow in Exiv2::DataBuf::write_uint16");
+  }
+  us2Data(&pData_[offset], x, byteOrder);
 }
 
-DataBuf& DataBuf::operator=(DataBufRef rhs) {
-  reset(rhs.p);
-  return *this;
+uint32_t Exiv2::DataBuf::read_uint32(size_t offset, ByteOrder byteOrder) const {
+  if (pData_.size() < 4 || offset > (pData_.size() - 4)) {
+    throw std::overflow_error("Overflow in Exiv2::DataBuf::read_uint32");
+  }
+  return getULong(&pData_[offset], byteOrder);
 }
 
-Exiv2::DataBuf::operator DataBufRef() {
-  return DataBufRef(release());
+void Exiv2::DataBuf::write_uint32(size_t offset, uint32_t x, ByteOrder byteOrder) {
+  if (pData_.size() < 4 || offset > (pData_.size() - 4)) {
+    throw std::overflow_error("Overflow in Exiv2::DataBuf::write_uint32");
+  }
+  ul2Data(&pData_[offset], x, byteOrder);
+}
+
+uint64_t Exiv2::DataBuf::read_uint64(size_t offset, ByteOrder byteOrder) const {
+  if (pData_.size() < 8 || offset > (pData_.size() - 8)) {
+    throw std::overflow_error("Overflow in Exiv2::DataBuf::read_uint64");
+  }
+  return getULongLong(&pData_[offset], byteOrder);
+}
+
+void Exiv2::DataBuf::write_uint64(size_t offset, uint64_t x, ByteOrder byteOrder) {
+  if (pData_.size() < 8 || offset > (pData_.size() - 8)) {
+    throw std::overflow_error("Overflow in Exiv2::DataBuf::write_uint64");
+  }
+  ull2Data(&pData_[offset], x, byteOrder);
+}
+
+int Exiv2::DataBuf::cmpBytes(size_t offset, const void* buf, size_t bufsize) const {
+  if (pData_.size() < bufsize || offset > pData_.size() - bufsize) {
+    throw std::overflow_error("Overflow in Exiv2::DataBuf::cmpBytes");
+  }
+  return memcmp(&pData_[offset], buf, bufsize);
+}
+
+byte* Exiv2::DataBuf::data(size_t offset) {
+  /// \todo this first check should be for <= offset
+  if (pData_.size() < offset) {
+    throw std::overflow_error("Overflow in Exiv2::DataBuf::c_data");
+  }
+  if (pData_.empty() || pData_.size() == offset) {
+    return nullptr;
+  }
+  return &pData_[offset];
+}
+
+const byte* Exiv2::DataBuf::c_data(size_t offset) const {
+  /// \todo this first check should be for <= offset
+  if (pData_.size() < offset) {
+    throw std::overflow_error("Overflow in Exiv2::DataBuf::c_data");
+  }
+  if (pData_.empty() || pData_.size() == offset) {
+    return nullptr;
+  }
+  return &pData_[offset];
+}
+
+const char* Exiv2::DataBuf::c_str(size_t offset) const {
+  return reinterpret_cast<const char*>(c_data(offset));
 }
 
 // *************************************************************************
@@ -168,17 +202,17 @@ Exiv2::DataBuf::operator DataBufRef() {
 static void checkDataBufBounds(const DataBuf& buf, size_t end) {
   enforce<std::invalid_argument>(end <= static_cast<size_t>(std::numeric_limits<long>::max()),
                                  "end of slice too large to be compared with DataBuf bounds.");
-  enforce<std::out_of_range>(static_cast<long>(end) <= buf.size_, "Invalid slice bounds specified");
+  enforce<std::out_of_range>(end <= buf.size(), "Invalid slice bounds specified");
 }
 
 Slice<byte*> makeSlice(DataBuf& buf, size_t begin, size_t end) {
   checkDataBufBounds(buf, end);
-  return {buf.pData_, begin, end};
+  return {buf.data(), begin, end};
 }
 
 Slice<const byte*> makeSlice(const DataBuf& buf, size_t begin, size_t end) {
   checkDataBufBounds(buf, end);
-  return {buf.pData_, begin, end};
+  return {buf.c_data(), begin, end};
 }
 
 std::ostream& operator<<(std::ostream& os, const Rational& r) {
@@ -345,6 +379,21 @@ long ul2Data(byte* buf, uint32_t l, ByteOrder byteOrder) {
   return 4;
 }
 
+long ull2Data(byte* buf, uint64_t l, ByteOrder byteOrder) {
+  if (byteOrder == littleEndian) {
+    for (size_t i = 0; i < 8; i++) {
+      buf[i] = static_cast<byte>(l & 0xff);
+      l >>= 8;
+    }
+  } else {
+    for (size_t i = 0; i < 8; i++) {
+      buf[8 - i - 1] = static_cast<byte>(l & 0xff);
+      l >>= 8;
+    }
+  }
+  return 8;
+}
+
 long ur2Data(byte* buf, URational l, ByteOrder byteOrder) {
   long o = ul2Data(buf, l.first, byteOrder);
   o += ul2Data(buf + o, l.second, byteOrder);
@@ -489,30 +538,6 @@ const char* exvGettext(const char* str) {
 #endif
 }
 
-#ifdef EXV_UNICODE_PATH
-std::string ws2s(const std::wstring& s) {
-  int len;
-  int slength = (int)s.length() + 1;
-  len = WideCharToMultiByte(CP_ACP, 0, s.c_str(), slength, 0, 0, 0, 0);
-  char* buf = new char[len];
-  WideCharToMultiByte(CP_ACP, 0, s.c_str(), slength, buf, len, 0, 0);
-  std::string r(buf);
-  delete[] buf;
-  return r;
-}
-
-std::wstring s2ws(const std::string& s) {
-  int len;
-  int slength = (int)s.length() + 1;
-  len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0);
-  wchar_t* buf = new wchar_t[len];
-  MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, buf, len);
-  std::wstring r(buf);
-  delete[] buf;
-  return r;
-}
-
-#endif  // EXV_UNICODE_PATH
 template <>
 bool stringTo<bool>(const std::string& s, bool& ok) {
   std::string lcs(s); /* lowercase string */
@@ -532,30 +557,38 @@ bool stringTo<bool>(const std::string& s, bool& ok) {
   return false;
 }
 
-long parseLong(const std::string& s, bool& ok) {
-  long ret = stringTo<long>(s, ok);
+int64_t parseInt64(const std::string& s, bool& ok) {
+  auto ret = stringTo<int64_t>(s, ok);
   if (ok)
     return ret;
 
   auto f = stringTo<float>(s, ok);
   if (ok)
-    return static_cast<long>(f);
+    return static_cast<int64_t>(f);
 
-  Rational r = stringTo<Rational>(s, ok);
+  auto [r, st] = stringTo<Rational>(s, ok);
   if (ok) {
-    if (r.second == 0) {
+    if (st <= 0) {
       ok = false;
       return 0;
     }
-    return static_cast<long>(static_cast<float>(r.first) / r.second);
+    return static_cast<int64_t>(static_cast<float>(r) / st);
   }
 
   bool b = stringTo<bool>(s, ok);
   if (ok)
     return b ? 1 : 0;
 
-  // everything failed, return from stringTo<long> is probably the best fit
+  // everything failed, return from stringTo<int64_t> is probably the best fit
   return ret;
+}
+
+uint32_t parseUint32(const std::string& s, bool& ok) {
+  const int64_t x = parseInt64(s, ok);
+  if (ok && 0 <= x && x <= std::numeric_limits<uint32_t>::max()) {
+    return static_cast<uint32_t>(x);
+  }
+  return 0;
 }
 
 float parseFloat(const std::string& s, bool& ok) {

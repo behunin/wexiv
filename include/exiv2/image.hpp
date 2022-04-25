@@ -202,7 +202,7 @@ class EXIV2API Image {
         to the image until the writeMetadata() method is called.
     @param comment String containing comment.
     */
-  virtual void setComment(const std::string& comment);
+  virtual void setComment(std::string_view comment);
   /*!
     @brief Erase any buffered comment. Comment is not removed
         from the actual image until the writeMetadata() method is called.
@@ -214,18 +214,17 @@ class EXIV2API Image {
     @param iccProfile DataBuf containing profile (binary)
     @param bTestValid - tests that iccProfile contains credible data
     */
-  virtual void setIccProfile(DataBuf& iccProfile, bool bTestValid = true);
+  virtual void setIccProfile(DataBuf&& iccProfile, bool bTestValid = true);
   /*!
     @brief Erase iccProfile. the profile is not removed from
         the actual image until the writeMetadata() method is called.
     */
   virtual void clearIccProfile();
   /*!
-    @brief Erase iccProfile. the profile is not removed from
-        the actual image until the writeMetadata() method is called.
-    */
+    @brief Returns the status of the ICC profile in the image instance
+   */
   virtual bool iccProfileDefined() {
-    return iccProfile_.size_ != 0;
+    return !iccProfile_.empty();
   }
 
   /*!
@@ -486,8 +485,8 @@ class EXIV2API Image {
   DataBuf iccProfile_;                //!< ICC buffer (binary data)
   std::string comment_;               //!< User comment
   std::string xmpPacket_;             //!< XMP packet
-  int pixelWidth_;                    //!< image pixel width
-  int pixelHeight_;                   //!< image pixel height
+  uint32_t pixelWidth_;               //!< image pixel width
+  uint32_t pixelHeight_;              //!< image pixel height
   NativePreviewList nativePreviews_;  //!< list of native previews
 
   //! Return tag name for given tag id.

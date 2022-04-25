@@ -26,6 +26,10 @@
 #include "types.hpp"
 #include "value.hpp"
 
+// + standard includes
+#include <iomanip>
+#include <sstream>
+
 namespace Exiv2 {
 namespace Internal {
 
@@ -69,7 +73,7 @@ std::ostream& printFocalLength35(std::ostream& os, const Value& value, const Exi
   if (value.count() != 1 || value.typeId() != unsignedLong) {
     return os << value;
   }
-  long length = value.toLong();
+  const auto length = value.toInt64();
   if (length == 0) {
     os << _("Unknown");
   } else {
@@ -157,11 +161,11 @@ std::ostream& printPwColor(std::ostream& os, const Value& value, const ExifData*
     return os << value;
   }
   // Special case where no color modification is done
-  if (value.toLong() == 65535) {
+  if (value.toInt64() == 65535) {
     return os << _("Neutral");
   }
   // Output seems to represent Hue in degrees
-  return os << value.toLong();
+  return os << value.toInt64();
 }
 
 //! Print the tag value minus 4
@@ -169,7 +173,7 @@ std::ostream& printValueMinus4(std::ostream& os, const Value& value, const ExifD
   if (value.count() != 1 || value.typeId() != unsignedShort) {
     return os << value;
   }
-  return os << value.toLong(0) - 4;
+  return os << value.toInt64(0) - 4;
 }
 
 // Samsung PictureWizard Tag Info

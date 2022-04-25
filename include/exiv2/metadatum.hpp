@@ -202,11 +202,11 @@ class EXIV2API Metadatum {
   //! Return the name of the type
   virtual const char* typeName() const = 0;
   //! Return the size in bytes of one component of this type
-  virtual long typeSize() const = 0;
+  virtual size_t typeSize() const = 0;
   //! Return the number of components in the value
-  virtual long count() const = 0;
+  virtual size_t count() const = 0;
   //! Return the size of the value in bytes
-  virtual long size() const = 0;
+  virtual size_t size() const = 0;
   //! Return the value as a string.
   virtual std::string toString() const = 0;
   /*!
@@ -216,11 +216,15 @@ class EXIV2API Metadatum {
   */
   virtual std::string toString(long n) const = 0;
   /*!
-    @brief Return the <EM>n</EM>-th component of the value converted to long.
-            The return value is -1 if the value is not set and the behaviour
-            of the method is undefined if there is no <EM>n</EM>-th component.
-  */
-  virtual long toLong(long n = 0) const = 0;
+    @brief Return the <EM>n</EM>-th component of the value converted to int64_t.
+           The return value is -1 if the value is not set and the behaviour
+           of the method is undefined if there is no <EM>n</EM>-th component.
+   */
+  [[nodiscard]] virtual int64_t toInt64(size_t n = 0) const = 0;
+  /*!
+    @brief Return the <EM>n</EM>-th component of the value converted to uint32_t.
+   */
+  [[nodiscard]] uint32_t toUint32(size_t n = 0) const;
   /*!
     @brief Return the <EM>n</EM>-th component of the value converted to float.
             The return value is -1 if the value is not set and the behaviour

@@ -90,7 +90,7 @@ class EXIV2API PgfImage : public Image {
   //! Read PGF Header size encoded in 32 bits integer.
   uint32_t readPgfHeaderSize(BasicIo& iIo) const;
   //! Read header structure.
-  DataBuf readPgfHeaderStructure(BasicIo& iIo, int& width, int& height) const;
+  DataBuf readPgfHeaderStructure(BasicIo& iIo, uint32_t& width, uint32_t& height) const;
   //@}
 
 };  // class PgfImage

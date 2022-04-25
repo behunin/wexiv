@@ -1,37 +1,19 @@
-// ***************************************************************** -*- C++ -*-
-/*
- * Copyright (C) 2004-2021 Exiv2 authors
- * This program is part of the Exiv2 distribution.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, 5th Floor, Boston, MA 02110-1301 USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 #ifndef MAKERNOTE_INT_HPP_
 #define MAKERNOTE_INT_HPP_
 
 // *****************************************************************************
 #include "tags_int.hpp"
-#include "tifffwd_int.hpp"
 #include "types.hpp"
 
 // + standard includes
-#include <array>
-#include <string>
+#include <functional>
 
 // *****************************************************************************
 namespace Exiv2 {
 namespace Internal {
+class TiffComponent;
 // *****************************************************************************
 /*!
   @brief Determine the path to the Exiv2 configuration file
@@ -46,11 +28,10 @@ std::string readExiv2Config(const std::string& section, const std::string& value
 // *****************************************************************************
 
 //! Type for a pointer to a function creating a makernote (image)
-using NewMnFct = TiffComponent* (*)(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size,
-                                    ByteOrder byteOrder);
+using NewMnFct = std::function<TiffComponent*(uint16_t, IfdId, IfdId, const byte*, size_t, ByteOrder)>;
 
 //! Type for a pointer to a function creating a makernote (group)
-using NewMnFct2 = TiffComponent* (*)(uint16_t tag, IfdId group, IfdId mnGroup);
+using NewMnFct2 = std::function<TiffComponent*(uint16_t tag, IfdId group, IfdId mnGroup)>;
 
 //! Makernote registry structure
 struct TiffMnRegistry {
@@ -89,7 +70,7 @@ class TiffMnCreator {
             is used to indicate this transfer here in order to reduce
             file dependencies.
   */
-  static TiffComponent* create(uint16_t tag, IfdId group, const std::string& make, const byte* pData, uint32_t size,
+  static TiffComponent* create(uint16_t tag, IfdId group, const std::string& make, const byte* pData, size_t size,
                                ByteOrder byteOrder);
   /*!
     @brief Create the Makernote for a given group. This method is used
@@ -117,7 +98,7 @@ class MnHeader {
   //! @name Manipulators
   //@{
   //! Read the header from a data buffer, return true if ok
-  virtual bool read(const byte* pData, uint32_t size, ByteOrder byteOrder) = 0;
+  virtual bool read(const byte* pData, size_t size, ByteOrder byteOrder) = 0;
   /*!
     @brief Set the byte order for the makernote.
   */
@@ -126,7 +107,7 @@ class MnHeader {
   //! @name Accessors
   //@{
   //! Return the size of the header (in bytes).
-  virtual uint32_t size() const = 0;
+  virtual size_t size() const = 0;
   /*!
     @brief Return the offset to the start of the Makernote IFD from
             the start of the Makernote (= the start of the header).
@@ -160,15 +141,15 @@ class OlympusMnHeader : public MnHeader {
   //@}
   //! @name Manipulators
   //@{
-  bool read(const byte* pData, uint32_t size, ByteOrder byteOrder) override;
+  bool read(const byte* pData, size_t size, ByteOrder byteOrder) override;
   //@}
   //! @name Accessors
   //@{
-  uint32_t size() const override;
+  size_t size() const override;
   uint32_t ifdOffset() const override;
   //@}
   //! Return the size of the makernote header signature
-  static uint32_t sizeOfSignature();
+  static size_t sizeOfSignature();
 
  private:
   DataBuf header_;                 //!< Data buffer for the makernote header
@@ -188,16 +169,16 @@ class Olympus2MnHeader : public MnHeader {
   //@}
   //! @name Manipulators
   //@{
-  bool read(const byte* pData, uint32_t size, ByteOrder byteOrder) override;
+  bool read(const byte* pData, size_t size, ByteOrder byteOrder) override;
   //@}
   //! @name Accessors
   //@{
-  uint32_t size() const override;
+  size_t size() const override;
   uint32_t ifdOffset() const override;
   uint32_t baseOffset(uint32_t mnOffset) const override;
   //@}
   //! Return the size of the makernote header signature
-  static uint32_t sizeOfSignature();
+  static size_t sizeOfSignature();
 
  private:
   DataBuf header_;                 //!< Data buffer for the makernote header
@@ -217,18 +198,18 @@ class FujiMnHeader : public MnHeader {
   //@}
   //! @name Manipulators
   //@{
-  bool read(const byte* pData, uint32_t size, ByteOrder byteOrder) override;
+  bool read(const byte* pData, size_t size, ByteOrder byteOrder) override;
   // setByteOrder not implemented
   //@}
   //! @name Accessors
   //@{
-  uint32_t size() const override;
+  size_t size() const override;
   uint32_t ifdOffset() const override;
   ByteOrder byteOrder() const override;
   uint32_t baseOffset(uint32_t mnOffset) const override;
   //@}
   //! Return the size of the makernote header signature
-  static uint32_t sizeOfSignature();
+  static size_t sizeOfSignature();
 
  private:
   DataBuf header_;                    //!< Data buffer for the makernote header
@@ -250,15 +231,15 @@ class Nikon2MnHeader : public MnHeader {
   //@}
   //! @name Manipulators
   //@{
-  bool read(const byte* pData, uint32_t size, ByteOrder byteOrder) override;
+  bool read(const byte* pData, size_t size, ByteOrder byteOrder) override;
   //@}
   //! @name Accessors
   //@{
-  uint32_t size() const override;
+  size_t size() const override;
   uint32_t ifdOffset() const override;
   //@}
   //! Return the size of the makernote header signature
-  static uint32_t sizeOfSignature();
+  static size_t sizeOfSignature();
 
  private:
   DataBuf buf_;                    //!< Raw header data
@@ -279,18 +260,18 @@ class Nikon3MnHeader : public MnHeader {
   //@}
   //! @name Manipulators
   //@{
-  bool read(const byte* pData, uint32_t size, ByteOrder byteOrder) override;
+  bool read(const byte* pData, size_t size, ByteOrder byteOrder) override;
   void setByteOrder(ByteOrder byteOrder) override;
   //@}
   //! @name Accessors
   //@{
-  uint32_t size() const override;
+  size_t size() const override;
   uint32_t ifdOffset() const override;
   ByteOrder byteOrder() const override;
   uint32_t baseOffset(uint32_t mnOffset) const override;
   //@}
   //! Return the size of the makernote header signature
-  static uint32_t sizeOfSignature();
+  static size_t sizeOfSignature();
 
  private:
   DataBuf buf_;                    //!< Raw header data
@@ -312,15 +293,15 @@ class PanasonicMnHeader : public MnHeader {
   //@}
   //! @name Manipulators
   //@{
-  bool read(const byte* pData, uint32_t size, ByteOrder byteOrder) override;
+  bool read(const byte* pData, size_t size, ByteOrder byteOrder) override;
   //@}
   //! @name Accessors
   //@{
-  uint32_t size() const override;
+  size_t size() const override;
   uint32_t ifdOffset() const override;
   //@}
   //! Return the size of the makernote header signature
-  static uint32_t sizeOfSignature();
+  static size_t sizeOfSignature();
 
  private:
   DataBuf buf_;                    //!< Raw header data
@@ -341,16 +322,16 @@ class PentaxDngMnHeader : public MnHeader {
   //@}
   //! @name Manipulators
   //@{
-  bool read(const byte* pData, uint32_t size, ByteOrder byteOrder) override;
+  bool read(const byte* pData, size_t size, ByteOrder byteOrder) override;
   //@}
   //! @name Accessors
   //@{
-  uint32_t size() const override;
+  size_t size() const override;
   uint32_t ifdOffset() const override;
   uint32_t baseOffset(uint32_t mnOffset) const override;
   //@}
   //! Return the size of the makernote header signature
-  static uint32_t sizeOfSignature();
+  static size_t sizeOfSignature();
 
  private:
   DataBuf header_;                 //!< Data buffer for the makernote header
@@ -370,15 +351,15 @@ class PentaxMnHeader : public MnHeader {
   //@}
   //! @name Manipulators
   //@{
-  bool read(const byte* pData, uint32_t size, ByteOrder byteOrder) override;
+  bool read(const byte* pData, size_t size, ByteOrder byteOrder) override;
   //@}
   //! @name Accessors
   //@{
-  uint32_t size() const override;
+  size_t size() const override;
   uint32_t ifdOffset() const override;
   //@}
   //! Return the size of the makernote header signature
-  static uint32_t sizeOfSignature();
+  static size_t sizeOfSignature();
 
  private:
   DataBuf header_;                 //!< Data buffer for the makernote header
@@ -396,11 +377,11 @@ class SamsungMnHeader : public MnHeader {
   //@}
   //! @name Manipulators
   //@{
-  bool read(const byte* pData, uint32_t size, ByteOrder byteOrder) override;
+  bool read(const byte* pData, size_t size, ByteOrder byteOrder) override;
   //@}
   //! @name Accessors
   //@{
-  uint32_t size() const override;
+  size_t size() const override;
   uint32_t baseOffset(uint32_t mnOffset) const override;
   //@}
 
@@ -418,15 +399,15 @@ class SigmaMnHeader : public MnHeader {
   //@}
   //! @name Manipulators
   //@{
-  bool read(const byte* pData, uint32_t size, ByteOrder byteOrder) override;
+  bool read(const byte* pData, size_t size, ByteOrder byteOrder) override;
   //@}
   //! @name Accessors
   //@{
-  uint32_t size() const override;
+  size_t size() const override;
   uint32_t ifdOffset() const override;
   //@}
   //! Return the size of the makernote header signature
-  static uint32_t sizeOfSignature();
+  static size_t sizeOfSignature();
 
  private:
   DataBuf buf_;                     //!< Raw header data
@@ -448,15 +429,15 @@ class SonyMnHeader : public MnHeader {
   //@}
   //! @name Manipulators
   //@{
-  bool read(const byte* pData, uint32_t size, ByteOrder byteOrder) override;
+  bool read(const byte* pData, size_t size, ByteOrder byteOrder) override;
   //@}
   //! @name Accessors
   //@{
-  uint32_t size() const override;
+  size_t size() const override;
   uint32_t ifdOffset() const override;
   //@}
   //! Return the size of the makernote header signature
-  static uint32_t sizeOfSignature();
+  static size_t sizeOfSignature();
 
  private:
   DataBuf buf_;                    //!< Raw header data
@@ -477,16 +458,16 @@ class Casio2MnHeader : public MnHeader {
   //@}
   //! @name Manipulators
   //@{
-  bool read(const byte* pData, uint32_t size, ByteOrder byteOrder) override;
+  bool read(const byte* pData, size_t size, ByteOrder byteOrder) override;
   //@}
   //! @name Accessors
   //@{
-  uint32_t size() const override;
+  size_t size() const override;
   uint32_t ifdOffset() const override;
   ByteOrder byteOrder() const override;
   //@}
   //! Return the size of the makernote header signature
-  static uint32_t sizeOfSignature();
+  static size_t sizeOfSignature();
 
  private:
   DataBuf buf_;                       //!< Raw header data
@@ -499,14 +480,13 @@ class Casio2MnHeader : public MnHeader {
 // *****************************************************************************
 
 //! Function to create a simple IFD makernote (Canon, Minolta, Nikon1)
-TiffComponent* newIfdMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size,
-                        ByteOrder byteOrder);
+TiffComponent* newIfdMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, size_t size, ByteOrder byteOrder);
 
 //! Function to create a simple IFD makernote (Canon, Minolta, Nikon1)
 TiffComponent* newIfdMn2(uint16_t tag, IfdId group, IfdId mnGroup);
 
 //! Function to create an Olympus makernote
-TiffComponent* newOlympusMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size,
+TiffComponent* newOlympusMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, size_t size,
                             ByteOrder byteOrder);
 
 //! Function to create an Olympus makernote
@@ -516,8 +496,7 @@ TiffComponent* newOlympusMn2(uint16_t tag, IfdId group, IfdId mnGroup);
 TiffComponent* newOlympus2Mn2(uint16_t tag, IfdId group, IfdId mnGroup);
 
 //! Function to create a Fujifilm makernote
-TiffComponent* newFujiMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size,
-                         ByteOrder byteOrder);
+TiffComponent* newFujiMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, size_t size, ByteOrder byteOrder);
 
 //! Function to create a Fujifilm makernote
 TiffComponent* newFujiMn2(uint16_t tag, IfdId group, IfdId mnGroup);
@@ -526,7 +505,7 @@ TiffComponent* newFujiMn2(uint16_t tag, IfdId group, IfdId mnGroup);
       @brief Function to create a Nikon makernote. This will create the
              appropriate Nikon 1, 2 or 3 makernote, based on the arguments.
      */
-TiffComponent* newNikonMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size,
+TiffComponent* newNikonMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, size_t size,
                           ByteOrder byteOrder);
 
 //! Function to create a Nikon2 makernote
@@ -536,14 +515,14 @@ TiffComponent* newNikon2Mn2(uint16_t tag, IfdId group, IfdId mnGroup);
 TiffComponent* newNikon3Mn2(uint16_t tag, IfdId group, IfdId mnGroup);
 
 //! Function to create a Panasonic makernote
-TiffComponent* newPanasonicMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size,
+TiffComponent* newPanasonicMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, size_t size,
                               ByteOrder byteOrder);
 
 //! Function to create a Panasonic makernote
 TiffComponent* newPanasonicMn2(uint16_t tag, IfdId group, IfdId mnGroup);
 
 //! Function to create an Pentax makernote
-TiffComponent* newPentaxMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size,
+TiffComponent* newPentaxMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, size_t size,
                            ByteOrder byteOrder);
 
 //! Function to create an Pentax makernote
@@ -553,22 +532,21 @@ TiffComponent* newPentaxMn2(uint16_t tag, IfdId group, IfdId mnGroup);
 TiffComponent* newPentaxDngMn2(uint16_t tag, IfdId group, IfdId mnGroup);
 
 //! Function to create a Samsung makernote
-TiffComponent* newSamsungMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size,
+TiffComponent* newSamsungMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, size_t size,
                             ByteOrder byteOrder);
 
 //! Function to create a Samsung makernote
 TiffComponent* newSamsungMn2(uint16_t tag, IfdId group, IfdId mnGroup);
 
 //! Function to create a Sigma makernote
-TiffComponent* newSigmaMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size,
+TiffComponent* newSigmaMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, size_t size,
                           ByteOrder byteOrder);
 
 //! Function to create a Sigma makernote
 TiffComponent* newSigmaMn2(uint16_t tag, IfdId group, IfdId mnGroup);
 
 //! Function to create a Sony makernote
-TiffComponent* newSonyMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size,
-                         ByteOrder byteOrder);
+TiffComponent* newSonyMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, size_t size, ByteOrder byteOrder);
 
 //! Function to create a Sony1 makernote
 TiffComponent* newSony1Mn2(uint16_t tag, IfdId group, IfdId mnGroup);
@@ -577,7 +555,7 @@ TiffComponent* newSony1Mn2(uint16_t tag, IfdId group, IfdId mnGroup);
 TiffComponent* newSony2Mn2(uint16_t tag, IfdId group, IfdId mnGroup);
 
 //! Function to create a Casio2 makernote
-TiffComponent* newCasioMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, uint32_t size,
+TiffComponent* newCasioMn(uint16_t tag, IfdId group, IfdId mnGroup, const byte* pData, size_t size,
                           ByteOrder byteOrder);
 
 //! Function to create a Casio2 makernote
@@ -592,7 +570,7 @@ TiffComponent* newCasio2Mn2(uint16_t tag, IfdId group, IfdId mnGroup);
   @param pRoot Pointer to the root component of the TIFF tree.
   @return An index into the array set, -1 if no match was found.
 */
-int sonyCsSelector(uint16_t tag, const byte* pData, uint32_t size, TiffComponent* const pRoot);
+int sonyCsSelector(uint16_t tag, const byte* pData, size_t size, TiffComponent* const pRoot);
 
 /*!
   @brief Function to select cfg + def of the Sony 2010 Miscellaneous Information complex binary array.
@@ -603,7 +581,7 @@ int sonyCsSelector(uint16_t tag, const byte* pData, uint32_t size, TiffComponent
   @param pRoot Pointer to the root component of the TIFF tree.
   @return An index into the array set, -1 if no match was found.
 */
-int sony2010eSelector(uint16_t tag, const byte* pData, uint32_t size, TiffComponent* const pRoot);
+int sony2010eSelector(uint16_t tag, const byte* pData, size_t size, TiffComponent* const pRoot);
 
 /*!
   @brief Function to select cfg + def of the Sony2Fp (tag 9402) complex binary array.
@@ -614,7 +592,7 @@ int sony2010eSelector(uint16_t tag, const byte* pData, uint32_t size, TiffCompon
   @param pRoot Pointer to the root component of the TIFF tree.
   @return An index into the array set, -1 if no match was found.
 */
-int sony2FpSelector(uint16_t tag, const byte* pData, uint32_t size, TiffComponent* const pRoot);
+int sony2FpSelector(uint16_t tag, const byte* pData, size_t size, TiffComponent* const pRoot);
 
 /*!
   @brief Function to select cfg + def of the SonyMisc2b (tag 9404b) complex binary array.
@@ -625,7 +603,7 @@ int sony2FpSelector(uint16_t tag, const byte* pData, uint32_t size, TiffComponen
   @param pRoot Pointer to the root component of the TIFF tree.
   @return An index into the array set, -1 if no match was found.
 */
-int sonyMisc2bSelector(uint16_t tag, const byte* pData, uint32_t size, TiffComponent* const pRoot);
+int sonyMisc2bSelector(uint16_t tag, const byte* pData, size_t size, TiffComponent* const pRoot);
 
 /*!
   @brief Function to select cfg + def of the SonyMisc3c (tag 9400) complex binary array.
@@ -636,7 +614,7 @@ int sonyMisc2bSelector(uint16_t tag, const byte* pData, uint32_t size, TiffCompo
   @param pRoot Pointer to the root component of the TIFF tree.
   @return An index into the array set, -1 if no match was found.
 */
-int sonyMisc3cSelector(uint16_t tag, const byte* pData, uint32_t size, TiffComponent* const pRoot);
+int sonyMisc3cSelector(uint16_t tag, const byte* pData, size_t size, TiffComponent* const pRoot);
 
 /*!
   @brief Function to select cfg + def of a Nikon complex binary array.
@@ -647,7 +625,7 @@ int sonyMisc3cSelector(uint16_t tag, const byte* pData, uint32_t size, TiffCompo
   @param pRoot Pointer to the root component of the TIFF tree.
   @return An index into the array set, -1 if no match was found.
 */
-int nikonSelector(uint16_t tag, const byte* pData, uint32_t size, TiffComponent* const pRoot);
+int nikonSelector(uint16_t tag, const byte* pData, size_t size, TiffComponent* const pRoot);
 
 /*!
   @brief Function to select cfg + def of a Nikon complex binary array.
@@ -658,7 +636,7 @@ int nikonSelector(uint16_t tag, const byte* pData, uint32_t size, TiffComponent*
   @param pRoot Pointer to the root component of the TIFF tree.
   @return An index into the array set, -1 if no match was found.
 */
-int nikonAf2Selector(uint16_t tag, const byte* pData, uint32_t size, TiffComponent* const pRoot);
+int nikonAf2Selector(uint16_t tag, const byte* pData, size_t size, TiffComponent* const pRoot);
 
 /*!
   @brief Encrypt and decrypt Nikon data.
@@ -676,7 +654,7 @@ int nikonAf2Selector(uint16_t tag, const byte* pData, uint32_t size, TiffCompone
   @return En/decrypted data. Ownership of the memory is passed to the caller.
           The buffer may be empty in case no decryption was needed.
 */
-DataBuf nikonCrypt(uint16_t tag, const byte* pData, uint32_t size, TiffComponent* const pRoot);
+DataBuf nikonCrypt(uint16_t tag, const byte* pData, size_t size, TiffComponent* const pRoot);
 
 }  // namespace Internal
 }  // namespace Exiv2

@@ -30,6 +30,7 @@
 #include "config.h"
 #include "error.hpp"
 #include "metadatum.hpp"
+#include "safe_op.hpp"
 #include "tags.hpp"
 #include "tags_int.hpp"
 #include "tiffcomposite_int.hpp"  // for Tag::root
@@ -37,6 +38,12 @@
 #include "tiffimage_int.hpp"
 #include "types.hpp"
 #include "value.hpp"
+
+// + standard includes
+#include <algorithm>
+#include <array>
+#include <cstdio>
+#include <utility>
 
 // *****************************************************************************
 namespace {
@@ -144,7 +151,7 @@ class JpegThumbnail : public Thumbnail {
 };  // class JpegThumbnail
 
 //! Helper function to sum all components of the value of a metadatum
-long sumToLong(const Exiv2::Exifdatum& md);
+int64_t sumToLong(const Exiv2::Exifdatum& md);
 
 //! Helper function to delete all tags of a specific IFD from the metadata.
 void eraseIfd(Exiv2::ExifData& ed, Exiv2::Internal::IfdId ifdId);
@@ -338,15 +345,15 @@ const char* Exifdatum::typeName() const {
   return TypeInfo::typeName(typeId());
 }
 
-long Exifdatum::typeSize() const {
+size_t Exifdatum::typeSize() const {
   return TypeInfo::typeSize(typeId());
 }
 
-long Exifdatum::count() const {
+size_t Exifdatum::count() const {
   return value_.get() == nullptr ? 0 : value_->count();
 }
 
-long Exifdatum::size() const {
+size_t Exifdatum::size() const {
   return value_.get() == nullptr ? 0 : value_->size();
 }
 
@@ -358,8 +365,8 @@ std::string Exifdatum::toString(long n) const {
   return value_.get() == nullptr ? "" : value_->toString(n);
 }
 
-long Exifdatum::toLong(long n) const {
-  return value_.get() == nullptr ? -1 : value_->toLong(n);
+int64_t Exifdatum::toInt64(size_t n) const {
+  return value_ ? value_->toInt64(n) : -1;
 }
 
 float Exifdatum::toFloat(long n) const {
@@ -421,7 +428,7 @@ void ExifData::sortByTag() {
   exifMetadata_.sort(cmpMetadataByTag);
 }
 
-ByteOrder ExifParser::decode(emscripten::val& exifData, const byte* pData, uint32_t size) {
+ByteOrder ExifParser::decode(emscripten::val& exifData, const byte* pData, size_t size) {
   auto iptcData = emscripten::val::object();
   auto xmpData = emscripten::val::object();
   ByteOrder bo = TiffParser::decode(exifData, iptcData, xmpData, pData, size);
@@ -450,10 +457,10 @@ const char* JpegThumbnail::extension() const {
   return ".jpg";
 }
 
-long sumToLong(const Exiv2::Exifdatum& md) {
-  long sum = 0;
-  for (long i = 0; i < md.count(); ++i) {
-    sum += md.toLong(i);
+int64_t sumToLong(const Exiv2::Exifdatum& md) {
+  int64_t sum = 0;
+  for (size_t i = 0; i < md.count(); ++i) {
+    sum = Safe::add(sum, md.toInt64(i));
   }
   return sum;
 }

@@ -42,6 +42,35 @@
 // namespace extensions
 namespace Exiv2 {
 
+namespace {
+std::string strError() {
+  int error = errno;
+  std::ostringstream os;
+#ifdef EXV_HAVE_STRERROR_R
+  const size_t n = 1024;
+#ifdef EXV_STRERROR_R_CHAR_P
+  char* buf = nullptr;
+  char buf2[n] = {};
+  buf = strerror_r(error, buf2, n);
+#else
+  char buf[n] = {};
+  const int ret = strerror_r(error, buf, n);
+  enforce(ret != ERANGE, Exiv2::ErrorCode::kerCallFailed);
+#endif
+  os << buf;
+  // Issue# 908.
+  // report strerror() if strerror_r() returns empty
+  if (!buf[0]) {
+    os << strerror(error);
+  }
+#else
+  os << std::strerror(error);
+#endif
+  os << " (errno = " << error << ")";
+  return os.str();
+}  // strError
+}  // namespace
+
 // *****************************************************************************
 // class definitions
 

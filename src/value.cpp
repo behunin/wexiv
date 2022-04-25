@@ -24,12 +24,13 @@
 #include "enforce.hpp"
 #include "error.hpp"
 #include "types.hpp"
-#include "unused.h"
 
 #ifdef EXV_HAVE_ICONV
 #include <errno.h>
 #include <iconv.h>
 #endif
+
+#include <regex>
 
 // *****************************************************************************
 // class member definitions
@@ -43,10 +44,7 @@ bool convertStringCharsetIconv(std::string& str, const char* from, const char* t
   iconv_t cd;
   cd = iconv_open(to, from);
   if (cd == (iconv_t)(-1)) {
-#ifndef SUPPRESS_WARNINGS
-    EXV_WARNING << "iconv_open: "
-                << "\n";
-#endif
+    EXV_WARNING << "iconv_open: ";
     return false;
   }
   std::string outstr;
@@ -59,10 +57,8 @@ bool convertStringCharsetIconv(std::string& str, const char* from, const char* t
     size_t rc = iconv(cd, &inptr, &inbytesleft, &outptr, &outbytesleft);
     const size_t outbytesProduced = sizeof(outbuf) - outbytesleft;
     if (rc == size_t(-1) && errno != E2BIG) {
-#ifndef SUPPRESS_WARNINGS
       EXV_WARNING << "iconv: "
-                  << " inbytesleft = " << inbytesleft << "\n";
-#endif
+                  << " inbytesleft = " << inbytesleft << ".";
       ret = false;
       break;
     }
@@ -159,7 +155,7 @@ Value::UniquePtr Value::create(TypeId typeId) {
   return value;
 }  // Value::create
 
-int Value::setDataArea(const byte* /*buf*/, long /*len*/) {
+int Value::setDataArea(const byte* /*buf*/, size_t /*len*/) {
   return -1;
 }
 
@@ -170,11 +166,11 @@ std::string Value::toString() const {
   return os.str();
 }
 
-std::string Value::toString(long /*n*/) const {
+std::string Value::toString(size_t /*n*/) const {
   return toString();
 }
 
-long Value::sizeDataArea() const {
+size_t Value::sizeDataArea() const {
   return 0;
 }
 
@@ -185,15 +181,15 @@ DataBuf Value::dataArea() const {
 DataValue::DataValue(TypeId typeId) : Value(typeId) {
 }
 
-DataValue::DataValue(const byte* buf, long len, ByteOrder byteOrder, TypeId typeId) : Value(typeId) {
+DataValue::DataValue(const byte* buf, size_t len, ByteOrder byteOrder, TypeId typeId) : Value(typeId) {
   read(buf, len, byteOrder);
 }
 
-long DataValue::count() const {
+size_t DataValue::count() const {
   return size();
 }
 
-int DataValue::read(const byte* buf, long len, ByteOrder /*byteOrder*/) {
+int DataValue::read(const byte* buf, size_t len, ByteOrder /*byteOrder*/) {
   // byteOrder not needed
   value_.assign(buf, buf + len);
   return 0;
@@ -213,13 +209,13 @@ int DataValue::read(const std::string& buf) {
   return 0;
 }
 
-long DataValue::copy(byte* buf, ByteOrder /*byteOrder*/) const {
+size_t DataValue::copy(byte* buf, ByteOrder /*byteOrder*/) const {
   // byteOrder not needed
-  return static_cast<long>(std::copy(value_.begin(), value_.end(), buf) - buf);
+  return std::copy(value_.begin(), value_.end(), buf) - buf;
 }
 
-long DataValue::size() const {
-  return static_cast<long>(value_.size());
+size_t DataValue::size() const {
+  return value_.size();
 }
 
 DataValue* DataValue::clone_() const {
@@ -227,8 +223,8 @@ DataValue* DataValue::clone_() const {
 }
 
 std::ostream& DataValue::write(std::ostream& os) const {
-  std::vector<byte>::size_type end = value_.size();
-  for (std::vector<byte>::size_type i = 0; i != end; ++i) {
+  size_t end = value_.size();
+  for (size_t i = 0; i != end; ++i) {
     os << static_cast<int>(value_.at(i));
     if (i < end - 1)
       os << " ";
@@ -236,24 +232,29 @@ std::ostream& DataValue::write(std::ostream& os) const {
   return os;
 }
 
-std::string DataValue::toString(long n) const {
+std::string DataValue::toString(size_t n) const {
   std::ostringstream os;
   os << static_cast<int>(value_.at(n));
   ok_ = !os.fail();
   return os.str();
 }
 
-long DataValue::toLong(long n) const {
+int64_t DataValue::toInt64(size_t n) const {
   ok_ = true;
   return value_.at(n);
 }
 
-float DataValue::toFloat(long n) const {
+uint32_t DataValue::toUint32(size_t n) const {
   ok_ = true;
   return value_.at(n);
 }
 
-Rational DataValue::toRational(long n) const {
+float DataValue::toFloat(size_t n) const {
+  ok_ = true;
+  return value_.at(n);
+}
+
+Rational DataValue::toRational(size_t n) const {
   ok_ = true;
   return {value_.at(n), 1};
 }
@@ -278,44 +279,49 @@ int StringValueBase::read(const std::string& buf) {
   return 0;
 }
 
-int StringValueBase::read(const byte* buf, long len, ByteOrder /*byteOrder*/) {
+int StringValueBase::read(const byte* buf, size_t len, ByteOrder /*byteOrder*/) {
   // byteOrder not needed
   if (buf)
     value_ = std::string(reinterpret_cast<const char*>(buf), len);
   return 0;
 }
 
-long StringValueBase::copy(byte* buf, ByteOrder /*byteOrder*/) const {
+size_t StringValueBase::copy(byte* buf, ByteOrder /*byteOrder*/) const {
   if (value_.empty())
     return 0;
   // byteOrder not needed
   assert(buf != 0);
-  return static_cast<long>(value_.copy(reinterpret_cast<char*>(buf), value_.size()));
+  return value_.copy(reinterpret_cast<char*>(buf), value_.size());
 }
 
-long StringValueBase::count() const {
+size_t StringValueBase::count() const {
   return size();
 }
 
-long StringValueBase::size() const {
-  return static_cast<long>(value_.size());
+size_t StringValueBase::size() const {
+  return value_.size();
 }
 
 std::ostream& StringValueBase::write(std::ostream& os) const {
   return os << value_;
 }
 
-long StringValueBase::toLong(long n) const {
+int64_t StringValueBase::toInt64(size_t n) const {
   ok_ = true;
   return value_.at(n);
 }
 
-float StringValueBase::toFloat(long n) const {
+uint32_t StringValueBase::toUint32(size_t n) const {
   ok_ = true;
   return value_.at(n);
 }
 
-Rational StringValueBase::toRational(long n) const {
+float StringValueBase::toFloat(size_t n) const {
+  ok_ = true;
+  return value_.at(n);
+}
+
+Rational StringValueBase::toRational(size_t n) const {
   ok_ = true;
   return {value_.at(n), 1};
 }
@@ -412,9 +418,7 @@ int CommentValue::read(const std::string& comment) {
       name = name.substr(0, name.length() - 1);
     charsetId = CharsetInfo::charsetIdByName(name);
     if (charsetId == invalidCharsetId) {
-#ifndef SUPPRESS_WARNINGS
-      EXV_WARNING << Error(kerInvalidCharset, name) << "\n";
-#endif
+      EXV_WARNING << Error(ErrorCode::kerInvalidCharset, name) << "\n";
       return 1;
     }
     c.clear();
@@ -429,17 +433,16 @@ int CommentValue::read(const std::string& comment) {
   return StringValueBase::read(code + c);
 }
 
-int CommentValue::read(const byte* buf, long len, ByteOrder byteOrder) {
+int CommentValue::read(const byte* buf, size_t len, ByteOrder byteOrder) {
   byteOrder_ = byteOrder;
   return StringValueBase::read(buf, len, byteOrder);
 }
 
-long CommentValue::copy(byte* buf, ByteOrder byteOrder) const {
+size_t CommentValue::copy(byte* buf, ByteOrder byteOrder) const {
   std::string c = value_;
   if (charsetId() == unicode) {
     c = value_.substr(8);
     const size_t sz = c.size();
-    UNUSED(sz);
     if (byteOrder_ == littleEndian && byteOrder == bigEndian) {
       convertStringCharset(c, "UCS-2LE", "UCS-2BE");
       assert(c.size() == sz);
@@ -452,7 +455,7 @@ long CommentValue::copy(byte* buf, ByteOrder byteOrder) const {
   if (c.empty())
     return 0;
   assert(buf != 0);
-  return static_cast<long>(c.copy(reinterpret_cast<char*>(buf), c.size()));
+  return c.copy(reinterpret_cast<char*>(buf), c.size());
 }
 
 std::ostream& CommentValue::write(std::ostream& os) const {
@@ -551,24 +554,24 @@ XmpValue::XmpStruct XmpValue::xmpStruct() const {
   return xmpStruct_;
 }
 
-long XmpValue::copy(byte* buf, ByteOrder /*byteOrder*/) const {
+size_t XmpValue::copy(byte* buf, ByteOrder /*byteOrder*/) const {
   std::ostringstream os;
   write(os);
   std::string s = os.str();
   if (!s.empty())
     std::memcpy(buf, &s[0], s.size());
-  return static_cast<long>(s.size());
+  return s.size();
 }
 
-int XmpValue::read(const byte* buf, long len, ByteOrder /*byteOrder*/) {
+int XmpValue::read(const byte* buf, size_t len, ByteOrder /*byteOrder*/) {
   std::string s(reinterpret_cast<const char*>(buf), len);
   return read(s);
 }
 
-long XmpValue::size() const {
+size_t XmpValue::size() const {
   std::ostringstream os;
   write(os);
-  return static_cast<long>(os.str().size());
+  return os.str().size();
 }
 
 XmpTextValue::XmpTextValue() : XmpValue(xmpText) {
@@ -604,7 +607,7 @@ int XmpTextValue::read(const std::string& buf) {
     } else if (type == "Struct") {
       setXmpStruct();
     } else {
-      throw Error(kerInvalidXmpText, type);
+      throw Error(ErrorCode::kerInvalidXmpText, type);
     }
   }
   value_ = b;
@@ -615,11 +618,11 @@ XmpTextValue::UniquePtr XmpTextValue::clone() const {
   return UniquePtr(clone_());
 }
 
-long XmpTextValue::size() const {
-  return static_cast<long>(value_.size());
+size_t XmpTextValue::size() const {
+  return value_.size();
 }
 
-long XmpTextValue::count() const {
+size_t XmpTextValue::count() const {
   return size();
 }
 
@@ -655,15 +658,19 @@ std::ostream& XmpTextValue::write(std::ostream& os) const {
   return os << value_;
 }
 
-long XmpTextValue::toLong(long /*n*/) const {
-  return parseLong(value_, ok_);
+int64_t XmpTextValue::toInt64(size_t /*n*/) const {
+  return parseInt64(value_, ok_);
 }
 
-float XmpTextValue::toFloat(long /*n*/) const {
+uint32_t XmpTextValue::toUint32(size_t /*n*/) const {
+  return parseUint32(value_, ok_);
+}
+
+float XmpTextValue::toFloat(size_t /*n*/) const {
   return parseFloat(value_, ok_);
 }
 
-Rational XmpTextValue::toRational(long /*n*/) const {
+Rational XmpTextValue::toRational(size_t /*n*/) const {
   return parseRational(value_, ok_);
 }
 
@@ -685,8 +692,8 @@ XmpArrayValue::UniquePtr XmpArrayValue::clone() const {
   return UniquePtr(clone_());
 }
 
-long XmpArrayValue::count() const {
-  return static_cast<long>(value_.size());
+size_t XmpArrayValue::count() const {
+  return value_.size();
 }
 
 std::ostream& XmpArrayValue::write(std::ostream& os) const {
@@ -698,20 +705,24 @@ std::ostream& XmpArrayValue::write(std::ostream& os) const {
   return os;
 }
 
-std::string XmpArrayValue::toString(long n) const {
+std::string XmpArrayValue::toString(size_t n) const {
   ok_ = true;
   return value_.at(n);
 }
 
-long XmpArrayValue::toLong(long n) const {
-  return parseLong(value_.at(n), ok_);
+int64_t XmpArrayValue::toInt64(size_t n) const {
+  return parseInt64(value_.at(n), ok_);
 }
 
-float XmpArrayValue::toFloat(long n) const {
+uint32_t XmpArrayValue::toUint32(size_t n) const {
+  return parseUint32(value_.at(n), ok_);
+}
+
+float XmpArrayValue::toFloat(size_t n) const {
   return parseFloat(value_.at(n), ok_);
 }
 
-Rational XmpArrayValue::toRational(long n) const {
+Rational XmpArrayValue::toRational(size_t n) const {
   return parseRational(value_.at(n), ok_);
 }
 
@@ -731,7 +742,6 @@ int LangAltValue::read(const std::string& buf) {
   std::string lang = "x-default";
   if (buf.length() > 5 && buf.substr(0, 5) == "lang=") {
     static const char* ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    static const char* ALPHA_NUM = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
     const std::string::size_type pos = buf.find_first_of(' ');
     if (pos == std::string::npos) {
@@ -740,25 +750,26 @@ int LangAltValue::read(const std::string& buf) {
       lang = buf.substr(5, pos - 5);
     }
     if (lang.empty())
-      throw Error(kerInvalidLangAltValue, buf);
+      throw Error(ErrorCode::kerInvalidLangAltValue, buf);
     // Strip quotes (so you can also specify the language without quotes)
     if (lang[0] == '"') {
       lang = lang.substr(1);
 
       if (lang.empty() || lang.find('"') != lang.length() - 1)
-        throw Error(kerInvalidLangAltValue, buf);
+        throw Error(ErrorCode::kerInvalidLangAltValue, buf);
 
       lang = lang.substr(0, lang.length() - 1);
     }
 
     if (lang.empty())
-      throw Error(kerInvalidLangAltValue, buf);
+      throw Error(ErrorCode::kerInvalidLangAltValue, buf);
 
     // Check language is in the correct format (see https://www.ietf.org/rfc/rfc3066.txt)
     std::string::size_type charPos = lang.find_first_not_of(ALPHA);
     if (charPos != std::string::npos) {
+      static const char* ALPHA_NUM = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
       if (lang.at(charPos) != '-' || lang.find_first_not_of(ALPHA_NUM, charPos + 1) != std::string::npos)
-        throw Error(kerInvalidLangAltValue, buf);
+        throw Error(ErrorCode::kerInvalidLangAltValue, buf);
     }
 
     b.clear();
@@ -774,8 +785,8 @@ LangAltValue::UniquePtr LangAltValue::clone() const {
   return UniquePtr(clone_());
 }
 
-long LangAltValue::count() const {
-  return static_cast<long>(value_.size());
+size_t LangAltValue::count() const {
+  return value_.size();
 }
 
 static const std::string x_default = "x-default";
@@ -791,18 +802,18 @@ std::ostream& LangAltValue::write(std::ostream& os) const {
   }
 
   // Write the others
-  for (auto&& v : value_) {
-    if (v.first != x_default) {
+  for (auto&& [lang, s] : value_) {
+    if (lang != x_default) {
       if (!first)
         os << ", ";
-      os << "lang=\"" << v.first << "\" " << v.second;
+      os << "lang=\"" << lang << "\" " << s;
       first = false;
     }
   }
   return os;
 }
 
-std::string LangAltValue::toString(long /*n*/) const {
+std::string LangAltValue::toString(size_t /*n*/) const {
   return toString(x_default);
 }
 
@@ -816,17 +827,22 @@ std::string LangAltValue::toString(const std::string& qualifier) const {
   return "";
 }
 
-long LangAltValue::toLong(long /*n*/) const {
+int64_t LangAltValue::toInt64(size_t /*n*/) const {
   ok_ = false;
   return 0;
 }
 
-float LangAltValue::toFloat(long /*n*/) const {
+uint32_t LangAltValue::toUint32(size_t /*n*/) const {
+  ok_ = false;
+  return 0;
+}
+
+float LangAltValue::toFloat(size_t /*n*/) const {
   ok_ = false;
   return 0.0F;
 }
 
-Rational LangAltValue::toRational(long /*n*/) const {
+Rational LangAltValue::toRational(size_t /*n*/) const {
   ok_ = false;
   return {0, 0};
 }
@@ -844,43 +860,40 @@ DateValue::DateValue(int year, int month, int day) : Value(date) {
   date_.day = day;
 }
 
-int DateValue::read(const byte* buf, long len, ByteOrder /*byteOrder*/) {
-  // Hard coded to read Iptc style dates
-  if (len != 8) {
-#ifndef SUPPRESS_WARNINGS
-    EXV_WARNING << Error(kerUnsupportedDateFormat) << "\n";
-#endif
-    return 1;
-  }
-  // Make the buffer a 0 terminated C-string for sscanf
-  char b[] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-  std::memcpy(b, reinterpret_cast<const char*>(buf), 8);
-  int scanned = sscanf(b, "%4d%2d%2d", &date_.year, &date_.month, &date_.day);
-  if (scanned != 3 || date_.year < 0 || date_.month < 1 || date_.month > 12 || date_.day < 1 || date_.day > 31) {
-#ifndef SUPPRESS_WARNINGS
-    EXV_WARNING << Error(kerUnsupportedDateFormat) << "\n";
-#endif
-    return 1;
-  }
-  return 0;
+int DateValue::read(const byte* buf, size_t len, ByteOrder /*byteOrder*/) {
+  const std::string str(reinterpret_cast<const char*>(buf), len);
+  return read(str);
 }
 
 int DateValue::read(const std::string& buf) {
-  // Hard coded to read Iptc style dates
-  if (buf.length() < 8) {
-#ifndef SUPPRESS_WARNINGS
-    EXV_WARNING << Error(kerUnsupportedDateFormat) << "\n";
-#endif
-    return 1;
+  // ISO 8601 date formats:
+  // https://web.archive.org/web/20171020084445/https://www.loc.gov/standards/datetime/ISO_DIS%208601-1.pdf
+  static const std::regex reExtended(R"(^(\d{4})-(\d{2})-(\d{2}))");
+  static const std::regex reBasic(R"(^(\d{4})(\d{2})(\d{2}))");
+  std::smatch sm;
+
+  auto printWarning = [] { EXV_WARNING << Error(ErrorCode::kerUnsupportedDateFormat); };
+
+  // Note: We use here regex_search instead of regex_match, because the string can be longer than expected and
+  // also contain the time
+  if (std::regex_search(buf, sm, reExtended) || std::regex_search(buf, sm, reBasic)) {
+    date_.year = std::stoi(sm[1].str());
+    date_.month = std::stoi(sm[2].str());
+    if (date_.month > 12) {
+      date_.month = 0;
+      printWarning();
+      return 1;
+    }
+    date_.day = std::stoi(sm[3].str());
+    if (date_.day > 31) {
+      date_.day = 0;
+      printWarning();
+      return 1;
+    }
+    return 0;
   }
-  int scanned = sscanf(buf.c_str(), "%4d-%2d-%2d", &date_.year, &date_.month, &date_.day);
-  if (scanned != 3 || date_.year < 0 || date_.month < 1 || date_.month > 12 || date_.day < 1 || date_.day > 31) {
-#ifndef SUPPRESS_WARNINGS
-    EXV_WARNING << Error(kerUnsupportedDateFormat) << "\n";
-#endif
-    return 1;
-  }
-  return 0;
+  printWarning();
+  return 1;
 }
 
 void DateValue::setDate(const Date& src) {
@@ -889,12 +902,14 @@ void DateValue::setDate(const Date& src) {
   date_.day = src.day;
 }
 
-long DateValue::copy(byte* buf, ByteOrder /*byteOrder*/) const {
+size_t DateValue::copy(byte* buf, ByteOrder /*byteOrder*/) const {
+  // \note Here the date is copied in the Basic format YYYYMMDD, as the IPTC key	Iptc.Application2.DateCreated
+  // wants it. Check https://exiv2.org/iptc.html
+
   // sprintf wants to add the null terminator, so use oversized buffer
   char temp[9];
 
-  int wrote = snprintf(temp, sizeof(temp), "%04d%02d%02d", date_.year, date_.month, date_.day);
-  assert(wrote == 8);
+  int wrote = static_cast<size_t>(snprintf(temp, sizeof(temp), "%04d%02d%02d", date_.year, date_.month, date_.day));
   std::memcpy(buf, temp, wrote);
   return wrote;
 }
@@ -903,11 +918,11 @@ const DateValue::Date& DateValue::getDate() const {
   return date_;
 }
 
-long DateValue::count() const {
+size_t DateValue::count() const {
   return size();
 }
 
-long DateValue::size() const {
+size_t DateValue::size() const {
   return 8;
 }
 
@@ -923,25 +938,32 @@ std::ostream& DateValue::write(std::ostream& os) const {
   return os;
 }
 
-long DateValue::toLong(long /*n*/) const {
+int64_t DateValue::toInt64(size_t /*n*/) const {
   // Range of tm struct is limited to about 1970 to 2038
   // This will return -1 if outside that range
-  std::tm tms;
-  std::memset(&tms, 0, sizeof(tms));
+  std::tm tms = {};
   tms.tm_mday = date_.day;
   tms.tm_mon = date_.month - 1;
   tms.tm_year = date_.year - 1900;
-  long l = static_cast<long>(std::mktime(&tms));
+  auto l = static_cast<int64_t>(std::mktime(&tms));
   ok_ = (l != -1);
   return l;
 }
 
-float DateValue::toFloat(long n) const {
-  return static_cast<float>(toLong(n));
+uint32_t DateValue::toUint32(size_t /*n*/) const {
+  const int64_t t = toInt64();
+  if (t < 0 || t > std::numeric_limits<uint32_t>::max()) {
+    return 0;
+  }
+  return static_cast<uint32_t>(t);
 }
 
-Rational DateValue::toRational(long n) const {
-  return {toLong(n), 1};
+float DateValue::toFloat(size_t n) const {
+  return static_cast<float>(toInt64(n));
+}
+
+Rational DateValue::toRational(size_t n) const {
+  return {static_cast<int32_t>(toInt64(n)), 1};
 }
 
 TimeValue::TimeValue() : Value(time) {
@@ -955,87 +977,63 @@ TimeValue::TimeValue(int hour, int minute, int second, int tzHour, int tzMinute)
   time_.tzMinute = tzMinute;
 }
 
-int TimeValue::read(const byte* buf, long len, ByteOrder /*byteOrder*/) {
-  // Make the buffer a 0 terminated C-string for scanTime[36]
-  char b[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  std::memcpy(b, reinterpret_cast<const char*>(buf), (len < 12 ? len : 11));
-  // Hard coded to read HHMMSS or Iptc style times
-  int rc = 1;
-  if (len == 6) {
-    // Try to read (non-standard) HHMMSS format
-    rc = scanTime3(b, "%2d%2d%2d");
-  }
-  if (len == 11) {
-    rc = scanTime6(b, "%2d%2d%2d%1c%2d%2d");
-  }
-  if (rc) {
-    rc = 1;
-#ifndef SUPPRESS_WARNINGS
-    EXV_WARNING << Error(kerUnsupportedTimeFormat) << "\n";
-#endif
-  }
-  return rc;
+int TimeValue::read(const byte* buf, size_t len, ByteOrder /*byteOrder*/) {
+  const std::string str(reinterpret_cast<const char*>(buf), len);
+  return read(str);
 }
 
 int TimeValue::read(const std::string& buf) {
-  // Hard coded to read H:M:S or Iptc style times
-  int rc = 1;
-  if (buf.length() < 9) {
-    // Try to read (non-standard) H:M:S format
-    rc = scanTime3(buf.c_str(), "%d:%d:%d");
-  } else {
-    rc = scanTime6(buf.c_str(), "%d:%d:%d%1c%d:%d");
-  }
-  if (rc) {
-    rc = 1;
-#ifndef SUPPRESS_WARNINGS
-    EXV_WARNING << Error(kerUnsupportedTimeFormat) << "\n";
-#endif
-  }
-  return rc;
-}
+  // ISO 8601 time formats:
+  // https://web.archive.org/web/20171020084445/https://www.loc.gov/standards/datetime/ISO_DIS%208601-1.pdf
+  // Not supported formats:
+  // 4.2.2.4 Representations with decimal fraction: 232050,5
+  static const std::regex re(R"(^(2[0-3]|[01][0-9]):?([0-5][0-9])?:?([0-5][0-9])?$)");
+  static const std::regex reExt(
+      R"(^(2[0-3]|[01][0-9]):?([0-5][0-9]):?([0-5][0-9])(Z|[+-](?:2[0-3]|[01][0-9])(?::?(?:[0-5][0-9]))?)$)");
 
-int TimeValue::scanTime3(const char* buf, const char* format) {
-  int rc = 1;
-  Time t;
-  int scanned = sscanf(buf, format, &t.hour, &t.minute, &t.second);
-  if (scanned == 3 && t.hour >= 0 && t.hour < 24 && t.minute >= 0 && t.minute < 60 && t.second >= 0 && t.second < 60) {
-    time_ = t;
-    rc = 0;
-  }
-  return rc;
-}
+  std::smatch sm;
+  if (std::regex_match(buf, sm, re) || std::regex_match(buf, sm, reExt)) {
+    time_.hour = sm.length(1) ? std::stoi(sm[1].str()) : 0;
+    time_.minute = sm.length(2) ? std::stoi(sm[2].str()) : 0;
+    time_.second = sm.length(3) ? std::stoi(sm[3].str()) : 0;
+    if (sm.size() > 4) {
+      std::string str = sm[4].str();
+      const auto strSize = str.size();
+      auto posColon = str.find(':');
 
-int TimeValue::scanTime6(const char* buf, const char* format) {
-  int rc = 1;
-  Time t;
-  char plusMinus = 0;
-  int scanned = sscanf(buf, format, &t.hour, &t.minute, &t.second, &plusMinus, &t.tzHour, &t.tzMinute);
-  if (scanned == 6 && t.hour >= 0 && t.hour < 24 && t.minute >= 0 && t.minute < 60 && t.second >= 0 && t.second < 60 &&
-      t.tzHour >= 0 && t.tzHour < 24 && t.tzMinute >= 0 && t.tzMinute < 60) {
-    time_ = t;
-    if (plusMinus == '-') {
-      time_.tzHour *= -1;
-      time_.tzMinute *= -1;
+      if (posColon == std::string::npos) {
+        // Extended format
+        time_.tzHour = std::stoi(str.substr(0, 3));
+        if (strSize > 3) {
+          int minute = std::stoi(str.substr(3));
+          time_.tzMinute = time_.tzHour < 0 ? -minute : minute;
+        }
+      } else {
+        // Basic format
+        time_.tzHour = std::stoi(str.substr(0, posColon));
+        int minute = std::stoi(str.substr(posColon + 1));
+        time_.tzMinute = time_.tzHour < 0 ? -minute : minute;
+      }
     }
-    rc = 0;
+    return 0;
   }
-  return rc;
+  EXV_WARNING << Error(ErrorCode::kerUnsupportedTimeFormat) << "\n";
+  return 1;
 }
 
 void TimeValue::setTime(const Time& src) {
   std::memcpy(&time_, &src, sizeof(time_));
 }
 
-long TimeValue::copy(byte* buf, ByteOrder /*byteOrder*/) const {
+size_t TimeValue::copy(byte* buf, ByteOrder /*byteOrder*/) const {
   char temp[12];
   char plusMinus = '+';
   if (time_.tzHour < 0 || time_.tzMinute < 0)
     plusMinus = '-';
 
-  const int wrote = snprintf(temp, sizeof(temp),  // 11 bytes are written + \0
-                             "%02d%02d%02d%1c%02d%02d", time_.hour, time_.minute, time_.second, plusMinus,
-                             abs(time_.tzHour), abs(time_.tzMinute));
+  const int wrote = static_cast<size_t>(snprintf(temp, sizeof(temp),  // 11 bytes are written + \0
+                                                 "%02d%02d%02d%1c%02d%02d", time_.hour, time_.minute, time_.second,
+                                                 plusMinus, abs(time_.tzHour), abs(time_.tzMinute)));
 
   enforce(wrote == 11, Exiv2::kerUnsupportedTimeFormat);
   std::memcpy(buf, temp, wrote);
@@ -1046,11 +1044,11 @@ const TimeValue::Time& TimeValue::getTime() const {
   return time_;
 }
 
-long TimeValue::count() const {
+size_t TimeValue::count() const {
   return size();
 }
 
-long TimeValue::size() const {
+size_t TimeValue::size() const {
   return 11;
 }
 
@@ -1072,9 +1070,9 @@ std::ostream& TimeValue::write(std::ostream& os) const {
   return os;
 }
 
-long TimeValue::toLong(long /*n*/) const {
+int64_t TimeValue::toInt64(size_t /*n*/) const {
   // Returns number of seconds in the day in UTC.
-  long result = (time_.hour - time_.tzHour) * 60 * 60;
+  int64_t result = (time_.hour - time_.tzHour) * 60 * 60;
   result += (time_.minute - time_.tzMinute) * 60;
   result += time_.second;
   if (result < 0) {
@@ -1084,12 +1082,20 @@ long TimeValue::toLong(long /*n*/) const {
   return result;
 }
 
-float TimeValue::toFloat(long n) const {
-  return static_cast<float>(toLong(n));
+uint32_t TimeValue::toUint32(size_t /*n*/) const {
+  const int64_t t = toInt64();
+  if (t < 0 || t > std::numeric_limits<uint32_t>::max()) {
+    return 0;
+  }
+  return static_cast<uint32_t>(t);
 }
 
-Rational TimeValue::toRational(long n) const {
-  return {toLong(n), 1};
+float TimeValue::toFloat(size_t n) const {
+  return static_cast<float>(toInt64(n));
+}
+
+Rational TimeValue::toRational(size_t n) const {
+  return {static_cast<int32_t>(toInt64(n)), 1};
 }
 
 }  // namespace Exiv2

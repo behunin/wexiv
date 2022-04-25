@@ -1,33 +1,12 @@
-// ***************************************************************** -*- C++ -*-
-/*
- * Copyright (C) 2004-2021 Exiv2 authors
- * This program is part of the Exiv2 distribution.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, 5th Floor, Boston, MA 02110-1301 USA.
- */
-// *****************************************************************************
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 // included header files
 #include "sonymn_int.hpp"
 
 #include "exif.hpp"
 #include "i18n.h"  // NLS support.
 #include "minoltamn_int.hpp"
-#include "tags_int.hpp"
 #include "tiffcomposite_int.hpp"
-#include "types.hpp"
-#include "utils.hpp"
 #include "value.hpp"
 
 namespace Exiv2 {
@@ -613,7 +592,7 @@ std::ostream& SonyMakerNote::printSony2FpFocusMode(std::ostream& os, const Value
   if (value.count() != 1)
     os << value;
   else {
-    long val = (value.toLong() & 0x7F);
+    const auto val = (value.toInt64() & 0x7F);
     switch (val) {
       case 0:
         os << N_("Manual");
@@ -650,12 +629,12 @@ std::ostream& SonyMakerNote::printSony2FpFocusPosition2(std::ostream& os, const 
     // Ranges of models that do not support this tag
     std::string model = pos->toString();
     for (auto& m : {"DSC-", "Stellar"}) {
-      if (Util::startsWith(model, m)) {
+      if (model.find(m) == 0) {
         os << N_("n/a");
         return os;
       }
     }
-    long val = value.toLong();
+    const auto val = value.toInt64();
     switch (val) {
       case 255:
         os << N_("Infinity");
@@ -757,7 +736,7 @@ std::ostream& SonyMakerNote::printSonyMisc2bLensZoomPosition(std::ostream& os, c
       return os << N_("n/a");
   }
 
-  os << round((value.toLong() / 10.24)) << "%";
+  os << round((value.toInt64() / 10.24)) << "%";
 
   return os;
 }
@@ -850,24 +829,22 @@ std::ostream& SonyMakerNote::printSonyMisc3cShotNumberSincePowerUp(std::ostream&
     return os << "(" << value << ")";
 
   // Models that support this tag
-  static constexpr const char* models[] = {
+  static constexpr auto models = std::array{
       "ILCA-68",     "ILCA-77M2",   "ILCA-99M2",  "ILCE-5000", "ILCE-5100",  "ILCE-6000",  "ILCE-6300",
       "ILCE-6500",   "ILCE-7",      "ILCE-7M2",   "ILCE-7R",   "ILCE-7RM2",  "ILCE-7S",    "ILCE-7SM2",
       "ILCE-QX1",    "DSC-HX350",   "DSC-HX400V", "DSC-HX60V", "DSC-HX80",   "DSC-HX90",   "DSC-HX90V",
       "DSC-QX30",    "DSC-RX0",     "DSC-RX1RM2", "DSC-RX10",  "DSC-RX10M2", "DSC-RX10M3", "DSC-RX100M3",
-      "DSC-RX100M4", "DSC-RX100M5", "DSC-WX220",  "DSC-WX350", "DSC-WX500"};
+      "DSC-RX100M4", "DSC-RX100M5", "DSC-WX220",  "DSC-WX350", "DSC-WX500",
+  };
 
-  std::string model = pos->toString();
-  for (auto& m : models) {
-    if (m == model)
-      return os << value.toLong();
-  }
-
+  bool f = std::any_of(models.begin(), models.end(), [model = pos->toString()](auto&& m) { return m == model; });
+  if (f)
+    return os << value.toInt64();
   return os << N_("n/a");
 }
 
 std::ostream& SonyMakerNote::printSonyMisc3cSequenceNumber(std::ostream& os, const Value& value, const ExifData*) {
-  return (value.count() != 1) ? os << "(" << value << ")" : os << (value.toLong() + 1);
+  return (value.count() != 1) ? os << "(" << value << ")" : os << (value.toInt64() + 1);
 }
 
 std::ostream& SonyMakerNote::printSonyMisc3cQuality2(std::ostream& os, const Value& value, const ExifData* metadata) {
@@ -878,7 +855,7 @@ std::ostream& SonyMakerNote::printSonyMisc3cQuality2(std::ostream& os, const Val
   if (pos == metadata->end())
     return os << "(" << value << ")";
 
-  long val = value.toLong();
+  const auto val = value.toInt64();
   std::string model = pos->toString();
 
   // Value is interpreted differently if model is in list or not
@@ -928,12 +905,12 @@ std::ostream& SonyMakerNote::printSonyMisc3cSonyImageHeight(std::ostream& os, co
   std::string model = pos->toString();
 
   // Models that do not support this tag
-  for (auto& m : {"ILCE-1", "ILCE-7SM3", "ILME-FX3"}) {
-    if (m == model)
-      return os << N_("n/a");
-  }
+  const auto models = std::array{"ILCE-1", "ILCE-7SM3", "ILME-FX3"};
+  bool f = std::any_of(models.begin(), models.end(), [model = pos->toString()](auto&& m) { return m == model; });
+  if (f)
+    return os << N_("n/a");
 
-  long val = value.toLong();
+  const auto val = value.toInt64();
   return val > 0 ? os << (8 * val) : os << N_("n/a");
 }
 
@@ -946,15 +923,13 @@ std::ostream& SonyMakerNote::printSonyMisc3cModelReleaseYear(std::ostream& os, c
   if (pos == metadata->end())
     return os << "(" << value << ")";
 
-  std::string model = pos->toString();
-
   // Models that do not support this tag
-  for (auto& m : {"ILCE-1", "ILCE-7SM3", "ILME-FX3"}) {
-    if (m == model)
-      return os << N_("n/a");
-  }
+  const auto models = std::array{"ILCE-1", "ILCE-7SM3", "ILME-FX3"};
+  bool f = std::any_of(models.begin(), models.end(), [model = pos->toString()](auto&& m) { return m == model; });
+  if (f)
+    return os << N_("n/a");
 
-  long val = value.toLong();
+  const auto val = value.toInt64();
   if (val > 99)
     return os << "(" << val << ")";
 
@@ -1055,7 +1030,7 @@ const TagInfo* SonyMakerNote::tagList2010e() {
 }
 
 // https://github.com/Exiv2/exiv2/pull/906#issuecomment-504338797
-static DataBuf sonyTagCipher(uint16_t /* tag */, const byte* bytes, uint32_t size, TiffComponent* const /*object*/,
+static DataBuf sonyTagCipher(uint16_t /* tag */, const byte* bytes, size_t size, TiffComponent* const /*object*/,
                              bool bDecipher) {
   DataBuf b(bytes, size);  // copy the data
 
@@ -1074,16 +1049,16 @@ static DataBuf sonyTagCipher(uint16_t /* tag */, const byte* bytes, uint32_t siz
 
   // code byte-by-byte
   for (uint32_t i = 0; i < size; i++) {
-    b.pData_[i] = code[bytes[i]];
+    b.write_uint8(i, code[bytes[i]]);
   }
 
   return b;
 }
 
-DataBuf sonyTagDecipher(uint16_t tag, const byte* bytes, uint32_t size, TiffComponent* const object) {
+DataBuf sonyTagDecipher(uint16_t tag, const byte* bytes, size_t size, TiffComponent* const object) {
   return sonyTagCipher(tag, bytes, size, object, true);
 }
-DataBuf sonyTagEncipher(uint16_t tag, const byte* bytes, uint32_t size, TiffComponent* const object) {
+DataBuf sonyTagEncipher(uint16_t tag, const byte* bytes, size_t size, TiffComponent* const object) {
   return sonyTagCipher(tag, bytes, size, object, false);
 }
 

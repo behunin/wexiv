@@ -185,15 +185,15 @@ class EXIV2API Exifdatum : public Metadatum {
   //! Return the name of the type
   const char* typeName() const override;
   //! Return the size in bytes of one component of this type
-  long typeSize() const override;
+  [[nodiscard]] size_t typeSize() const override;
   //! Return the number of components in the value
-  long count() const override;
+  [[nodiscard]] size_t count() const override;
   //! Return the size of the value in bytes
-  long size() const override;
+  [[nodiscard]] size_t size() const override;
   //! Return the value as a string.
   std::string toString() const override;
   std::string toString(long n) const override;
-  long toLong(long n = 0) const override;
+  [[nodiscard]] int64_t toInt64(size_t n = 0) const override;
   float toFloat(long n = 0) const override;
   Rational toRational(long n = 0) const override;
   Value::UniquePtr getValue() const override;
@@ -359,7 +359,7 @@ class EXIV2API ExifParser {
     @param size 	  Length of the data buffer
     @return Byte order in which the data is encoded.
   */
-  static ByteOrder decode(emscripten::val& exifData, const byte* pData, uint32_t size);
+  static ByteOrder decode(emscripten::val& exifData, const byte* pData, size_t size);
 
 };  // class ExifParser
 

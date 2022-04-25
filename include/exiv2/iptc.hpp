@@ -135,12 +135,12 @@ class EXIV2API Iptcdatum : public Metadatum {
   uint16_t tag() const override;
   TypeId typeId() const override;
   const char* typeName() const override;
-  long typeSize() const override;
-  long count() const override;
-  long size() const override;
+  size_t typeSize() const override;
+  size_t count() const override;
+  size_t size() const override;
   std::string toString() const override;
   std::string toString(long n) const override;
-  long toLong(long n = 0) const override;
+  [[nodiscard]] int64_t toInt64(size_t n = 0) const override;
   float toFloat(long n = 0) const override;
   Rational toRational(long n = 0) const override;
   Value::UniquePtr getValue() const override;
@@ -300,7 +300,7 @@ class EXIV2API IptcParser {
     @return 0 if successful;<BR>
             5 if the binary IPTC data is invalid or corrupt
     */
-  static int decode(emscripten::val& iptcData, const byte* pData, uint32_t size);
+  static int decode(emscripten::val& iptcData, const byte* pData, size_t size);
 
  private:
   // Constant data

@@ -19,15 +19,24 @@
  */
 // *****************************************************************************
 // included header files
-#include "pngimage.hpp"
+// included header files
+#include "config.h"
 
+#include "../externals/zlib/zlib.h"  // To uncompress IccProfiles
+
+#include "basicio.hpp"
 #include "enforce.hpp"
 #include "error.hpp"
+#include "image.hpp"
+#include "image_int.hpp"
+#include "jpgimage.hpp"
+#include "photoshop.hpp"
 #include "pngchunk_int.hpp"
+#include "pngimage.hpp"
 #include "tiffimage.hpp"
 #include "types.hpp"
 
-#include <zlib.h>  // To uncompress IccProfiles
+#include <array>
 
 // Signature from front of PNG file
 const unsigned char pngSignature[8] = {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A};
@@ -49,13 +58,13 @@ static bool zlibToDataBuf(const byte* bytes, long length, DataBuf& result) {
 
   do {
     result.alloc(uncompressedLen);
-    zlibResult = uncompress(result.pData_, &uncompressedLen, bytes, length);
+    zlibResult = uncompress(result.data(), &uncompressedLen, bytes, length);
     // if result buffer is large than necessary, redo to fit perfectly.
-    if (zlibResult == Z_OK && static_cast<long>(uncompressedLen) < result.size_) {
+    if (zlibResult == Z_OK && static_cast<long>(uncompressedLen) < result.size()) {
       result.reset();
 
       result.alloc(uncompressedLen);
-      zlibResult = uncompress(result.pData_, &uncompressedLen, bytes, length);
+      zlibResult = uncompress(result.data(), &uncompressedLen, bytes, length);
     }
     if (zlibResult == Z_BUF_ERROR) {
       // the uncompressed buffer needs to be larger
@@ -73,39 +82,38 @@ static bool zlibToDataBuf(const byte* bytes, long length, DataBuf& result) {
 }
 
 void readChunk(DataBuf& buffer, BasicIo& io) {
-  long bufRead = io.read(buffer.pData_, buffer.size_);
+  const size_t bufRead = io.read(buffer.data(), buffer.size());
   if (io.error()) {
-    throw Error(kerFailedToReadImageData);
+    throw Error(ErrorCode::kerFailedToReadImageData);
   }
-  if (bufRead != buffer.size_) {
-    throw Error(kerInputDataReadFailed);
+  if (bufRead != buffer.size()) {
+    throw Error(ErrorCode::kerInputDataReadFailed);
   }
 }  // Exiv2::readChunk
 
 void PngImage::readMetadata() {
   if (io_->open() != 0) {
-    throw Error(kerDataSourceOpenFailed, io_->path());
+    throw Error(ErrorCode::kerDataSourceOpenFailed, io_->path(), strError());
   }
   IoCloser closer(*io_);
   if (!isPngType(*io_, true)) {
-    throw Error(kerNotAnImage, "PNG");
+    throw Error(ErrorCode::kerNotAnImage, "PNG");
   }
 
-  const long imgSize = static_cast<long>(io_->size());
+  const auto imgSize = io_->size();
   DataBuf cheaderBuf(8);  // Chunk header: 4 bytes (data size) + 4 bytes (chunk type).
 
   while (!io_->eof()) {
-    std::memset(cheaderBuf.pData_, 0x0, cheaderBuf.size_);
     readChunk(cheaderBuf, *io_);  // Read chunk header.
 
     // Decode chunk data length.
-    uint32_t chunkLength = Exiv2::getULong(cheaderBuf.pData_, Exiv2::bigEndian);
+    uint32_t chunkLength = cheaderBuf.read_uint32(0, Exiv2::bigEndian);
     long pos = io_->tell();
-    if (pos == -1 || chunkLength > uint32_t(0x7FFFFFFF) || static_cast<long>(chunkLength) > imgSize - pos) {
-      throw Exiv2::Error(kerFailedToReadImageData);
+    if (pos == -1 || chunkLength > uint32_t(0x7FFFFFFF) || chunkLength > imgSize - pos) {
+      throw Exiv2::Error(ErrorCode::kerFailedToReadImageData);
     }
 
-    std::string chunkType(reinterpret_cast<char*>(cheaderBuf.pData_) + 4, 4);
+    std::string chunkType(cheaderBuf.c_str(4), 4);
 
     /// \todo analyse remaining chunks of the standard
     // Perform a chunk triage for item that we need.
@@ -117,7 +125,7 @@ void PngImage::readMetadata() {
       if (chunkType == "IEND") {
         return;  // Last chunk found: we stop parsing.
       }
-      if (chunkType == "IHDR" && chunkData.size_ >= 8) {
+      if (chunkType == "IHDR" && chunkData.size() >= 8) {
         PngChunk::decodeIHDRChunk(chunkData, &pixelWidth_, &pixelHeight_);
       } else if (chunkType == "tEXt") {
         PngChunk::decodeTXTChunk(this, chunkData, PngChunk::tEXt_Chunk);
@@ -126,20 +134,20 @@ void PngImage::readMetadata() {
       } else if (chunkType == "iTXt") {
         PngChunk::decodeTXTChunk(this, chunkData, PngChunk::iTXt_Chunk);
       } else if (chunkType == "eXIf") {
-        ByteOrder bo = TiffParser::decode(exifData(), iptcData(), xmpData(), chunkData.pData_, chunkData.size_);
+        ByteOrder bo = TiffParser::decode(exifData(), iptcData(), xmpData(), chunkData.c_data(), chunkData.size());
         setByteOrder(bo);
       } else if (chunkType == "iCCP") {
         // The ICC profile name can vary from 1-79 characters.
         uint32_t iccOffset = 0;
         do {
-          enforce(iccOffset < 80 && iccOffset < chunkLength, Exiv2::kerCorruptedMetadata);
-        } while (chunkData.pData_[iccOffset++] != 0x00);
+          enforce(iccOffset < 80 && iccOffset < chunkLength, ErrorCode::kerCorruptedMetadata);
+        } while (chunkData.read_uint8(iccOffset++) != 0x00);
 
-        profileName_ = std::string(reinterpret_cast<char*>(chunkData.pData_), iccOffset - 1);
+        profileName_ = std::string(chunkData.c_str(), iccOffset - 1);
         ++iccOffset;  // +1 = 'compressed' flag
-        enforce(iccOffset <= chunkLength, Exiv2::kerCorruptedMetadata);
+        enforce(iccOffset <= chunkLength, ErrorCode::kerCorruptedMetadata);
 
-        zlibToDataBuf(chunkData.pData_ + iccOffset, chunkLength - iccOffset, iccProfile_);
+        zlibToDataBuf(chunkData.c_data(iccOffset), chunkLength - iccOffset, iccProfile_);
       }
 
       // Set chunkLength to 0 in case we have read a supported chunk type. Otherwise, we need to seek the
@@ -150,13 +158,13 @@ void PngImage::readMetadata() {
     // Move to the next chunk: chunk data size + 4 CRC bytes.
     io_->seek(chunkLength + 4, BasicIo::cur);
     if (io_->error() || io_->eof()) {
-      throw Error(kerFailedToReadImageData);
+      throw Error(ErrorCode::kerFailedToReadImageData);
     }
   }
 }  // PngImage::readMetadata
 
 Image::UniquePtr newPngInstance(BasicIo::UniquePtr io, bool create) {
-  Image::UniquePtr image(new PngImage(std::move(io)));
+  auto image = std::make_unique<PngImage>(std::move(io));
   if (!image->good()) {
     image.reset();
   }
@@ -165,7 +173,7 @@ Image::UniquePtr newPngInstance(BasicIo::UniquePtr io, bool create) {
 
 bool isPngType(BasicIo& iIo, bool advance) {
   if (iIo.error() || iIo.eof()) {
-    throw Error(kerInputDataReadFailed);
+    throw Error(ErrorCode::kerInputDataReadFailed);
   }
   const int32_t len = 8;
   byte buf[len];

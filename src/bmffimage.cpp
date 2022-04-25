@@ -29,12 +29,18 @@
 #include "config.h"
 #include "enforce.hpp"
 #include "error.hpp"
+#include "image.hpp"
 #include "image_int.hpp"
 #include "safe_op.hpp"
 #include "tiffimage.hpp"
 #include "tiffimage_int.hpp"
 #include "types.hpp"
-#include "unused.h"
+
+// + standard includes
+#include <cinttypes>
+#include <cstdio>
+#include <cstring>
+#include <string>
 
 #define TAG_ftyp 0x66747970 /**< "ftyp" File type box */
 #define TAG_avif 0x61766966 /**< "avif" AVIF */
@@ -100,6 +106,13 @@ bool BmffImage::fullBox(uint32_t box) {
   return box == TAG_meta || box == TAG_iinf || box == TAG_iloc;
 }
 
+static bool skipBox(uint32_t box) {
+  // Allows boxHandler() to optimise the reading of files by identifying
+  // box types that we're not interested in. Box types listed here must
+  // not appear in the cases in switch (box_type) in boxHandler().
+  return box == TAG_mdat;  // mdat is where the main image lives and can be huge
+}
+
 std::string BmffImage::mimeType() const {
   switch (fileType_) {
     case TAG_avif:
@@ -141,10 +154,10 @@ std::string BmffImage::uuidName(Exiv2::DataBuf& uuid) {
   const char* uuidCano = "\x85\xC0\xB6\x87\x82\xF\x11\xE0\x81\x11\xF4\xCE\x46\x2B\x6A\x48";
   const char* uuidXmp = "\xBE\x7A\xCF\xCB\x97\xA9\x42\xE8\x9C\x71\x99\x94\x91\xE3\xAF\xAC";
   const char* uuidCanp = "\xEA\xF4\x2B\x5E\x1C\x98\x4B\x88\xB9\xFB\xB7\xDC\x40\x6E\x4D\x16";
-  const char* result = std::memcmp(uuid.pData_, uuidCano, 16) == 0   ? "cano"
-                       : std::memcmp(uuid.pData_, uuidXmp, 16) == 0  ? "xmp"
-                       : std::memcmp(uuid.pData_, uuidCanp, 16) == 0 ? "canp"
-                                                                     : "";
+  const char* result = uuid.cmpBytes(0, uuidCano, 16) == 0   ? "cano"
+                       : uuid.cmpBytes(0, uuidXmp, 16) == 0  ? "xmp"
+                       : uuid.cmpBytes(0, uuidCanp, 16) == 0 ? "canp"
+                                                             : "";
   return result;
 }
 
@@ -176,17 +189,25 @@ long BmffImage::boxHandler(Exiv2::PrintStructureOption option /* = kpsNone */, c
     hdrsize += 8;
     enforce(hdrsize <= static_cast<size_t>(pbox_end - address), Exiv2::kerCorruptedMetadata);
     DataBuf data(8);
-    io_->read(data.pData_, data.size_);
-    box_length = getULongLong(data.pData_, endian_);
+    io_->read(data.data(), data.size());
+    box_length = data.read_uint64(0, endian_);
   }
 
   // read data in box and restore file position
   long restore = io_->tell();
   enforce(box_length >= hdrsize, Exiv2::kerCorruptedMetadata);
-  enforce(box_length - hdrsize <= static_cast<size_t>(pbox_end - restore), Exiv2::kerCorruptedMetadata);
+  enforce(box_length - hdrsize <= static_cast<size_t>(pbox_end - restore), ErrorCode::kerCorruptedMetadata);
+
+  const auto buffer_size = static_cast<size_t>(box_length - hdrsize);
+  if (skipBox(box_type)) {
+    // The enforce() above checks that restore + buffer_size won't
+    // exceed pbox_end, and by implication, won't exceed LONG_MAX
+    return restore + static_cast<long>(buffer_size);
+  }
+
   DataBuf data(static_cast<long>(box_length - hdrsize));
-  const long box_end = restore + data.size_;
-  io_->read(data.pData_, data.size_);
+  const long box_end = restore + static_cast<long>(data.size());
+  io_->read(data.data(), data.size());
   io_->seek(restore, BasicIo::beg);
 
   long skip = 0;  // read position in data.pData_
@@ -194,8 +215,8 @@ long BmffImage::boxHandler(Exiv2::PrintStructureOption option /* = kpsNone */, c
   uint32_t flags = 0;
 
   if (fullBox(box_type)) {
-    enforce(data.size_ - skip >= 4, Exiv2::kerCorruptedMetadata);
-    flags = getLong(data.pData_ + skip, endian_);  // version/flags
+    enforce(data.size() - skip >= 4, ErrorCode::kerCorruptedMetadata);
+    flags = data.read_uint32(skip, endian_);  // version/flags
     version = static_cast<uint8_t>(flags >> 24);
     version &= 0x00ffffff;
     skip += 4;
@@ -203,14 +224,14 @@ long BmffImage::boxHandler(Exiv2::PrintStructureOption option /* = kpsNone */, c
 
   switch (box_type) {
     case TAG_ftyp: {
-      enforce(data.size_ >= 4, Exiv2::kerCorruptedMetadata);
-      fileType_ = getLong(data.pData_, endian_);
+      enforce(data.size() >= 4, ErrorCode::kerCorruptedMetadata);
+      fileType_ = data.read_uint32(0, endian_);
     } break;
 
     // 8.11.6.1
     case TAG_iinf: {
-      enforce(data.size_ - skip >= 2, Exiv2::kerCorruptedMetadata);
-      uint16_t n = getShort(data.pData_ + skip, endian_);
+      enforce(data.size() - skip >= 2, ErrorCode::kerCorruptedMetadata);
+      uint16_t n = data.read_uint16(skip, endian_);
       skip += 2;
 
       io_->seek(skip, BasicIo::cur);
@@ -221,16 +242,16 @@ long BmffImage::boxHandler(Exiv2::PrintStructureOption option /* = kpsNone */, c
 
     // 8.11.6.2
     case TAG_infe: {  // .__._.__hvc1_ 2 0 0 1 0 1 0 0 104 118 99 49 0
-      enforce(data.size_ - skip >= 8, Exiv2::kerCorruptedMetadata);
+      enforce(data.size() - skip >= 8, ErrorCode::kerCorruptedMetadata);
       /* getLong (data.pData_+skip,endian_) ; */ skip += 4;
-      uint16_t ID = getShort(data.pData_ + skip, endian_);
+      uint16_t ID = data.read_uint16(skip, endian_);
       skip += 2;
       /* getShort(data.pData_+skip,endian_) ; */ skip += 2;  // protection
       std::string id;
       // Check that the string has a '\0' terminator.
-      const char* str = reinterpret_cast<const char*>(data.pData_) + skip;
-      const auto maxlen = static_cast<size_t>(data.size_ - skip);
-      enforce(strnlen(str, maxlen) < maxlen, Exiv2::kerCorruptedMetadata);
+      const char* str = data.c_str(skip);
+      const auto maxlen = data.size() - skip;
+      enforce(strnlen(str, maxlen) < maxlen, ErrorCode::kerCorruptedMetadata);
       std::string name(str);
       if (name.find("Exif") != std::string::npos) {  // "Exif" or "ExifExif"
         exifID_ = ID;
@@ -266,8 +287,8 @@ long BmffImage::boxHandler(Exiv2::PrintStructureOption option /* = kpsNone */, c
 
     // 8.11.3.1
     case TAG_iloc: {
-      enforce(data.size_ - skip >= 2, Exiv2::kerCorruptedMetadata);
-      uint8_t u = data.pData_[skip++];
+      enforce(data.size() - skip >= 2, ErrorCode::kerCorruptedMetadata);
+      uint8_t u = data.read_uint8(skip++);
       uint16_t offsetSize = u >> 4;
       uint16_t lengthSize = u & 0xF;
 #if 0
@@ -279,8 +300,8 @@ long BmffImage::boxHandler(Exiv2::PrintStructureOption option /* = kpsNone */, c
 #else
       skip++;
 #endif
-      enforce(data.size_ - skip >= (version < 2 ? 2 : 4), Exiv2::kerCorruptedMetadata);
-      uint32_t itemCount = version < 2 ? getShort(data.pData_ + skip, endian_) : getLong(data.pData_ + skip, endian_);
+      enforce(data.size() - skip >= (version < 2 ? 2 : 4), ErrorCode::kerCorruptedMetadata);
+      uint32_t itemCount = version < 2 ? data.read_uint16(skip, endian_) : data.read_uint32(skip, endian_);
       skip += version < 2 ? 2 : 4;
       if (itemCount && itemCount < box_length / 14 && offsetSize == 4 && lengthSize == 4 &&
           ((box_length - 16) % itemCount) == 0) {
@@ -288,14 +309,14 @@ long BmffImage::boxHandler(Exiv2::PrintStructureOption option /* = kpsNone */, c
         long base = skip;
         for (uint32_t i = 0; i < itemCount; i++) {
           skip = base + i * step;  // move in 14, 16 or 18 byte steps
-          enforce(data.size_ - skip >= (version > 2 ? 4 : 2), Exiv2::kerCorruptedMetadata);
-          enforce(data.size_ - skip >= step, Exiv2::kerCorruptedMetadata);
-          uint32_t ID = version > 2 ? getLong(data.pData_ + skip, endian_) : getShort(data.pData_ + skip, endian_);
-          uint32_t offset = step == 14 || step == 16 ? getLong(data.pData_ + skip + step - 8, endian_)
-                            : step == 18             ? getLong(data.pData_ + skip + 4, endian_)
+          enforce(data.size() - skip >= (version > 2 ? 4 : 2), ErrorCode::kerCorruptedMetadata);
+          enforce(data.size() - skip >= step, ErrorCode::kerCorruptedMetadata);
+          uint32_t ID = version > 2 ? data.read_uint32(skip, endian_) : data.read_uint16(skip, endian_);
+          uint32_t offset = step == 14 || step == 16 ? data.read_uint32(skip + step - 8, endian_)
+                            : step == 18             ? data.read_uint32(skip + 4, endian_)
                                                      : 0;
 
-          uint32_t ldata = getLong(data.pData_ + skip + step - 4, endian_);
+          uint32_t ldata = data.read_uint32(skip + step - 4, endian_);
           // save data for post-processing in meta box
           if (offset && ldata && ID != unknownID_) {
             ilocs_[ID] = Iloc(ID, offset, ldata);
@@ -305,11 +326,11 @@ long BmffImage::boxHandler(Exiv2::PrintStructureOption option /* = kpsNone */, c
     } break;
 
     case TAG_ispe: {
-      enforce(data.size_ - skip >= 12, Exiv2::kerCorruptedMetadata);
+      enforce(data.size() - skip >= 12, ErrorCode::kerCorruptedMetadata);
       skip += 4;
-      int width = getLong(data.pData_ + skip, endian_);
+      uint32_t width = data.read_uint32(skip, endian_);
       skip += 4;
-      int height = getLong(data.pData_ + skip, endian_);
+      uint32_t height = data.read_uint32(skip, endian_);
       skip += 4;
       // HEIC files can have multiple ispe records
       // Store largest width/height
@@ -321,21 +342,20 @@ long BmffImage::boxHandler(Exiv2::PrintStructureOption option /* = kpsNone */, c
 
     // 12.1.5.2
     case TAG_colr: {
-      if (data.size_ >=
-          static_cast<long>(skip + 4 + 8)) {  // .____.HLino..__mntrR 2 0 0 0 0 12 72 76 105 110 111 2 16 ...
+      if (data.size() >= (skip + 4 + 8)) {  // .____.HLino..__mntrR 2 0 0 0 0 12 72 76 105 110 111 2 16 ...
         // https://www.ics.uci.edu/~dan/class/267/papers/jpeg2000.pdf
-        uint8_t meth = data.pData_[skip + 0];
-        uint8_t prec = data.pData_[skip + 1];
-        uint8_t approx = data.pData_[skip + 2];
-        std::string colour_type = std::string(reinterpret_cast<char*>(data.pData_), 4);
+        uint8_t meth = data.read_uint8(skip + 0);
+        uint8_t prec = data.read_uint8(skip + 1);
+        uint8_t approx = data.read_uint8(skip + 2);
+        std::string colour_type = std::string(data.c_str(), 4);
         skip += 4;
         if (colour_type == "rICC" || colour_type == "prof") {
-          DataBuf profile(data.pData_ + skip, data.size_ - skip);
+          DataBuf profile(data.c_data(skip), data.size() - skip);
           // setIccProfile(profile);
         } else if (meth == 2 && prec == 0 && approx == 0) {
           // JP2000 files have a 3 byte head // 2 0 0 icc......
           skip -= 1;
-          DataBuf profile(data.pData_ + skip, data.size_ - skip);
+          DataBuf profile(data.c_data(skip), data.size() - skip);
           // setIccProfile(profile);
         }
       }
@@ -343,7 +363,7 @@ long BmffImage::boxHandler(Exiv2::PrintStructureOption option /* = kpsNone */, c
 
     case TAG_uuid: {
       DataBuf uuid(16);
-      io_->read(uuid.pData_, uuid.size_);
+      io_->read(uuid.data(), uuid.size());
       std::string name = uuidName(uuid);
       if (name == "cano") {
         while (io_->tell() < box_end) {
@@ -381,27 +401,28 @@ long BmffImage::boxHandler(Exiv2::PrintStructureOption option /* = kpsNone */, c
 }
 
 void BmffImage::parseTiff(uint32_t root_tag, uint64_t length, uint64_t start) {
-  enforce(start <= io_->size(), kerCorruptedMetadata);
-  enforce(length <= io_->size() - start, kerCorruptedMetadata);
-  enforce(start <= static_cast<unsigned long>(std::numeric_limits<long>::max()), kerCorruptedMetadata);
-  enforce(length <= static_cast<unsigned long>(std::numeric_limits<long>::max()), kerCorruptedMetadata);
+  enforce(start <= io_->size(), ErrorCode::kerCorruptedMetadata);
+  enforce(length <= io_->size() - start, ErrorCode::kerCorruptedMetadata);
+  enforce(start <= static_cast<unsigned long>(std::numeric_limits<long>::max()), ErrorCode::kerCorruptedMetadata);
+  enforce(length <= static_cast<unsigned long>(std::numeric_limits<long>::max()), ErrorCode::kerCorruptedMetadata);
 
   // read and parse exif data
   long restore = io_->tell();
   DataBuf exif(static_cast<long>(length));
   io_->seek(static_cast<long>(start), BasicIo::beg);
-  if (exif.size_ > 8 && io_->read(exif.pData_, exif.size_) == exif.size_) {
+  if (exif.size() > 8 && io_->read(exif.data(), exif.size()) == exif.size()) {
     // hunt for "II" or "MM"
     long eof = 0xffffffff;  // impossible value for punt
     long punt = eof;
-    for (long i = 0; i < exif.size_ - 8 && punt == eof; i += 2) {
-      if (exif.pData_[i] == exif.pData_[i + 1])
-        if (exif.pData_[i] == 'I' || exif.pData_[i] == 'M')
+    for (size_t i = 0; i < exif.size() - 8 && punt == eof; i += 2) {
+      if (exif.read_uint8(i) == exif.read_uint8(i + 1))
+        if (exif.read_uint8(i) == 'I' || exif.read_uint8(i) == 'M')
           punt = i;
     }
     if (punt != eof) {
-      Internal::TiffParserWorker::decode(exifData(), iptcData(), xmpData(), exif.pData_ + punt, exif.size_ - punt,
-                                         root_tag, Internal::TiffMapping::findDecoder);
+      Internal::TiffParserWorker::decode(exifData(), iptcData(), xmpData(), exif.c_data(punt),
+                                         static_cast<uint32_t>(exif.size() - punt), root_tag,
+                                         Internal::TiffMapping::findDecoder);
     }
   }
   io_->seek(restore, BasicIo::beg);
@@ -409,39 +430,39 @@ void BmffImage::parseTiff(uint32_t root_tag, uint64_t length, uint64_t start) {
 
 void BmffImage::parseTiff(uint32_t root_tag, uint64_t length) {
   if (length > 8) {
-    enforce(length - 8 <= io_->size() - io_->tell(), kerCorruptedMetadata);
-    enforce(length - 8 <= static_cast<unsigned long>(std::numeric_limits<long>::max()), kerCorruptedMetadata);
+    enforce(length - 8 <= io_->size() - io_->tell(), ErrorCode::kerCorruptedMetadata);
+    enforce(length - 8 <= static_cast<unsigned long>(std::numeric_limits<long>::max()),
+            ErrorCode::kerCorruptedMetadata);
     DataBuf data(static_cast<long>(length - 8));
-    long bufRead = io_->read(data.pData_, data.size_);
+    long bufRead = io_->read(data.data(), data.size());
 
     if (io_->error())
-      throw Error(kerFailedToReadImageData);
-    if (bufRead != data.size_)
-      throw Error(kerInputDataReadFailed);
+      throw Error(ErrorCode::kerFailedToReadImageData);
+    if (bufRead != data.size())
+      throw Error(ErrorCode::kerInputDataReadFailed);
 
-    Internal::TiffParserWorker::decode(exifData(), iptcData(), xmpData(), data.pData_, data.size_, root_tag,
+    Internal::TiffParserWorker::decode(exifData(), iptcData(), xmpData(), data.c_data(), data.size(), root_tag,
                                        Internal::TiffMapping::findDecoder);
   }
 }
 
 void BmffImage::parseXmp(uint64_t length, uint64_t start) {
   if (length > 8) {
-    enforce(start <= io_->size(), kerCorruptedMetadata);
-    enforce(length <= io_->size() - start, kerCorruptedMetadata);
+    enforce(start <= io_->size(), ErrorCode::kerCorruptedMetadata);
+    enforce(length <= io_->size() - start, ErrorCode::kerCorruptedMetadata);
 
     long restore = io_->tell();
-    enforce(start <= static_cast<unsigned long>(std::numeric_limits<long>::max()), kerCorruptedMetadata);
     io_->seek(static_cast<long>(start), BasicIo::beg);
 
-    enforce(length < static_cast<unsigned long>(std::numeric_limits<long>::max()), kerCorruptedMetadata);
-    DataBuf xmp(static_cast<long>(length + 1));
-    xmp.pData_[length] = 0;  // ensure xmp is null terminated!
-    if (io_->read(xmp.pData_, static_cast<long>(length)) != static_cast<long>(length))
+    auto lengthSizeT = static_cast<size_t>(length);
+    DataBuf xmp(lengthSizeT + 1);
+    xmp.write_uint8(lengthSizeT, 0);  // ensure xmp is null terminated!
+    if (io_->read(xmp.data(), static_cast<long>(length)) != static_cast<long>(length))
       throw Error(kerInputDataReadFailed);
     if (io_->error())
       throw Error(kerFailedToReadImageData);
     try {
-      Exiv2::XmpParser::decode(xmpData(), std::string(reinterpret_cast<char*>(xmp.pData_)));
+      Exiv2::XmpParser::decode(xmpData(), std::string(xmp.c_str()));
     } catch (...) {
       throw Error(kerFailedToReadImageData);
     }
@@ -482,7 +503,7 @@ void BmffImage::readMetadata() {
 }  // BmffImage::readMetadata
 
 Image::UniquePtr newBmffInstance(BasicIo::UniquePtr io, bool create) {
-  Image::UniquePtr image(new BmffImage(std::move(io), create));
+  auto image = std::make_unique<BmffImage>(std::move(io), create);
   if (!image->good()) {
     image.reset();
   }

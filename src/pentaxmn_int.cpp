@@ -1,23 +1,6 @@
-// ***************************************************************** -*- C++ -*-
-/*
- * Copyright (C) 2004-2021 Exiv2 authors
- * This program is part of the Exiv2 distribution.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, 5th Floor, Boston, MA 02110-1301 USA.
- */
-// *****************************************************************************
+// SPDX-License-Identifier: GPL-2.0-or-later
+
+// included header files
 #include "pentaxmn_int.hpp"
 
 #include "exif.hpp"
@@ -27,6 +10,8 @@
 #include "tags.hpp"
 #include "types.hpp"
 #include "value.hpp"
+
+#include <array>
 
 // *****************************************************************************
 namespace Exiv2 {
@@ -924,65 +909,65 @@ std::ostream& PentaxMakerNote::printResolution(std::ostream& os, const Value& va
 
 std::ostream& PentaxMakerNote::printDate(std::ostream& os, const Value& value, const ExifData*) {
   /* I choose same format as is used inside EXIF itself */
-  os << ((value.toLong(0) << 8) + value.toLong(1));
+  os << ((value.toInt64(0) << 8) + value.toInt64(1));
   os << ":";
-  os << std::setw(2) << std::setfill('0') << value.toLong(2);
+  os << std::setw(2) << std::setfill('0') << value.toInt64(2);
   os << ":";
-  os << std::setw(2) << std::setfill('0') << value.toLong(3);
+  os << std::setw(2) << std::setfill('0') << value.toInt64(3);
   return os;
 }
 
 std::ostream& PentaxMakerNote::printTime(std::ostream& os, const Value& value, const ExifData*) {
   std::ios::fmtflags f(os.flags());
-  os << std::setw(2) << std::setfill('0') << value.toLong(0);
+  os << std::setw(2) << std::setfill('0') << value.toInt64(0);
   os << ":";
-  os << std::setw(2) << std::setfill('0') << value.toLong(1);
+  os << std::setw(2) << std::setfill('0') << value.toInt64(1);
   os << ":";
-  os << std::setw(2) << std::setfill('0') << value.toLong(2);
+  os << std::setw(2) << std::setfill('0') << value.toInt64(2);
   os.flags(f);
   return os;
 }
 
 std::ostream& PentaxMakerNote::printExposure(std::ostream& os, const Value& value, const ExifData*) {
-  os << static_cast<float>(value.toLong()) / 100 << " ms";
+  os << static_cast<float>(value.toInt64()) / 100 << " ms";
   return os;
 }
 
 std::ostream& PentaxMakerNote::printFValue(std::ostream& os, const Value& value, const ExifData*) {
   std::ios::fmtflags f(os.flags());
-  os << "F" << std::setprecision(2) << static_cast<float>(value.toLong()) / 10;
+  os << "F" << std::setprecision(2) << static_cast<float>(value.toInt64()) / 10;
   os.flags(f);
   return os;
 }
 
 std::ostream& PentaxMakerNote::printFocalLength(std::ostream& os, const Value& value, const ExifData*) {
   std::ios::fmtflags f(os.flags());
-  os << std::fixed << std::setprecision(1) << static_cast<float>(value.toLong()) / 100 << " mm";
+  os << std::fixed << std::setprecision(1) << static_cast<float>(value.toInt64()) / 100 << " mm";
   os.flags(f);
   return os;
 }
 
 std::ostream& PentaxMakerNote::printCompensation(std::ostream& os, const Value& value, const ExifData*) {
   std::ios::fmtflags f(os.flags());
-  os << std::setprecision(2) << (static_cast<float>(value.toLong()) - 50) / 10 << " EV";
+  os << std::setprecision(2) << (static_cast<float>(value.toInt64()) - 50) / 10 << " EV";
   os.flags(f);
   return os;
 }
 
 std::ostream& PentaxMakerNote::printTemperature(std::ostream& os, const Value& value, const ExifData*) {
-  os << value.toLong() << " C";
+  os << value.toInt64() << " C";
   return os;
 }
 
 std::ostream& PentaxMakerNote::printFlashCompensation(std::ostream& os, const Value& value, const ExifData*) {
   std::ios::fmtflags f(os.flags());
-  os << std::setprecision(2) << static_cast<float>(value.toLong()) / 256 << " EV";
+  os << std::setprecision(2) << static_cast<float>(value.toInt64()) / 256 << " EV";
   os.flags(f);
   return os;
 }
 
 std::ostream& PentaxMakerNote::printBracketing(std::ostream& os, const Value& value, const ExifData*) {
-  long l0 = value.toLong(0);
+  const auto l0 = value.toInt64(0);
 
   if (l0 < 10) {
     os << std::setprecision(2) << static_cast<float>(l0) / 3 << " EV";
@@ -991,7 +976,7 @@ std::ostream& PentaxMakerNote::printBracketing(std::ostream& os, const Value& va
   }
 
   if (value.count() == 2) {
-    long l1 = value.toLong(1);
+    const auto l1 = value.toInt64(1);
     os << " (";
     if (l1 == 0) {
       os << _("No extended bracketing");
@@ -1042,11 +1027,11 @@ std::ostream& PentaxMakerNote::printShutterCount(std::ostream& os, const Value& 
     os << "undefined";
     return os;
   }
-  const uint32_t date =
-      (dateIt->toLong(0) << 24) + (dateIt->toLong(1) << 16) + (dateIt->toLong(2) << 8) + (dateIt->toLong(3) << 0);
-  const uint32_t time = (timeIt->toLong(0) << 24) + (timeIt->toLong(1) << 16) + (timeIt->toLong(2) << 8);
+  const uint32_t date = (dateIt->toUint32(0) << 24) + (dateIt->toUint32(1) << 16) + (dateIt->toUint32(2) << 8) +
+                        (dateIt->toUint32(3) << 0);
+  const uint32_t time = (timeIt->toUint32(0) << 24) + (timeIt->toUint32(1) << 16) + (timeIt->toUint32(2) << 8);
   const uint32_t countEnc =
-      (value.toLong(0) << 24) + (value.toLong(1) << 16) + (value.toLong(2) << 8) + (value.toLong(3) << 0);
+      (value.toUint32(0) << 24) + (value.toUint32(1) << 16) + (value.toUint32(2) << 8) + (value.toUint32(3) << 0);
   // The shutter count is encoded using date and time values stored
   // in Pentax-specific tags.  The prototype for the encoding/decoding
   // function is taken from Phil Harvey's ExifTool: Pentax.pm file,
@@ -1139,15 +1124,15 @@ std::ostream& resolveLens0x3ff(std::ostream& os, const Value& value, const ExifD
       // 255 255 0 0 80 6 241 0 0 0 0 0 0 0 0
       unsigned long base = 1;
 
-      unsigned int autoAperture = lensInfo->toLong(base + 1) & 0x01;
-      unsigned int minAperture = lensInfo->toLong(base + 2) & 0x06;
-      unsigned int minFocusDistance = lensInfo->toLong(base + 3) & 0xf8;
+      unsigned int autoAperture = lensInfo->toUint32(base + 1) & 0x01;
+      unsigned int minAperture = lensInfo->toUint32(base + 2) & 0x06;
+      unsigned int minFocusDistance = lensInfo->toUint32(base + 3) & 0xf8;
 
-      if (autoAperture == 0x0 && minAperture == 0x0 && minFocusDistance == 0x28 && lensInfo->toLong(base + 4) == 148)
+      if (autoAperture == 0x0 && minAperture == 0x0 && minFocusDistance == 0x28 && lensInfo->toUint32(base + 4) == 148)
         index = 8;
-      if (autoAperture == 0x0 && minAperture == 0x0 && minFocusDistance == 0x28 && lensInfo->toLong(base + 5) == 110)
+      if (autoAperture == 0x0 && minAperture == 0x0 && minFocusDistance == 0x28 && lensInfo->toUint32(base + 5) == 110)
         index = 7;
-      if (autoAperture == 0x0 && minAperture == 0x0 && minFocusDistance == 0x28 && lensInfo->toLong(base + 4) == 110)
+      if (autoAperture == 0x0 && minAperture == 0x0 && minFocusDistance == 0x28 && lensInfo->toUint32(base + 4) == 110)
         index = 7;
 
     } else if (value.count() == 3) {
@@ -1156,17 +1141,17 @@ std::ostream& resolveLens0x3ff(std::ostream& os, const Value& value, const ExifD
       // 0x003f PentaxDng    LensType  Byte        3    3 255   0
       // 0x0207 PentaxDng    LensInfo  Undefined  69  131   0   0 255 0  40 148  68 244 ...
       //                                                0   1   2   3 4   5   6
-      if (lensInfo->toLong(4) == 0 && lensInfo->toLong(5) == 40 && lensInfo->toLong(6) == 148)
+      if (lensInfo->toUint32(4) == 0 && lensInfo->toUint32(5) == 40 && lensInfo->toUint32(6) == 148)
         index = 8;
 
     } else if (value.count() == 4) {
       // http://dev.exiv2.org/attachments/download/868/IMGP2221.JPG
       // 0x0207 PentaxDng    LensInfo  Undefined 128    0 131 128   0 0 255   1 184   0 0 0 0 0
       //                                                0   1   2   3 4   5   6
-      if (lensInfo->count() == 128 && lensInfo->toLong(1) == 131 && lensInfo->toLong(2) == 128)
+      if (lensInfo->count() == 128 && lensInfo->toUint32(1) == 131 && lensInfo->toUint32(2) == 128)
         index = 8;
       // #1155
-      if (lensInfo->toLong(6) == 5)
+      if (lensInfo->toUint32(6) == 5)
         index = 7;
     }
 
@@ -1192,8 +1177,8 @@ std::ostream& resolveLens0x8ff(std::ostream& os, const Value& value, const ExifD
     const auto lensInfo = findLensInfo(metadata);
     if (value.count() == 4) {
       std::string model = getKeyString("Exif.Image.Model", metadata);
-      if (model.rfind("PENTAX K-3", 0) == 0 && lensInfo->count() == 128 && lensInfo->toLong(1) == 168 &&
-          lensInfo->toLong(2) == 144)
+      if (model.rfind("PENTAX K-3", 0) == 0 && lensInfo->count() == 128 && lensInfo->toUint32(1) == 168 &&
+          lensInfo->toUint32(2) == 144)
         index = 7;
     }
 
@@ -1219,8 +1204,8 @@ std::ostream& resolveLens0x319(std::ostream& os, const Value& value, const ExifD
     const auto lensInfo = findLensInfo(metadata);
     if (value.count() == 4) {
       std::string model = getKeyString("Exif.Image.Model", metadata);
-      if (model.rfind("PENTAX K-3", 0) == 0 && lensInfo->count() == 128 && lensInfo->toLong(1) == 131 &&
-          lensInfo->toLong(2) == 128)
+      if (model.rfind("PENTAX K-3", 0) == 0 && lensInfo->count() == 128 && lensInfo->toUint32(1) == 131 &&
+          lensInfo->toUint32(2) == 128)
         index = 6;
     }
     if (value.count() == 2) {
@@ -1270,7 +1255,7 @@ std::ostream& printLensType(std::ostream& os, const Value& value, const ExifData
   const std::string undefined("undefined");
   const std::string section("pentax");
 
-  unsigned long index = value.toLong(0) * 256 + value.toLong(1);
+  const auto index = value.toUint32(0) * 256 + value.toUint32(1);
 
   // std::cout << std::endl << "printLensType value =" << value.toLong() << " index = " << index << std::endl;
   const LensIdFct* lif = find(lensIdFct, index);

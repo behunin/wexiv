@@ -37,8 +37,6 @@ add_library( exiv2lib_int OBJECT
     tiffimage_int.cpp       tiffimage_int.hpp
     tiffvisitor_int.cpp     tiffvisitor_int.hpp
     tifffwd_int.hpp
-    timegm.h
-    unused.h
     utils.cpp               utils.hpp
     pngchunk_int.cpp        pngchunk_int.hpp
 )
@@ -62,6 +60,8 @@ set(PUBLIC_HEADERS
     ../include/exiv2/jpgimage.hpp
     ../include/exiv2/mrwimage.hpp
     ../include/exiv2/orfimage.hpp
+    ../include/exiv2/photoshop.hpp
+    ../include/exiv2/preview.hpp
     ../include/exiv2/pgfimage.hpp
     ../include/exiv2/pngimage.hpp
     ../include/exiv2/psdimage.hpp
@@ -73,7 +73,6 @@ set(PUBLIC_HEADERS
     ../include/exiv2/tiffimage.hpp
     ../include/exiv2/types.hpp
     ../include/exiv2/value.hpp
-    ../include/exiv2/version.hpp
     ../include/exiv2/webpimage.hpp
     ../include/exiv2/wexiv.hpp
     ../include/exiv2/xmp_exiv2.hpp
@@ -97,8 +96,11 @@ add_library( exiv2lib STATIC
     iptc.cpp
     jp2image.cpp
     jpgimage.cpp
+    metadatum.cpp
     mrwimage.cpp
     orfimage.cpp
+    photoshop.cpp
+    preview.cpp
     pgfimage.cpp
     pngimage.cpp
     psdimage.cpp
@@ -109,7 +111,6 @@ add_library( exiv2lib STATIC
     tiffimage.cpp
     types.cpp
     value.cpp
-    version.cpp
     webpimage.cpp
     xmp.cpp
     ${PUBLIC_HEADERS}
@@ -126,16 +127,12 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
 endif()
 
 set_target_properties( exiv2lib PROPERTIES
-    VERSION       ${PROJECT_VERSION}
-    SOVERSION     ${PROJECT_VERSION_MINOR}
+    VERSION       "${PROJECT_VERSION}"
+    SOVERSION     "${PROJECT_VERSION_MINOR}"
     OUTPUT_NAME   exiv2
-    PDB_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    COMPILE_FLAGS ${EXTRA_COMPILE_FLAGS}
+    PDB_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+    COMPILE_FLAGS "${EXTRA_COMPILE_FLAGS}"
 )
-
-message(STATUS "XMP_LIB: ${XMPSDK_LIBRARY}")
-message(STATUS "XMP_INCLUDE_DIR: ${XMPSDK_INCLUDE_DIR}")
-
 
 target_link_libraries(exiv2lib PUBLIC ${XMPSDK_LIBRARY})
 target_include_directories(exiv2lib PUBLIC ${XMPSDK_INCLUDE_DIR})
@@ -152,7 +149,7 @@ target_include_directories(exiv2lib_int PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/exiv2>
 )
 
-target_link_libraries( exiv2lib PRIVATE ZLIB::ZLIB)
+target_link_libraries( exiv2lib PRIVATE zlib)
 
 if( EXIV2_ENABLE_NLS )
     target_link_libraries(exiv2lib PRIVATE ${Intl_LIBRARIES})

@@ -50,7 +50,6 @@
 #include "exiv2/tiffimage.hpp"
 #include "exiv2/types.hpp"
 #include "exiv2/value.hpp"
-#include "exiv2/version.hpp"
 #include "exiv2/xmp_exiv2.hpp"
 
 #endif  // ifndef WEXIV_HPP_

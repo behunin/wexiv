@@ -1,29 +1,15 @@
-// ***************************************************************** -*- C++ -*-
-/*
- * Copyright (C) 2004-2021 Exiv2 authors
- * This program is part of the Exiv2 distribution.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, 5th Floor, Boston, MA 02110-1301 USA.
- */
-// *****************************************************************************
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 #include "panasonicmn_int.hpp"
 
 #include "i18n.h"  // NLS support.
 #include "tags_int.hpp"
 #include "types.hpp"
 #include "value.hpp"
+
+// + standard includes
+#include <iomanip>
+#include <sstream>
 
 // *****************************************************************************
 namespace Exiv2 {
@@ -465,8 +451,8 @@ std::ostream& PanasonicMakerNote::print0x000f(std::ostream& os, const Value& val
   if (value.count() < 2 || value.typeId() != unsignedByte) {
     return os << value;
   }
-  long l0 = value.toLong(0);
-  long l1 = value.toLong(1);
+  const auto l0 = value.toInt64(0);
+  const auto l1 = value.toInt64(1);
   if (l0 == 0 && l1 == 1)
     os << _("Spot mode on or 9 area");
   else if (l0 == 0 && l1 == 16)
@@ -509,7 +495,7 @@ std::ostream& PanasonicMakerNote::print0x0023(std::ostream& os, const Value& val
   std::ios::fmtflags f(os.flags());
   std::ostringstream oss;
   oss.copyfmt(os);
-  os << std::fixed << std::setprecision(1) << value.toLong() / 3 << _(" EV");
+  os << std::fixed << std::setprecision(1) << value.toInt64() / 3 << _(" EV");
   os.copyfmt(oss);
 
   os.flags(f);
@@ -521,7 +507,7 @@ std::ostream& PanasonicMakerNote::print0x0023(std::ostream& os, const Value& val
 std::ostream& PanasonicMakerNote::print0x0029(std::ostream& os, const Value& value, const ExifData*) {
   std::ostringstream oss;
   oss.copyfmt(os);
-  long time = value.toLong();
+  const auto time = value.toInt64();
   os << std::setw(2) << std::setfill('0') << time / 360000 << ":" << std::setw(2) << std::setfill('0')
      << (time % 360000) / 6000 << ":" << std::setw(2) << std::setfill('0') << (time % 6000) / 100 << "." << std::setw(2)
      << std::setfill('0') << time % 100;
@@ -543,7 +529,7 @@ std::ostream& PanasonicMakerNote::print0x0033(std::ostream& os, const Value& val
 
 // Travel days
 std::ostream& PanasonicMakerNote::print0x0036(std::ostream& os, const Value& value, const ExifData*) {
-  if (value.toLong() == 65535) {
+  if (value.toInt64() == 65535) {
     os << N_("not set");
   } else {
     os << value;
@@ -553,7 +539,7 @@ std::ostream& PanasonicMakerNote::print0x0036(std::ostream& os, const Value& val
 
 // Program ISO
 std::ostream& PanasonicMakerNote::print0x003c(std::ostream& os, const Value& value, const ExifData*) {
-  switch (value.toLong()) {
+  switch (value.toInt64()) {
     case 65534:
       os << N_("Intelligent ISO");
       break;
@@ -570,10 +556,10 @@ std::ostream& PanasonicMakerNote::print0x003c(std::ostream& os, const Value& val
 std::ostream& PanasonicMakerNote::printPanasonicText(std::ostream& os, const Value& value, const ExifData*) {
   if (value.size() > 0 && value.typeId() == undefined) {
     for (long i = 0; i < value.size(); i++) {
-      if (value.toLong(i) == 0) {
+      if (value.toInt64(i) == 0) {
         break;
       };
-      os << static_cast<char>(value.toLong(i));
+      os << static_cast<char>(value.toInt64(i));
     };
     return os;
   }
@@ -584,7 +570,7 @@ std::ostream& PanasonicMakerNote::printPanasonicText(std::ostream& os, const Val
 
 // Manometer Pressure
 std::ostream& PanasonicMakerNote::printPressure(std::ostream& os, const Value& value, const ExifData*) {
-  switch (value.toLong()) {
+  switch (value.toInt64()) {
     case 65535:
       os << N_("infinite");
       break;
@@ -597,15 +583,13 @@ std::ostream& PanasonicMakerNote::printPressure(std::ostream& os, const Value& v
 
 std::ostream& PanasonicMakerNote::printAccelerometer(std::ostream& os, const Value& value, const ExifData*) {
   // value is stored as unsigned int, but should be readed as signed int, so manually convert it
-  int i = value.toLong();
-  i = i - ((i & 0x8000) >> 15) * 0xffff;
+  const auto i = static_cast<int16_t>(value.toInt64());
   return os << i;
 }  // PanasonicMakerNote::printAccelerometer
 
 std::ostream& PanasonicMakerNote::printRollAngle(std::ostream& os, const Value& value, const ExifData*) {
   // roll angle is stored as signed int, but tag states to be unsigned int
-  int i = value.toLong();
-  i = i - ((i & 0x8000) >> 15) * 0xffff;
+  const auto i = static_cast<int16_t>(value.toInt64());
   std::ostringstream oss;
   oss.copyfmt(os);
   os << std::fixed << std::setprecision(1) << i / 10.0;
@@ -617,8 +601,7 @@ std::ostream& PanasonicMakerNote::printRollAngle(std::ostream& os, const Value& 
 std::ostream& PanasonicMakerNote::printPitchAngle(std::ostream& os, const Value& value, const ExifData*) {
   // pitch angle is stored as signed int, but tag states to be unsigned int
   // change sign to be compatible with ExifTool: positive is upwards
-  int i = value.toLong();
-  i = i - ((i & 0x8000) >> 15) * 0xffff;
+  const auto i = static_cast<int16_t>(value.toInt64());
   std::ostringstream oss;
   oss.copyfmt(os);
   os << std::fixed << std::setprecision(1) << -i / 10.0;

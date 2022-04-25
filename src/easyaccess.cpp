@@ -117,7 +117,7 @@ ExifData::const_iterator isoSpeed(const ExifData& ed) {
     std::ostringstream os;
     md->write(os, &ed);
     bool ok = false;
-    iso_val = parseLong(os.str(), ok);
+    iso_val = parseInt64(os.str(), ok);
     if (ok && iso_val > 0)
       break;
     while (strcmp(keys[idx++], md->key().c_str()) != 0 && idx < cnt) {
@@ -138,7 +138,7 @@ ExifData::const_iterator isoSpeed(const ExifData& ed) {
     std::ostringstream os;
     md_st->write(os, &ed);
     bool ok = false;
-    const long st_val = parseLong(os.str(), ok);
+    const int64_t st_val = parseInt64(os.str(), ok);
     // SensivityType out of range or cannot be parsed properly
     if (!ok || st_val < 1 || st_val > 7)
       break;
@@ -153,7 +153,7 @@ ExifData::const_iterator isoSpeed(const ExifData& ed) {
       std::ostringstream os_iso;
       md_st->write(os_iso, &ed);
       ok = false;
-      iso_tmp_val = parseLong(os_iso.str(), ok);
+      iso_tmp_val = parseInt64(os_iso.str(), ok);
       // something wrong with the value
       if (ok || iso_tmp_val > 0) {
         md = md_st;

@@ -44,78 +44,6 @@ const int exv = 2;   //!< EXV image type (see class ExvImage)
 }  // namespace ImageType
 
 /*!
-  @brief Helper class, has methods to deal with %Photoshop "Information
-          Resource Blocks" (IRBs).
-  */
-struct EXIV2API Photoshop {
-  // Todo: Public for now
-  static const char* const ps3Id_;                 //!< %Photoshop marker
-  static const std::array<const char*, 4> irbId_;  //!< %Photoshop IRB markers
-  static const char* const bimId_;                 //!< %Photoshop IRB marker (deprecated)
-  static const uint16_t iptc_;                     //!< %Photoshop IPTC marker
-  static const uint16_t preview_;                  //!< %Photoshop preview marker
-
-  /*!
-    @brief Checks an IRB
-
-    @param pPsData        Existing IRB buffer
-    @param sizePsData     Size of the IRB buffer
-    @return true  if the IRB marker is known and the buffer is big enough to check this;<BR>
-            false otherwise
-  */
-  static bool isIrb(const byte* pPsData, long sizePsData);
-  /*!
-    @brief Validates all IRBs
-
-    @param pPsData        Existing IRB buffer
-    @param sizePsData     Size of the IRB buffer, may be 0
-    @return true  if all IRBs are valid;<BR>
-            false otherwise
-  */
-  static bool valid(const byte* pPsData, long sizePsData);
-  /*!
-    @brief Locates the data for a %Photoshop tag in a %Photoshop formated memory
-        buffer. Operates on raw data to simplify reuse.
-    @param pPsData Pointer to buffer containing entire payload of
-        %Photoshop formated data, e.g., from APP13 Jpeg segment.
-    @param sizePsData Size in bytes of pPsData.
-    @param psTag %Tag number of the block to look for.
-    @param record Output value that is set to the start of the
-        data block within pPsData (may not be null).
-    @param sizeHdr Output value that is set to the size of the header
-        within the data block pointed to by record (may not be null).
-    @param sizeData Output value that is set to the size of the actual
-        data within the data block pointed to by record (may not be null).
-    @return 0 if successful;<BR>
-            3 if no data for psTag was found in pPsData;<BR>
-            -2 if the pPsData buffer does not contain valid data.
-  */
-  static int locateIrb(const byte* pPsData, long sizePsData, uint16_t psTag, const byte** record,
-                       uint32_t* const sizeHdr, uint32_t* const sizeData);
-  /*!
-    @brief Forwards to locateIrb() with \em psTag = \em iptc_
-    */
-  static int locateIptcIrb(const byte* pPsData, long sizePsData, const byte** record, uint32_t* const sizeHdr,
-                           uint32_t* const sizeData);
-  /*!
-    @brief Forwards to locatePreviewIrb() with \em psTag = \em preview_
-    */
-  static int locatePreviewIrb(const byte* pPsData, long sizePsData, const byte** record, uint32_t* const sizeHdr,
-                              uint32_t* const sizeData);
-  /*!
-    @brief Set the new IPTC IRB, keeps existing IRBs but removes the
-            IPTC block if there is no new IPTC data to write.
-
-    @param pPsData    Existing IRB buffer
-    @param sizePsData Size of the IRB buffer, may be 0
-    @param iptcData   Iptc data to embed, may be empty
-    @return A data buffer containing the new IRB buffer, may have 0 size
-  */
-  static DataBuf setIptcIrb(const byte* pPsData, long sizePsData, const IptcData& iptcData);
-
-};  // class Photoshop
-
-/*!
       @brief Abstract helper base class to access JPEG images.
      */
 class EXIV2API JpegBase : public Image {
@@ -176,35 +104,6 @@ class EXIV2API JpegBase : public Image {
     */
   virtual bool isThisType(BasicIo& iIo, bool advance) const = 0;
   //@}
-
-  // Constant Data
-  static const byte dht_;            //!< JPEG DHT marker
-  static const byte dqt_;            //!< JPEG DQT marker
-  static const byte dri_;            //!< JPEG DRI marker
-  static const byte sos_;            //!< JPEG SOS marker
-  static const byte eoi_;            //!< JPEG EOI marker
-  static const byte app0_;           //!< JPEG APP0 marker
-  static const byte app1_;           //!< JPEG APP1 marker
-  static const byte app2_;           //!< JPEG APP2 marker
-  static const byte app13_;          //!< JPEG APP13 marker
-  static const byte com_;            //!< JPEG Comment marker
-  static const byte sof0_;           //!< JPEG Start-Of-Frame marker
-  static const byte sof1_;           //!< JPEG Start-Of-Frame marker
-  static const byte sof2_;           //!< JPEG Start-Of-Frame marker
-  static const byte sof3_;           //!< JPEG Start-Of-Frame marker
-  static const byte sof5_;           //!< JPEG Start-Of-Frame marker
-  static const byte sof6_;           //!< JPEG Start-Of-Frame marker
-  static const byte sof7_;           //!< JPEG Start-Of-Frame marker
-  static const byte sof9_;           //!< JPEG Start-Of-Frame marker
-  static const byte sof10_;          //!< JPEG Start-Of-Frame marker
-  static const byte sof11_;          //!< JPEG Start-Of-Frame marker
-  static const byte sof13_;          //!< JPEG Start-Of-Frame marker
-  static const byte sof14_;          //!< JPEG Start-Of-Frame marker
-  static const byte sof15_;          //!< JPEG Start-Of-Frame marker
-  static const char* const exifId_;  //!< Exif identifier
-  static const char* const jfifId_;  //!< JFIF identifier
-  static const char* const xmpId_;   //!< XMP packet identifier
-  static const char* const iccId_;   //!< ICC profile identifier
 
  private:
   //! @name Accessors

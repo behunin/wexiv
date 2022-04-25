@@ -49,6 +49,12 @@
 #include "tiffvisitor_int.hpp"
 #include "webpimage.hpp"
 
+// + standard includes
+#include <array>
+#include <cstring>
+#include <limits>
+#include <set>
+
 // *****************************************************************************
 namespace {
 
@@ -109,18 +115,6 @@ const Registry registry[] = {
 
 // *****************************************************************************
 namespace Exiv2 {
-// BasicIo::read() with error checking
-static void readOrThrow(BasicIo& iIo, byte* buf, long rcount, ErrorCode err) {
-  const long nread = iIo.read(buf, rcount);
-  enforce(nread == rcount, err);
-  enforce(!iIo.error(), err);
-}
-
-// BasicIo::seek() with error checking
-static void seekOrThrow(BasicIo& iIo, long offset, BasicIo::Position pos, ErrorCode err) {
-  const int r = iIo.seek(offset, pos);
-  enforce(r == 0, err);
-}
 
 Image::Image(int imageType, uint16_t supportedMetadata, BasicIo::UniquePtr io) :
     exifData_{emscripten::val::object()},
@@ -215,18 +209,18 @@ uint16_t Image::byteSwap(uint16_t value, bool bSwap) {
 uint16_t Image::byteSwap2(const DataBuf& buf, size_t offset, bool bSwap) {
   uint16_t v = 0;
   auto p = reinterpret_cast<char*>(&v);
-  p[0] = buf.pData_[offset];
-  p[1] = buf.pData_[offset + 1];
+  p[0] = buf.read_uint8(offset);
+  p[1] = buf.read_uint8(offset + 1);
   return Image::byteSwap(v, bSwap);
 }
 
 uint32_t Image::byteSwap4(const DataBuf& buf, size_t offset, bool bSwap) {
   uint32_t v = 0;
   auto p = reinterpret_cast<char*>(&v);
-  p[0] = buf.pData_[offset];
-  p[1] = buf.pData_[offset + 1];
-  p[2] = buf.pData_[offset + 2];
-  p[3] = buf.pData_[offset + 3];
+  p[0] = buf.read_uint8(offset);
+  p[1] = buf.read_uint8(offset + 1);
+  p[2] = buf.read_uint8(offset + 2);
+  p[3] = buf.read_uint8(offset + 3);
   return Image::byteSwap(v, bSwap);
 }
 
@@ -235,7 +229,7 @@ uint64_t Image::byteSwap8(const DataBuf& buf, size_t offset, bool bSwap) {
   auto p = reinterpret_cast<byte*>(&v);
 
   for (int i = 0; i < 8; i++)
-    p[i] = buf.pData_[offset + i];
+    p[i] = buf.read_uint8(offset + i);
 
   return Image::byteSwap(v, bSwap);
 }
@@ -389,19 +383,21 @@ void Image::clearComment() {
   comment_.erase();
 }
 
-void Image::setComment(const std::string& comment) {
+void Image::setComment(std::string_view comment) {
   comment_ = comment;
 }
 
-void Image::setIccProfile(Exiv2::DataBuf& iccProfile, bool bTestValid) {
+void Image::setIccProfile(Exiv2::DataBuf&& iccProfile, bool bTestValid) {
   if (bTestValid) {
-    if (iccProfile.pData_ && (iccProfile.size_ < static_cast<long>(sizeof(long))))
-      throw Error(kerInvalidIccProfile);
-    long size = iccProfile.pData_ ? getULong(iccProfile.pData_, bigEndian) : -1;
-    if (size != iccProfile.size_)
-      throw Error(kerInvalidIccProfile);
+    if (iccProfile.size() < sizeof(long)) {
+      throw Error(ErrorCode::kerInvalidIccProfile);
+    }
+    const size_t size = iccProfile.read_uint32(0, bigEndian);
+    if (size != iccProfile.size()) {
+      throw Error(ErrorCode::kerInvalidIccProfile);
+    }
   }
-  iccProfile_ = iccProfile;
+  iccProfile_ = std::move(iccProfile);
 }
 
 void Image::clearIccProfile() {
@@ -533,16 +529,15 @@ int ImageFactory::getType(BasicIo& io) {
 }  // ImageFactory::getType
 
 Image::UniquePtr ImageFactory::open(const byte* data, long size) {
-  BasicIo::UniquePtr io(new MemIo(data, size));
-  Image::UniquePtr image = open(std::move(io));  // may throw
-  if (image.get() == nullptr)
-    throw Error(kerMemoryContainsUnknownImageType);
+  auto image = open(std::make_unique<MemIo>(data, size));  // may throw
+  if (image == nullptr)
+    throw Error(ErrorCode::kerMemoryContainsUnknownImageType);
   return image;
 }
 
 Image::UniquePtr ImageFactory::open(BasicIo::UniquePtr io) {
   if (io->open() != 0) {
-    throw Error(kerDataSourceOpenFailed, io->path());
+    throw Error(ErrorCode::kerDataSourceOpenFailed, io->path(), strError());
   }
   for (unsigned int i = 0; registry[i].imageType_ != ImageType::none; ++i) {
     if (registry[i].isThisType_(*io, false)) {

@@ -1,42 +1,16 @@
-// ***************************************************************** -*- C++ -*-
-/*
- * Copyright (C) 2004-2021 Exiv2 authors
- * This program is part of the Exiv2 distribution.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, 5th Floor, Boston, MA 02110-1301 USA.
- */
-// *****************************************************************************
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 // included header files
 #include "tags.hpp"
 
 #include "canonmn_int.hpp"
 #include "casiomn_int.hpp"
 #include "error.hpp"
-#include "fujimn_int.hpp"
 #include "i18n.h"  // NLS support.
-#include "minoltamn_int.hpp"
-#include "nikonmn_int.hpp"
-#include "olympusmn_int.hpp"
-#include "panasonicmn_int.hpp"
-#include "pentaxmn_int.hpp"
-#include "samsungmn_int.hpp"
-#include "sigmamn_int.hpp"
-#include "sonymn_int.hpp"
 #include "tags_int.hpp"
 #include "types.hpp"
-#include "value.hpp"
+
+#include <array>
 
 namespace Exiv2 {
 
@@ -58,28 +32,30 @@ static const TagInfo unknownTag{0xffff,      "Unknown tag",   N_("Unknown tag"),
 using namespace Internal;
 
 //! List of all defined Exif sections.
-constexpr SectionInfo sectionInfo[] = {{sectionIdNotSet, "(UnknownSection)", N_("Unknown section")},
-                                       {imgStruct, "ImageStructure", N_("Image data structure")},
-                                       {recOffset, "RecordingOffset", N_("Recording offset")},
-                                       {imgCharacter, "ImageCharacteristics", N_("Image data characteristics")},
-                                       {otherTags, "OtherTags", N_("Other data")},
-                                       {exifFormat, "ExifFormat", N_("Exif data structure")},
-                                       {exifVersion, "ExifVersion", N_("Exif version")},
-                                       {imgConfig, "ImageConfig", N_("Image configuration")},
-                                       {userInfo, "UserInfo", N_("User information")},
-                                       {relatedFile, "RelatedFile", N_("Related file")},
-                                       {dateTime, "DateTime", N_("Date and time")},
-                                       {captureCond, "CaptureConditions", N_("Picture taking conditions")},
-                                       {gpsTags, "GPS", N_("GPS information")},
-                                       {iopTags, "Interoperability", N_("Interoperability information")},
-                                       {mpfTags, "MPF", N_("CIPA Multi-Picture Format")},
-                                       {makerTags, "Makernote", N_("Vendor specific information")},
-                                       {dngTags, "DngTags", N_("Adobe DNG tags")},
-                                       {panaRaw, "PanasonicRaw", N_("Panasonic RAW tags")},
-                                       {tiffEp, "TIFF/EP", N_("TIFF/EP tags")},
-                                       {tiffPm6, "TIFF&PM6", N_("TIFF PageMaker 6.0 tags")},
-                                       {adobeOpi, "AdobeOPI", N_("Adobe OPI tags")},
-                                       {lastSectionId, "(LastSection)", N_("Last section")}};
+constexpr auto sectionInfo = std::array{
+    SectionInfo(sectionIdNotSet, "(UnknownSection)", N_("Unknown section")),
+    SectionInfo(imgStruct, "ImageStructure", N_("Image data structure")),
+    SectionInfo(recOffset, "RecordingOffset", N_("Recording offset")),
+    SectionInfo(imgCharacter, "ImageCharacteristics", N_("Image data characteristics")),
+    SectionInfo(otherTags, "OtherTags", N_("Other data")),
+    SectionInfo(exifFormat, "ExifFormat", N_("Exif data structure")),
+    SectionInfo(exifVersion, "ExifVersion", N_("Exif version")),
+    SectionInfo(imgConfig, "ImageConfig", N_("Image configuration")),
+    SectionInfo(userInfo, "UserInfo", N_("User information")),
+    SectionInfo(relatedFile, "RelatedFile", N_("Related file")),
+    SectionInfo(dateTime, "DateTime", N_("Date and time")),
+    SectionInfo(captureCond, "CaptureConditions", N_("Picture taking conditions")),
+    SectionInfo(gpsTags, "GPS", N_("GPS information")),
+    SectionInfo(iopTags, "Interoperability", N_("Interoperability information")),
+    SectionInfo(mpfTags, "MPF", N_("CIPA Multi-Picture Format")),
+    SectionInfo(makerTags, "Makernote", N_("Vendor specific information")),
+    SectionInfo(dngTags, "DngTags", N_("Adobe DNG tags")),
+    SectionInfo(panaRaw, "PanasonicRaw", N_("Panasonic RAW tags")),
+    SectionInfo(tiffEp, "TIFF/EP", N_("TIFF/EP tags")),
+    SectionInfo(tiffPm6, "TIFF&PM6", N_("TIFF PageMaker 6.0 tags")),
+    SectionInfo(adobeOpi, "AdobeOPI", N_("Adobe OPI tags")),
+    SectionInfo(lastSectionId, "(LastSection)", N_("Last section")),
+};
 
 //! @cond IGNORE
 GroupInfo::GroupName::GroupName(std::string groupName) : g_(std::move(groupName)) {

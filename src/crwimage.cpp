@@ -1,29 +1,10 @@
-// ***************************************************************** -*- C++ -*-
-/*
- * Copyright (C) 2004-2021 Exiv2 authors
- * This program is part of the Exiv2 distribution.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, 5th Floor, Boston, MA 02110-1301 USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
   File:      crwimage.cpp
   Author(s): Andreas Huggel (ahu) <ahuggel@gmx.net>
   History:   28-Aug-05, ahu: created
-
  */
-// *****************************************************************************
+// included header files
 #include "crwimage.hpp"
 
 #include "config.h"
@@ -31,7 +12,6 @@
 #include "error.hpp"
 #include "tags.hpp"
 #include "tags_int.hpp"
-#include "value.hpp"
 
 // *****************************************************************************
 namespace Exiv2 {
@@ -61,18 +41,18 @@ int CrwImage::pixelHeight() const {
 
 void CrwImage::readMetadata() {
   if (io_->open() != 0) {
-    throw Error(kerDataSourceOpenFailed, io_->path());
+    throw Error(ErrorCode::kerDataSourceOpenFailed, io_->path());
   }
   IoCloser closer(*io_);
   // Ensure that this is the correct image type
   if (!isCrwType(*io_, false)) {
     if (io_->error() || io_->eof())
-      throw Error(kerFailedToReadImageData);
-    throw Error(kerNotACrwImage);
+      throw Error(ErrorCode::kerFailedToReadImageData);
+    throw Error(ErrorCode::kerNotACrwImage);
   }
 
   DataBuf file(static_cast<long>(io().size()));
-  io_->read(file.pData_, file.size_);
+  io_->read(file.data(), file.size());
 
   CrwParser::decode(this, io_->mmap(), static_cast<uint32_t>(io_->size()));
 
@@ -97,7 +77,7 @@ void CrwParser::decode(CrwImage* pCrwImage, const byte* pData, uint32_t size) {
 }  // CrwParser::decode
 
 Image::UniquePtr newCrwInstance(BasicIo::UniquePtr io, bool create) {
-  Image::UniquePtr image(new CrwImage(std::move(io), create));
+  auto image = std::make_unique<CrwImage>(std::move(io), create);
   if (!image->good()) {
     image.reset();
   }

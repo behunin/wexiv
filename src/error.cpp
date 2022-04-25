@@ -22,7 +22,7 @@
  */
 // *****************************************************************************
 #include "error.hpp"
-
+#include <cstring>
 #include "i18n.h"  // NLS support.
 
 #include <emscripten/emscripten.h>
@@ -159,16 +159,16 @@ LogMsg::Handler LogMsg::handler() {
 void LogMsg::defaultHandler(int level, const char* s) {
   switch (static_cast<LogMsg::Level>(level)) {
     case LogMsg::debug:
-      EM_ASM({ console.debug($0); }, s);
+      EM_ASM({ console.debug(UTF8ToString($0)); }, s);
       break;
     case LogMsg::info:
-      EM_ASM({ console.info($0); }, s);
+      EM_ASM({ console.info(UTF8ToString($0)); }, s);
       break;
     case LogMsg::warn:
-      EM_ASM({ console.warn($0); }, s);
+      EM_ASM({ console.warn(UTF8ToString($0)); }, s);
       break;
     case LogMsg::error:
-      EM_ASM({ console.error($0); }, s);
+      EM_ASM({ console.error(UTF8ToString($0)); }, s);
       break;
     case LogMsg::mute:
       assert(false);

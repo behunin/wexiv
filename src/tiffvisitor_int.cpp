@@ -1,35 +1,15 @@
-// ***************************************************************** -*- C++ -*-
-/*
- * Copyright (C) 2004-2021 Exiv2 authors
- * This program is part of the Exiv2 distribution.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, 5th Floor, Boston, MA 02110-1301 USA.
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 // *****************************************************************************
 // included header files
 #include "tiffvisitor_int.hpp"  // see bug #487
-
 #include "config.h"
 #include "enforce.hpp"
 #include "exif.hpp"
-#include "i18n.h"  // NLS support.
-#include "image.hpp"
-#include "image_int.hpp"
 #include "iptc.hpp"
 #include "jpgimage.hpp"
 #include "makernote_int.hpp"
+#include "photoshop.hpp"
 #include "sonymn_int.hpp"
 #include "tiffcomposite_int.hpp"  // Do not change the order of these 2 includes,
 #include "tiffimage_int.hpp"
@@ -290,16 +270,12 @@ void TiffDecoder::decodeXmp(const TiffEntryBase* object) {
     xmpPacket.assign(reinterpret_cast<const char*>(pData), size);
     std::string::size_type idx = xmpPacket.find_first_of('<');
     if (idx != std::string::npos && idx > 0) {
-#ifndef SUPPRESS_WARNINGS
       EXV_WARNING << "Removing " << static_cast<unsigned long>(idx)
-                  << " characters from the beginning of the XMP packet\n";
-#endif
+                  << " characters from the beginning of the XMP packet";
       xmpPacket = xmpPacket.substr(idx);
     }
     if (XmpParser::decode(xmpData_, xmpPacket)) {
-#ifndef SUPPRESS_WARNINGS
-      EXV_WARNING << "Failed to decode XMP metadata.\n";
-#endif
+      EXV_WARNING << "Failed to decode XMP metadata.";
     }
   }
 }  // TiffDecoder::decodeXmp
@@ -322,11 +298,8 @@ void TiffDecoder::decodeIptc(const TiffEntryBase* object) {
     if (0 == IptcParser::decode(iptcData_, pData, size)) {
       return;
     }
-#ifndef SUPPRESS_WARNINGS
     EXV_WARNING << "Failed to decode IPTC block found in "
-                << "Directory Image, entry 0x83bb\n";
-
-#endif
+                << "Directory Image, entry 0x83bb";
   }
 
   // 2nd choice if no IPTCNAA record found or failed to decode it:
@@ -344,11 +317,8 @@ void TiffDecoder::decodeIptc(const TiffEntryBase* object) {
     if (0 == IptcParser::decode(iptcData_, record + sizeHdr, sizeData)) {
       return;
     }
-#ifndef SUPPRESS_WARNINGS
     EXV_WARNING << "Failed to decode IPTC block found in "
-                << "Directory Image, entry 0x8649\n";
-
-#endif
+                << "Directory Image, entry 0x8649";
   }
 }  // TiffMetadataDecoder::decodeIptc
 
@@ -368,8 +338,8 @@ void TiffDecoder::decodeCanonAFInfo(const TiffEntryBase* object) {
   std::vector<int16_t> ints;
   std::vector<uint16_t> uint;
   for (long i = 0; i < object->pValue()->count(); i++) {
-    ints.push_back(static_cast<int16_t>(object->pValue()->toLong(i)));
-    uint.push_back(static_cast<uint16_t>(object->pValue()->toLong(i)));
+    ints.push_back(static_cast<int16_t>(object->pValue()->toInt64(i)));
+    uint.push_back(static_cast<uint16_t>(object->pValue()->toInt64(i)));
   }
   // Check this is AFInfo2 (ints[0] = bytes in object)
   if (ints.at(0) != object->pValue()->count() * 2)
@@ -381,46 +351,43 @@ void TiffDecoder::decodeCanonAFInfo(const TiffEntryBase* object) {
   const uint16_t nMasks = (nPoints + 15) / (sizeof(uint16_t) * 8);
   int nStart = 0;
 
-  struct {
-    uint16_t tag;
-    uint16_t size;
-    bool bSigned;
-  } records[] = {
-      {0x2600, 1, true},        // AFInfoSize
-      {0x2601, 1, true},        // AFAreaMode
-      {0x2602, 1, true},        // AFNumPoints
-      {0x2603, 1, true},        // AFValidPoints
-      {0x2604, 1, true},        // AFCanonImageWidth
-      {0x2605, 1, true},        // AFCanonImageHeight
-      {0x2606, 1, true},        // AFImageWidth"
-      {0x2607, 1, true},        // AFImageHeight
-      {0x2608, nPoints, true},  // AFAreaWidths
-      {0x2609, nPoints, true},  // AFAreaHeights
-      {0x260a, nPoints, true},  // AFXPositions
-      {0x260b, nPoints, true},  // AFYPositions
-      {0x260c, nMasks, false},  // AFPointsInFocus
-      {0x260d, nMasks, false},  // AFPointsSelected
-      {0x260e, nMasks, false},  // AFPointsUnusable
+  using record = std::tuple<uint16_t, uint16_t, bool>;
+  static const auto records = std::array{
+      record(0x2600, 1, true),        // AFInfoSize
+      record(0x2601, 1, true),        // AFAreaMode
+      record(0x2602, 1, true),        // AFNumPoints
+      record(0x2603, 1, true),        // AFValidPoints
+      record(0x2604, 1, true),        // AFCanonImageWidth
+      record(0x2605, 1, true),        // AFCanonImageHeight
+      record(0x2606, 1, true),        // AFImageWidth"
+      record(0x2607, 1, true),        // AFImageHeight
+      record(0x2608, nPoints, true),  // AFAreaWidths
+      record(0x2609, nPoints, true),  // AFAreaHeights
+      record(0x260a, nPoints, true),  // AFXPositions
+      record(0x260b, nPoints, true),  // AFYPositions
+      record(0x260c, nMasks, false),  // AFPointsInFocus
+      record(0x260d, nMasks, false),  // AFPointsSelected
+      record(0x260e, nMasks, false),  // AFPointsUnusable
   };
   // check we have enough data!
   uint16_t count = 0;
-  for (auto&& record : records) {
-    count += record.size;
+  for (auto&& [tag, size, bSigned] : records) {
+    count += size;
     if (count > ints.size())
       return;
   }
 
-  for (auto&& record : records) {
+  for (auto&& [tag, size, bSigned] : records) {
     const TagInfo* pTags = ExifTags::tagList("Canon");
-    const TagInfo* pTag = findTag(pTags, record.tag);
+    const TagInfo* pTag = findTag(pTags, tag);
     if (pTag) {
-      auto v = Exiv2::Value::create(record.bSigned ? Exiv2::signedShort : Exiv2::unsignedShort);
+      auto v = Exiv2::Value::create(bSigned ? Exiv2::signedShort : Exiv2::unsignedShort);
       std::ostringstream s;
-      if (record.bSigned) {
-        for (uint16_t k = 0; k < record.size; k++)
+      if (bSigned) {
+        for (uint16_t k = 0; k < size; k++)
           s << " " << ints.at(nStart++);
       } else {
-        for (uint16_t k = 0; k < record.size; k++)
+        for (uint16_t k = 0; k < size; k++)
           s << " " << uint.at(nStart++);
       }
 
@@ -541,10 +508,8 @@ void TiffReader::visitSizeEntry(TiffSizeEntry* object) {
 bool TiffReader::circularReference(const byte* start, IfdId group) {
   DirList::const_iterator pos = dirList_.find(start);
   if (pos != dirList_.end()) {
-#ifndef SUPPRESS_WARNINGS
     EXV_ERROR << groupName(group) << " pointer references previously read " << groupName(pos->second)
-              << " directory; ignored.\n";
-#endif
+              << " directory; ignored.";
     return true;
   }
   dirList_[start] = group;
@@ -575,27 +540,21 @@ void TiffReader::visitDirectory(TiffDirectory* object) {
     return;
 
   if (p + 2 > pLast_) {
-#ifndef SUPPRESS_WARNINGS
-    EXV_ERROR << "Directory " << groupName(object->group()) << ": IFD exceeds data buffer, cannot read entry count.\n";
-#endif
+    EXV_ERROR << "Directory " << groupName(object->group()) << ": IFD exceeds data buffer, cannot read entry count.";
     return;
   }
   const uint16_t n = getUShort(p, byteOrder());
   p += 2;
   // Sanity check with an "unreasonably" large number
   if (n > 256) {
-#ifndef SUPPRESS_WARNINGS
     EXV_ERROR << "Directory " << groupName(object->group()) << " with " << n
-              << " entries considered invalid; not read.\n";
-#endif
+              << " entries considered invalid; not read.";
     return;
   }
   for (uint16_t i = 0; i < n; ++i) {
     if (p + 12 > pLast_) {
-#ifndef SUPPRESS_WARNINGS
       EXV_ERROR << "Directory " << groupName(object->group()) << ": IFD entry " << i
-                << " lies outside of the data buffer.\n";
-#endif
+                << " lies outside of the data buffer.";
       return;
     }
     uint16_t tag = getUShort(p, byteOrder());
@@ -604,36 +563,27 @@ void TiffReader::visitDirectory(TiffDirectory* object) {
       tc->setStart(p);
       object->addChild(std::move(tc));
     } else {
-#ifndef SUPPRESS_WARNINGS
-      EXV_WARNING << "Unable to handle tag " << tag << ".\n";
-#endif
+      EXV_WARNING << "Unable to handle tag " << tag << ".";
     }
     p += 12;
   }
 
   if (object->hasNext()) {
     if (p + 4 > pLast_) {
-#ifndef SUPPRESS_WARNINGS
-      EXV_ERROR << "Directory " << groupName(object->group())
-                << ": IFD exceeds data buffer, cannot read next pointer.\n";
-#endif
+      EXV_ERROR << "Directory " << groupName(object->group()) << ": IFD exceeds data buffer, cannot read next pointer.";
       return;
     }
     TiffComponent::UniquePtr tc;
     uint32_t next = getLong(p, byteOrder());
     if (next) {
       tc = TiffCreator::create(Tag::next, object->group());
-#ifndef SUPPRESS_WARNINGS
       if (tc.get() == nullptr) {
-        EXV_WARNING << "Directory " << groupName(object->group()) << " has an unexpected next pointer; ignored.\n";
+        EXV_WARNING << "Directory " << groupName(object->group()) << " has an unexpected next pointer; ignored.";
       }
-#endif
     }
     if (tc.get()) {
       if (baseOffset() + next > size_) {
-#ifndef SUPPRESS_WARNINGS
-        EXV_ERROR << "Directory " << groupName(object->group()) << ": Next pointer is out of bounds; ignored.\n";
-#endif
+        EXV_ERROR << "Directory " << groupName(object->group()) << ": Next pointer is out of bounds; ignored.";
         return;
       }
       tc->setStart(pData_ + baseOffset() + next);
@@ -656,17 +606,13 @@ void TiffReader::visitSubIfd(TiffSubIfd* object) {
     for (uint32_t i = 0; i < object->count(); ++i) {
       uint32_t offset = getLong(object->pData() + 4 * i, byteOrder());
       if (baseOffset() + offset > size_) {
-#ifndef SUPPRESS_WARNINGS
         EXV_ERROR << "Directory " << groupName(object->group()) << ", entry 0x" << std::setw(4) << std::setfill('0')
-                  << std::hex << object->tag() << " Sub-IFD pointer " << i << " is out of bounds; ignoring it.\n";
-#endif
+                  << std::hex << object->tag() << " Sub-IFD pointer " << i << " is out of bounds; ignoring it.";
         return;
       }
       if (i >= maxi) {
-#ifndef SUPPRESS_WARNINGS
         EXV_WARNING << "Directory " << groupName(object->group()) << ", entry 0x" << std::setw(4) << std::setfill('0')
-                    << std::hex << object->tag() << ": Skipping sub-IFDs beyond the first " << i << ".\n";
-#endif
+                    << std::hex << object->tag() << ": Skipping sub-IFDs beyond the first " << i << ".";
         break;
       }
       // If there are multiple dirs, group is incremented for each
@@ -674,13 +620,10 @@ void TiffReader::visitSubIfd(TiffSubIfd* object) {
       td->setStart(pData_ + baseOffset() + offset);
       object->addChild(std::move(td));
     }
-  }
-#ifndef SUPPRESS_WARNINGS
-  else {
+  } else {
     EXV_WARNING << "Directory " << groupName(object->group()) << ", entry 0x" << std::setw(4) << std::setfill('0')
-                << std::hex << object->tag() << " doesn't look like a sub-IFD.\n";
+                << std::hex << object->tag() << " doesn't look like a sub-IFD.";
   }
-#endif
 
 }  // TiffReader::visitSubIfd
 
@@ -710,14 +653,12 @@ void TiffReader::visitIfdMakernote(TiffIfdMakernote* object) {
   object->setImageByteOrder(byteOrder());  // set the byte order for the image
 
   if (!object->readHeader(object->start(), static_cast<uint32_t>(pLast_ - object->start()), byteOrder())) {
-#ifndef SUPPRESS_WARNINGS
-    EXV_ERROR << "Failed to read " << groupName(object->ifd_.group()) << " IFD Makernote header.\n";
+    EXV_ERROR << "Failed to read " << groupName(object->ifd_.group()) << " IFD Makernote header.";
 #ifdef EXIV2_DEBUG_MESSAGES
     if (static_cast<uint32_t>(pLast_ - object->start()) >= 16) {
       hexdump(std::cerr, object->start(), 16);
     }
 #endif  // EXIV2_DEBUG_MESSAGES
-#endif  // SUPPRESS_WARNINGS
     setGo(geKnownMakernote, false);
     return;
   }
@@ -743,11 +684,9 @@ void TiffReader::readTiffEntry(TiffEntryBase* object) {
   assert(p >= pData_);
 
   if (p + 12 > pLast_) {
-#ifndef SUPPRESS_WARNINGS
     EXV_ERROR << "Entry in directory " << groupName(object->group())
               << "requests access to memory beyond the data buffer. "
               << "Skipping entry.\n";
-#endif
     return;
   }
   // Component already has tag
@@ -756,21 +695,17 @@ void TiffReader::readTiffEntry(TiffEntryBase* object) {
   TypeId typeId = toTypeId(tiffType, object->tag(), object->group());
   long typeSize = TypeInfo::typeSize(typeId);
   if (0 == typeSize) {
-#ifndef SUPPRESS_WARNINGS
     EXV_WARNING << "Directory " << groupName(object->group()) << ", entry 0x" << std::setw(4) << std::setfill('0')
                 << std::hex << object->tag() << " has unknown Exif (TIFF) type " << std::dec << tiffType
-                << "; setting type size 1.\n";
-#endif
+                << "; setting type size 1.";
     typeSize = 1;
   }
   p += 2;
   uint32_t count = getULong(p, byteOrder());
   if (count >= 0x10000000) {
-#ifndef SUPPRESS_WARNINGS
     EXV_ERROR << "Directory " << groupName(object->group()) << ", entry 0x" << std::setw(4) << std::setfill('0')
               << std::hex << object->tag() << " has invalid size " << std::dec << count << "*" << typeSize
-              << "; skipping entry.\n";
-#endif
+              << "; skipping entry.";
     return;
   }
   p += 4;
@@ -787,12 +722,9 @@ void TiffReader::readTiffEntry(TiffEntryBase* object) {
     if (object->tag() == 0x2001 && std::string(groupName(object->group())) == "Sony1") {
       isize = size;
     } else {
-#ifndef SUPPRESS_WARNINGS
       EXV_ERROR << "Offset of directory " << groupName(object->group()) << ", entry 0x" << std::setw(4)
                 << std::setfill('0') << std::hex << object->tag() << " is out of bounds: "
-                << "Offset = 0x" << std::setw(8) << std::setfill('0') << std::hex << offset
-                << "; truncating the entry\n";
-#endif
+                << "Offset = 0x" << std::setw(8) << std::setfill('0') << std::hex << offset << "; truncating the entry";
     }
     size = 0;
   }
@@ -812,7 +744,6 @@ void TiffReader::readTiffEntry(TiffEntryBase* object) {
 
     // check for size being invalid
     if (size > static_cast<uint32_t>(pLast_ - pData)) {
-#ifndef SUPPRESS_WARNINGS
       EXV_ERROR << "Upper boundary of data for "
                 << "directory " << groupName(object->group()) << ", entry 0x" << std::setw(4) << std::setfill('0')
                 << std::hex << object->tag() << " is out of bounds: "
@@ -820,8 +751,7 @@ void TiffReader::readTiffEntry(TiffEntryBase* object) {
                 << size
                 << ", exceeds buffer size by "
                 // cast to make MSVC happy
-                << static_cast<uint32_t>(pData + size - pLast_) << " Bytes; truncating the entry\n";
-#endif
+                << static_cast<uint32_t>(pData + size - pLast_) << " Bytes; truncating the entry";
       size = 0;
     }
   }
@@ -838,7 +768,7 @@ void TiffReader::readTiffEntry(TiffEntryBase* object) {
   }
 
   object->setValue(std::move(v));
-  object->setData(pData, size);
+  object->setData(pData, size, std::shared_ptr<DataBuf>());
   object->setOffset(offset);
   object->setIdx(nextIdx(object->group()));
 
@@ -860,11 +790,9 @@ void TiffReader::visitBinaryArray(TiffBinaryArray* object) {
   pRoot_->accept(finder);
   auto te = dynamic_cast<TiffEntryBase*>(finder.result());
   if (te && te->idx() != object->idx()) {
-#ifndef SUPPRESS_WARNINGS
     EXV_WARNING << "Not decoding duplicate binary array tag 0x" << std::setw(4) << std::setfill('0') << std::hex
                 << object->tag() << std::dec << ", group " << groupName(object->group()) << ", idx " << object->idx()
-                << "\n";
-#endif
+                << ".";
     object->setDecoded(false);
     return;
   }
@@ -881,8 +809,8 @@ void TiffReader::visitBinaryArray(TiffBinaryArray* object) {
   if (cryptFct != nullptr) {
     const byte* pData = object->pData();
     int32_t size = object->TiffEntryBase::doSize();
-    DataBuf buf = cryptFct(object->tag(), pData, size, pRoot_);
-    if (buf.size_ > 0)
+    auto buf = std::make_shared<DataBuf>(cryptFct(object->tag(), pData, size, pRoot_));
+    if (!buf->empty())
       object->setData(buf);
   }
 
